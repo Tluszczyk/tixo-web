@@ -2,40 +2,74 @@
 import {ref, onMounted, computed} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { games } from '@/api/games'
+import { auth } from '@/api/authentication'
 import type { Game } from '@/api/dto/Game'
 import { GameStatus } from '@/api/dto/GameStatus'
 import Board from '@/components/Board.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import AuthenticatedView from '@/views/AuthenticatedView.vue'
-import {functions} from "@/api/appwriteClient.ts";
+import type { Models } from 'appwrite'
 
 const route = useRoute()
 const router = useRouter()
 const game = ref<Game | null>(null)
+const currentUser = ref<Models.User<Models.Preferences> | null>(null)
 const loading = ref(true)
+const joining = ref(false)
 const selectedCell = ref<number | null>(null)
 
 const fetchGame = async () => {
   loading.value = true
   const gameId = route.params.id as string
   try {
-    const data = await games.getGame(gameId)
-    if (data) {
-      game.value = data
+    const [gameData, userData] = await Promise.all([
+      games.getGame(gameId),
+      auth.getCurrentUser()
+    ])
+    
+    if (gameData) {
+      game.value = gameData
     } else {
       console.error('Game not found')
     }
+    
+    currentUser.value = userData
   } catch (error) {
-    console.error('Failed to fetch game:', error)
+    console.error('Failed to fetch game or user:', error)
   } finally {
     loading.value = false
   }
 }
 
+const joinMatch = async () => {
+  if (!game.value || joining.value) return
+  joining.value = true
+  try {
+    const success = await games.joinGame(game.value.$id)
+    if (success) {
+      await fetchGame()
+    }
+  } catch (error) {
+    console.error('Failed to join game:', error)
+  } finally {
+    joining.value = false
+  }
+}
+
+const isPlayerInGame = computed(() => {
+  if (!game.value || !currentUser.value) return false
+  return game.value.xPlayerId === currentUser.value.$id || game.value.oPlayerId === currentUser.value.$id
+})
+
+const isMyTurn = computed(() => {
+  if (!game.value || !currentUser.value || game.value.status !== GameStatus.IN_PROGRESS) return false
+  return game.value.nextPlayerId === currentUser.value.$id
+})
+
 const currentPlayer = computed(() => {
   if (!game.value) return 'X'
-  // Using nexPlayerId to determine whose turn it is
-  if (game.value.nexPlayerId === game.value.oPlayerId) return 'O'
+  // Using nextPlayerId to determine whose turn it is
+  if (game.value.nextPlayerId === game.value.oPlayerId) return 'O'
   return 'X'
 })
 
@@ -53,6 +87,8 @@ const displayBoard = computed(() => {
 
 const handleCellClick = (index: number) => {
   if (game.value?.status !== GameStatus.IN_PROGRESS) return
+  if (!isPlayerInGame.value) return
+  if (!isMyTurn.value) return
 
   if (selectedCell.value === index) {
     selectedCell.value = null
@@ -67,6 +103,8 @@ const handleCellClick = (index: number) => {
 
 const submitMove = () => {
   if (selectedCell.value === null) return
+  if (!isPlayerInGame.value || !isMyTurn.value) return
+  
   console.log('Submitting move for cell:', selectedCell.value);
 
   // TODO: implement submitting move
@@ -160,17 +198,31 @@ const goBack = () => {
                   </button>
                 </div>
                 <div v-else-if="game.status === GameStatus.IN_PROGRESS" class="text-slate-500 font-medium flex items-center space-x-2 italic">
-                   <i class="pi pi-info-circle text-xs"></i>
-                   <span>Select an empty cell to make your move</span>
+                   <div v-if="!isPlayerInGame" class="flex items-center space-x-2 text-blue-400">
+                      <i class="pi pi-eye text-xs"></i>
+                      <span>You are spectating this match</span>
+                   </div>
+                   <div v-else-if="!isMyTurn" class="flex items-center space-x-2 text-amber-500">
+                      <i class="pi pi-clock text-xs"></i>
+                      <span>Waiting for opponent's move</span>
+                   </div>
+                   <div v-else class="flex items-center space-x-2 text-green-500">
+                      <i class="pi pi-info-circle text-xs"></i>
+                      <span>Your turn! Select a cell to move</span>
+                   </div>
                 </div>
                 <div v-else-if="game.status === GameStatus.WAITING_FOR_OPPONENT" class="flex flex-col items-center space-y-3">
                    <div class="text-amber-500 font-medium flex items-center space-x-2 animate-pulse">
                       <i class="pi pi-user-plus text-xs"></i>
                       <span>Waiting for an opponent to join...</span>
                    </div>
-                   <button class="px-8 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg transition-colors text-sm">
-                      Join Match
+                   <button v-if="!isPlayerInGame" @click="joinMatch" :disabled="joining" class="px-8 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                      <i v-if="joining" class="pi pi-spin pi-spinner mr-2"></i>
+                      <span>Join Match</span>
                    </button>
+                   <div v-else class="text-slate-500 text-xs italic">
+                     You are already in this game.
+                   </div>
                 </div>
               </Transition>
             </div>
@@ -186,31 +238,31 @@ const goBack = () => {
                   <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Turn</p>
                   <div class="flex items-center space-x-2">
                     <span :class="currentPlayer === 'X' ? 'text-red-500' : 'text-blue-500'" class="font-black">{{ currentPlayer }}</span>
-                    <span class="text-xs text-slate-300">{{ currentPlayer === 'X' ? (game.xPlayerId || 'Player X') : (game.oPlayerId || 'Player O') }}</span>
+                    <span class="text-xs text-slate-300">{{ currentPlayer === 'X' ? 'X Player' : 'O Player' }}</span>
                   </div>
                </div>
                <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Winner</p>
-                  <p class="text-sm text-slate-200">{{ game.winnerId ? (game.winnerId || 'Player') : 'None' }}</p>
+                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Created At</p>
+                  <span class="text-xs text-slate-100">{{ new Date(game.$createdAt).toLocaleDateString() }}</span>
                </div>
                <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Moves</p>
-                  <p class="text-sm text-slate-200">{{ game.moveHistory?.length || 0 }}</p>
+                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Next To Play</p>
+                  <span class="text-xs text-slate-100 truncate max-w-full block">{{ game.nextPlayerId ? game.nextPlayerId.substring(0,10) : 'None' }}</span>
                </div>
                <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Created</p>
-                  <p class="text-sm text-slate-200">{{ new Date(game.$createdAt).toLocaleDateString() }}</p>
+                  <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Game ID</p>
+                  <span class="text-xs text-slate-100 truncate max-w-full block">{{ game.$id.substring(0,10) }}</span>
                </div>
             </div>
           </div>
         </div>
 
-        <!-- Sidebar / Move History -->
-        <div class="space-y-6">
-          <div class="bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col h-[500px]">
+        <!-- Sidebar -->
+        <div class="space-y-8">
+          <div class="bg-slate-900/50 rounded-2xl border border-slate-800 flex flex-col h-[400px]">
              <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="font-bold text-slate-100">Move History</h3>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-slate-400">{{ game.moveHistory?.length || 0 }}</span>
+                 <h3 class="text-sm font-bold text-slate-100 uppercase tracking-widest">Move History</h3>
+                 <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-slate-400">{{ game.moveHistory?.length || 0 }}</span>
              </div>
              <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 <div v-if="!game.moveHistory || game.moveHistory.length === 0" class="flex flex-col items-center justify-center h-full opacity-30">
@@ -237,7 +289,9 @@ const goBack = () => {
                 <i class="pi pi-trophy"></i>
              </div>
              <h4 class="text-lg font-black mb-1 relative z-10">Match Info</h4>
-             <p class="text-blue-100 text-xs mb-4 relative z-10 opacity-80">You are spectating this match.</p>
+             <p class="text-blue-100 text-xs mb-4 relative z-10 opacity-80">
+               {{ isPlayerInGame ? 'You are playing this match.' : 'You are spectating this match.' }}
+             </p>
              <button class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold transition-all relative z-10 backdrop-blur-md">
                 Share Match
              </button>

@@ -8,7 +8,7 @@ export interface Game extends Models.DefaultRow {
   createdBy: string;
 
   winnerId: string;
-  nexPlayerId: string;
+  nextPlayerId: string;
 
   winner: string;
   status: GameStatus;

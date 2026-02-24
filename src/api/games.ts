@@ -2,16 +2,17 @@ import {functions, tablesDB} from "@/api/appwriteClient";
 import type {Game} from "@/api/dto/Game";
 import {HandleAppwriteErrors} from "@/api/utils/decorators";
 import type {Models} from "appwrite";
-import { auth } from "@/api/authentication";
+import type { CreateGameRequest } from '@/api/requests/CreateGameRequest.ts'
+import type { JoinGameRequest } from '@/api/requests/JoinGameRequest.ts'
 
 class GamesService {
   @HandleAppwriteErrors({}, null)
   async createGame(symbol: 'X' | 'O'): Promise<string | null> {
-    const body: any = {symbol: symbol};
+    const body: CreateGameRequest = { symbol: symbol }
 
     const execution = await functions.createExecution({
-      functionId: "699b73ca0012c5269d5b",
-      body: JSON.stringify(body)
+      functionId: "create-game",
+      body: JSON.stringify(body),
     });
 
     if (execution.status === 'completed') {
@@ -25,6 +26,28 @@ class GamesService {
     }
 
     return null;
+  }
+
+  @HandleAppwriteErrors({}, null)
+  async joinGame(gameId: string): Promise<boolean> {
+    const body: JoinGameRequest = { gameId: gameId }
+
+    const execution = await functions.createExecution({
+      functionId: "join-game",
+      body: JSON.stringify(body),
+    });
+
+    if (execution.status === 'completed') {
+      try {
+        const response = JSON.parse(execution.responseBody);
+        return !!response.success;
+      } catch (e) {
+        console.error('Failed to parse joinGame response', e);
+        return false;
+      }
+    }
+
+    return false;
   }
 
   @HandleAppwriteErrors({},[])
