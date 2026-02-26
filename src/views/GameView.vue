@@ -326,44 +326,49 @@ const goBack = () => {
         </button>
       </div>
 
-      <div v-else class="flex flex-col lg:flex-row gap-12 pb-12">
-        <!-- Sidebar: Subtle Timeline (Desktop) -->
-        <aside class="hidden lg:flex w-20 flex-col items-center py-4 border-r border-white/[0.05] h-fit sticky top-0">
-            <div class="flex flex-col gap-6 overflow-y-auto custom-scrollbar max-h-[75vh] w-full px-2 py-4">
+      <div v-else class="flex flex-col lg:flex-row gap-8 pb-12 h-full min-h-[calc(100vh-120px)]">
+        <!-- Mobile/Desktop Move History -->
+        <aside class="w-full lg:w-32 flex flex-col items-center border-b lg:border-b-0 lg:border-r border-white/[0.1] bg-white/[0.02] lg:bg-transparent overflow-hidden shrink-0">
+            <div class="w-full px-4 py-2 border-b border-white/[0.05] flex items-center justify-between lg:hidden">
+              <span class="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Match Timeline</span>
+              <span class="text-[9px] font-bold text-white/40 uppercase mono">{{ game.moveHistory?.length || 0 }} MOVES</span>
+            </div>
+            
+            <div class="flex flex-row lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto custom-scrollbar w-full p-4 lg:py-6 lg:h-[70vh]">
                 <div v-for="(move, idx) in game.moveHistory" :key="idx"
                      @click="selectedHistoryIndex = (selectedHistoryIndex === idx ? null : idx)"
-                     class="history-item flex flex-col items-center gap-1 cursor-pointer group shrink-0">
-                    <span class="text-[9px] font-bold transition-colors mono"
-                          :class="selectedHistoryIndex === idx ? 'text-indigo-500' : 'text-white/20 group-hover:text-white/40'">
+                     class="history-item flex flex-col items-center gap-2 cursor-pointer group shrink-0 min-w-[50px] lg:min-w-0">
+                    <span class="text-[10px] font-black transition-colors mono"
+                          :class="selectedHistoryIndex === idx ? 'text-indigo-400' : 'text-white/40 group-hover:text-white/70'">
                         {{ (idx + 1).toString().padStart(2, '0') }}
                     </span>
                     
-                    <!-- Expanding Dot -->
                     <div :class="[
-                        'relative flex items-center justify-center transition-all duration-500 ease-out h-6 w-full',
-                        selectedHistoryIndex === idx ? 'scale-110' : ''
+                        'relative flex items-center justify-center transition-all duration-300 h-10 w-10 lg:w-16 lg:h-16 rounded-xl border',
+                        selectedHistoryIndex === idx 
+                          ? 'bg-indigo-500/20 border-indigo-500/60 ring-4 ring-indigo-500/10 scale-110' 
+                          : 'bg-white/[0.03] border-white/[0.1] hover:border-white/30 hover:bg-white/10'
                     ]">
-                        <div :class="[
-                            'rounded-full transition-all duration-500 ease-out flex items-center justify-center text-[9px] font-black text-white overflow-hidden whitespace-nowrap px-0',
-                            selectedHistoryIndex === idx ? 'ring-4 ring-indigo-500/20' : '',
-                            // Base size vs Hover size
-                            'w-2 h-2 group-hover:w-12 group-hover:h-6 group-hover:rounded-lg group-hover:px-2',
-                            // Color logic (X is red, O is blue)
-                            game.isOnDevice 
-                              ? (idx % 2 === 0 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]')
-                              : (idx % 2 === 0 ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]')
+                        <span :class="[
+                          'text-sm lg:text-lg font-black transition-all duration-300',
+                          game.isOnDevice 
+                            ? (idx % 2 === 0 ? 'text-red-400 marker-x' : 'text-blue-400 marker-o')
+                            : (idx % 2 === 0 ? 'text-blue-400 marker-o' : 'text-red-400 marker-x'),
+                          selectedHistoryIndex === idx ? 'scale-125' : 'scale-100 group-hover:scale-110'
                         ]">
-                            <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">{{ move }}</span>
-                        </div>
+                          {{ move }}
+                        </span>
+                        
+                        <!-- Active Indicator Dot -->
+                        <div v-if="selectedHistoryIndex === idx" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_8px_#6366f1]"></div>
                     </div>
                 </div>
-                <div v-if="game.moveHistory?.length > 0" class="h-12 w-[1px] bg-white/5 mx-auto shrink-0 mt-2"></div>
             </div>
         </aside>
 
         <!-- Main Board Area -->
-        <div class="flex-1 space-y-12">
-          <div class="flex flex-col items-center space-y-12">
+        <div class="flex-1 flex flex-col items-center justify-center py-4 lg:py-0 min-h-[60vh]">
+          <div class="flex flex-col items-center justify-center space-y-8 lg:space-y-12 w-full">
             <Board :available-moves="selectedHistoryIndex !== null ? '' : game?.availableMoves"
               :board="selectedHistoryIndex !== null ? historicalState?.board : displayBoard"
               :tile-winners="selectedHistoryIndex !== null ? historicalState?.tileWinners : game.tileWinners"

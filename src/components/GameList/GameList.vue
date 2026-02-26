@@ -116,31 +116,31 @@ const handleApplyFilters = (newFilters: FilterState) => {
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col space-y-4">
-    <div class="flex items-center justify-between mb-4 px-2">
+  <div class="w-full h-full flex flex-col space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
       <div class="space-y-1">
-        <h2 class="text-2xl font-black text-white uppercase italic">Active Operations<span class="text-indigo-500">.</span></h2>
+        <h2 class="text-2xl lg:text-3xl font-black text-white uppercase italic">Active Operations<span class="text-indigo-500">.</span></h2>
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Live Operational Data</p>
       </div>
-      <div class="flex items-center gap-4">
-        <button @click="fetchGames" class="w-10 h-10 rounded-xl glass border-white/5 text-white/40 hover:text-white hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group" title="Synchronize">
-           <i class="pi pi-refresh text-sm group-hover:scale-110 transition-transform" :class="{'animate-spin': loading}"></i>
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <button @click="fetchGames" class="w-12 h-12 lg:w-10 lg:h-10 rounded-xl glass border-white/10 text-white/40 hover:text-white hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group shrink-0" title="Synchronize">
+           <i class="pi pi-refresh text-sm lg:text-xs group-hover:scale-110 transition-transform" :class="{'animate-spin': loading}"></i>
         </button>
         <button @click="showFilterDialog = true" 
-                :class="['px-6 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 cursor-pointer', 
-                         showFilterDialog ? 'bg-indigo-500 border-indigo-400 text-white' : 'glass border-white/5 text-white/40 hover:text-white']">
+                :class="['flex-1 md:flex-none px-4 lg:px-6 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 cursor-pointer', 
+                         showFilterDialog ? 'bg-indigo-500 border-indigo-400 text-white' : 'glass border-white/10 text-white/40 hover:text-white']">
            <i class="pi pi-filter text-[10px]"></i>
            <span>Parameters</span>
         </button>
-        <button @click="showCreateDialog = true" class="px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-200 transition-all shadow-xl shadow-white/5 flex items-center gap-3 cursor-pointer">
+        <button @click="showCreateDialog = true" class="flex-1 md:flex-none px-4 lg:px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-200 transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-3 cursor-pointer">
            <i class="pi pi-plus text-[10px]"></i>
            <span>Initialize</span>
         </button>
       </div>
     </div>
 
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="i in 3" :key="i" class="h-40 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
+    <div v-if="loading" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <div v-for="i in 4" :key="i" class="h-48 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
     </div>
 
     <div v-else-if="activeGames.length === 0" class="py-20 flex flex-col items-center justify-center glass border-white/[0.03] rounded-[2.5rem] border-dashed">
@@ -151,7 +151,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
       <button @click="showCreateDialog = true" class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">Initiate New Protocol</button>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8">
        <GameListItem v-for="game in activeGames" :key="game.$id" :game="game" />
     </div>
 
@@ -166,15 +166,15 @@ const handleApplyFilters = (newFilters: FilterState) => {
          </div>
        </div>
 
-       <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-         <div v-for="i in 3" :key="i" class="h-40 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
+       <div v-if="loading" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+         <div v-for="i in 4" :key="i" class="h-48 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
        </div>
 
        <div v-else-if="recentMatches.length === 0" class="py-12 text-center text-white/10 text-[10px] font-black uppercase tracking-widest italic">
          Historical database empty
        </div>
 
-       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+       <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700">
           <GameListItem v-for="game in recentMatches" :key="game.$id" :game="game" />
        </div>
     </div>

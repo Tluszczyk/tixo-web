@@ -17,9 +17,9 @@ const emit = defineEmits<{
 
 const containerSizeClasses = computed(() => {
   switch (props.size) {
-    case "sm": return "max-w-[120px]"
-    case "md": return "max-w-[450px]"
-    default: return "max-w-[650px]"
+    case "sm": return "max-w-[180px]"
+    case "md": return "max-w-[500px]"
+    default: return "max-w-[min(90vw,75vh)] w-full"
   }
 })
 
@@ -96,9 +96,9 @@ const deserializedTileWinners = computed(() => {
 
 const cellClasses = computed(() => {
   switch (props.size) {
-    case "sm": return "text-[8px]"
-    case "md": return "text-lg h-10"
-    default: return "text-2xl h-14"
+    case "sm": return "text-[8px] lg:text-[10px]"
+    case "md": return "text-lg lg:text-xl"
+    default: return "text-lg lg:text-3xl"
   }
 })
 
@@ -120,12 +120,12 @@ const onCellClick = (tileIndex: number, cellIndex: number) => {
 </script>
 
 <template>
-  <div :class="['board-container w-full relative group', containerSizeClasses]">
-    <div class="main-grid glass rounded-[2rem] shadow-2xl relative z-10 transition-transform duration-700 grid grid-cols-3 grid-rows-3 gap-4 p-4 lg:p-6">
+  <div :class="['board-container w-full relative group mx-auto', containerSizeClasses]">
+    <div class="main-grid aspect-square glass rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl relative z-10 grid grid-cols-3 grid-rows-3 gap-2 lg:gap-4 p-2 lg:p-6 transition-all duration-300">
       <div v-for="(tileArr, i) in deserializedBoard" :key="i" 
-           class="small-board transition-all duration-500 relative overflow-hidden aspect-square grid grid-cols-3 grid-rows-3 gap-1 p-1.5"
+           class="small-board transition-all duration-200 relative overflow-hidden aspect-square grid grid-cols-3 grid-rows-3 gap-0.5 lg:gap-1 p-0.5 lg:p-1.5"
            :class="[
-             isTileActive(i) ? 'active ring-1 ring-indigo-500/30' : 'opacity-40 grayscale-[0.5]',
+             isTileActive(i) ? 'active ring-2 ring-indigo-500/50' : 'opacity-80',
              deserializedTileWinners[i] === 'X' ? 'won-x' : 
              deserializedTileWinners[i] === 'O' ? 'won-o' : 
              deserializedTileWinners[i] === 'D' ? 'won-draw' : 'glass'
@@ -133,16 +133,18 @@ const onCellClick = (tileIndex: number, cellIndex: number) => {
         
         <div v-for="(cell, j) in tileArr" :key="j" 
              @click="onCellClick(i, j)"
-             class="flex items-center justify-center rounded-lg bg-white/[0.02] border border-white/[0.03] font-black transition-all hover:bg-white/[0.08] hover:border-white/[0.1] cursor-pointer"
+             class="flex items-center justify-center aspect-square rounded-md lg:rounded-lg bg-white/[0.03] border border-white/[0.05] font-black transition-all cursor-pointer select-none active:scale-90 overflow-hidden outline-none touch-manipulation"
+             style="-webkit-tap-highlight-color: transparent;"
              :class="[
                cellClasses,
                { 
-                 'bg-indigo-500/20 border-indigo-500/40 ring-1 ring-indigo-500/20 scale-95': selectedCell === getAbsoluteIndex(i, j),
-                 'available-cell': isCellAvailable(i, j)
+                 'bg-indigo-500/30 border-indigo-500/50 ring-2 ring-indigo-500/40 scale-95': selectedCell === getAbsoluteIndex(i, j),
+                 'available-cell hover:bg-yellow-500/20 hover:border-yellow-500/60 hover:ring-2 hover:ring-yellow-500/30': isCellAvailable(i, j),
+                 'hover:bg-white/10 hover:border-white/20': !isCellAvailable(i, j) && !readonly
                }
              ]">
-          <span v-if="cell === 'X'" class="marker-x">X</span>
-          <span v-else-if="cell === 'O'" class="marker-o">O</span>
+          <span v-if="cell === 'X'" class="marker-x leading-none flex items-center justify-center">X</span>
+          <span v-else-if="cell === 'O'" class="marker-o leading-none flex items-center justify-center">O</span>
         </div>
       </div>
     </div>
@@ -151,19 +153,18 @@ const onCellClick = (tileIndex: number, cellIndex: number) => {
 
 <style scoped>
 .board-container {
-    perspective: 1500px;
+    /* Perspective removed to fix hit-test misalignment */
 }
 .small-board {
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
 }
 .small-board.active {
-    background: rgba(99, 102, 241, 0.03);
-    border-color: rgba(99, 102, 241, 0.2);
-    transform: translateZ(30px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    z-index: 30;
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    z-index: 20;
 }
 .small-board.won-x {
     background: rgba(239, 68, 68, 0.1);

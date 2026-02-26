@@ -78,11 +78,11 @@ const goToFeatured = () => {
             </div>
           </div>
 
-          <div class="flex justify-center lg:justify-end cursor-pointer group" @click="goToFeatured">
-             <div class="relative">
+          <div class="flex justify-center lg:justify-end cursor-pointer group w-full" @click="goToFeatured">
+             <div class="relative w-full max-w-[min(90vw,65vh)] lg:max-w-[70vh]">
                 <!-- Decorative Glow -->
                 <div class="absolute inset-0 bg-indigo-500/10 blur-[100px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-1000"></div>
-                <Board :board="featuredBoard" :tile-winners="featuredWinners" readonly size="md" />
+                <Board :board="featuredBoard" :tile-winners="featuredWinners" readonly size="lg" />
              </div>
           </div>
         </section>

@@ -13,17 +13,17 @@ const winners = computed(() => {
 </script>
 
 <template>
-  <div class="w-full h-full bg-void grid grid-cols-3 grid-rows-3 gap-[2px] p-[2px]">
+  <div class="w-full h-full bg-void/50 grid grid-cols-3 grid-rows-3 gap-[3px] p-[3px]">
     <div v-for="(winner, i) in winners" :key="i" 
-         class="flex items-center justify-center relative transition-all duration-500"
+         class="flex items-center justify-center relative transition-all duration-500 rounded-sm"
          :class="[
-           winner === 'X' ? 'bg-red-500/10' : 
-           winner === 'O' ? 'bg-blue-500/10' : 
-           'bg-white/[0.02]'
+           winner === 'X' ? 'bg-red-500/20 border border-red-500/20' : 
+           winner === 'O' ? 'bg-blue-500/20 border border-blue-500/20' : 
+           'bg-white/[0.05] border border-white/[0.05]'
          ]">
-      <span v-if="winner === 'X'" class="text-[10px] font-black marker-x opacity-60">X</span>
-      <span v-else-if="winner === 'O'" class="text-[10px] font-black marker-o opacity-60">O</span>
-      <div v-else class="w-0.5 h-0.5 rounded-full bg-white/5"></div>
+      <span v-if="winner === 'X'" class="text-xs font-black marker-x">X</span>
+      <span v-else-if="winner === 'O'" class="text-xs font-black marker-o">O</span>
+      <div v-else class="w-1 h-1 rounded-full bg-white/10"></div>
     </div>
   </div>
 </template>

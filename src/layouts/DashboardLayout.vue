@@ -80,7 +80,7 @@ onMounted(async () => {
         <!-- Radial Background -->
         <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.03)_0%,_transparent_70%)]"></div>
         
-        <div class="max-w-7xl mx-auto p-6 lg:p-12 relative z-10">
+        <div class="w-full mx-auto p-4 lg:p-8 relative z-10 h-full">
           <slot />
         </div>
       </main>
