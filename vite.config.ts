@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/tixo-web/',
   esbuild: {
     target: 'es2020',
   },

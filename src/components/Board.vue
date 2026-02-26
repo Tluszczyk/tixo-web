@@ -48,14 +48,16 @@ const isCellAvailable = (tileIndex: number, cellIndex: number) => {
   const col = String.fromCharCode(65 + x)
   const row = y + 1
   const coord = `${col}${row}`
-  const moves = props.availableMoves
+  const moves = props.availableMoves || ""
 
   if (moves.startsWith("ALL_AVAILABLE_EXCEPT:")) {
-    const except = moves.split(":")[1].split(",").filter(Boolean)
+    const parts = moves.split(":")
+    const except = parts[1] ? parts[1].split(",").filter(Boolean) : []
     return !except.includes(coord)
   } else if (moves.startsWith("AVAILABLE_IN_TILE:")) {
     const parts = moves.split(":")
     const tileCoord = parts[1]
+    if (!tileCoord) return true
     const except = parts[3] ? parts[3].split(",").filter(Boolean) : []
     const tx = tileCoord.charCodeAt(0) - 65
     const ty = parseInt(tileCoord.substring(1)) - 1

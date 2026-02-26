@@ -63,14 +63,15 @@ const getSmallBoard = (board: string, sbIdx: number): string => {
 }
 
 const check3x3Winner = (board: string): string | null => {
-  const winPatterns = [
+  const winPatterns: [number, number, number][] = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
   ];
   for (const pattern of winPatterns) {
-    if (board[pattern[0]] !== "." && board[pattern[0]] === board[pattern[1]] && board[pattern[0]] === board[pattern[2]]) {
-      return board[pattern[0]];
+    const [p1, p2, p3] = pattern;
+    if (board[p1] !== "." && board[p1] === board[p2] && board[p1] === board[p3]) {
+      return board[p1] ?? null;
     }
   }
   if (!board.includes(".")) return "D";
@@ -89,11 +90,14 @@ const historicalState = computed(() => {
   const startsWithX = game.value.isOnDevice;
 
   for (let i = 0; i < limit; i++) {
+    const move = moves[i];
+    if (!move) continue;
+
     const symbol = startsWithX
       ? (i % 2 === 0 ? "X" : "O")
       : (i % 2 === 0 ? "O" : "X");
 
-    const pos = coordToIndex(moves[i]);
+    const pos = coordToIndex(move);
     boardArray[pos] = symbol;
 
     const sbIdx = Math.floor(Math.floor(pos / 9) / 3) * 3 + Math.floor((pos % 9) / 3);
@@ -124,11 +128,13 @@ const isCellAvailable = (index: number) => {
   const coord = indexToCoord(index);
   const moves = game.value.availableMoves ?? "";
   if (moves.startsWith("ALL_AVAILABLE_EXCEPT:")) {
-    const except = moves.split(":")[1].split(",");
+    const parts = moves.split(":");
+    const except = parts[1] ? parts[1].split(",") : [];
     return !except.includes(coord);
   } else if (moves.startsWith("AVAILABLE_IN_TILE:")) {
     const parts = moves.split(":");
     const tileCoord = parts[1];
+    if (!tileCoord) return true;
     const except = parts[3] ? parts[3].split(",") : [];
     const tx = tileCoord.charCodeAt(0) - 65;
     const ty = parseInt(tileCoord.substring(1)) - 1;
@@ -471,7 +477,7 @@ const goBack = () => {
               <div>
                 <h3 class="text-xl font-bold text-white">Abandon Match?</h3>
                 <p class="text-sm text-slate-400 mt-1">
-                  {{ game.status === GameStatus.WAITING_FOR_OPPONENT ? 'This will cancel the match.' : 'This will count as a loss. Are you sure?' }}
+                  {{ game?.status === GameStatus.WAITING_FOR_OPPONENT ? 'This will cancel the match.' : 'This will count as a loss. Are you sure?' }}
                 </p>
               </div>
               <div class="grid grid-cols-2 gap-3 w-full pt-2">
