@@ -13,6 +13,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const selectedSymbol = ref<'X' | 'O'>('X')
+const isOnDevice = ref(false)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -20,7 +21,7 @@ const handleCreate = async () => {
   loading.value = true
   error.value = null
   try {
-    const gameId = await games.createGame(selectedSymbol.value)
+    const gameId = await games.createGame(selectedSymbol.value, isOnDevice.value)
     if (gameId) {
       emit('close')
       router.push(`/game/${gameId}`)
@@ -80,6 +81,35 @@ const handleCreate = async () => {
               <i class="pi pi-check text-[10px] text-white font-bold"></i>
             </div>
           </button>
+        </div>
+
+        <!-- On Device Toggle -->
+        <div 
+          @click="isOnDevice = !isOnDevice"
+          class="flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+          :class="isOnDevice ? 'border-amber-500/50 bg-amber-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+        >
+          <div class="flex items-center space-x-4">
+            <div 
+              class="w-12 h-12 rounded-xl flex items-center justify-center"
+              :class="isOnDevice ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'"
+            >
+              <i class="pi pi-mobile text-xl"></i>
+            </div>
+            <div>
+              <p class="font-bold text-sm" :class="isOnDevice ? 'text-amber-500' : 'text-slate-300'">Play on one device</p>
+              <p class="text-xs text-slate-500">Two players, one screen</p>
+            </div>
+          </div>
+          <div 
+            class="w-12 h-6 rounded-full relative transition-colors duration-300"
+            :class="isOnDevice ? 'bg-amber-500' : 'bg-slate-700'"
+          >
+            <div 
+              class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300"
+              :class="isOnDevice ? 'left-7' : 'left-1'"
+            ></div>
+          </div>
         </div>
 
         <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">

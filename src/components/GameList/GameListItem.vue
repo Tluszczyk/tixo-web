@@ -16,8 +16,8 @@ const openGame = () => {
 </script>
 
 <template>
-  <div @click="openGame" class="group flex flex-row h-32 w-full bg-slate-900/40 rounded-xl border border-slate-800 hover:border-blue-500/30 hover:bg-slate-900/60 transition-all duration-300 shadow-sm cursor-pointer overflow-hidden p-2">
-    <div class="h-full aspect-square shrink-0">
+  <div @click="openGame" class="group flex flex-row h-36 w-full glass border-white/[0.05] rounded-3xl hover:border-indigo-500/30 hover:bg-white/[0.05] transition-all duration-500 cursor-pointer overflow-hidden p-3 gap-3">
+    <div class="h-full aspect-square shrink-0 rounded-2xl overflow-hidden glass border-white/[0.02]">
       <GameThumbnail :board="game.board" :tile-winners="game.tileWinners" />
     </div>
 

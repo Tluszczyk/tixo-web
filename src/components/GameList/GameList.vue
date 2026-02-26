@@ -2,18 +2,39 @@
 import {computed, onMounted, ref} from 'vue'
 import GameListItem from '@/components/GameList/GameListItem.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
+import GameFilterDialog, { type FilterState } from '@/components/GameList/GameFilterDialog.vue'
 import {games} from '@/api/games'
+import {auth} from '@/api/authentication'
 import type {Game} from '@/api/dto/Game'
 import {GameStatus} from '@/api/dto/GameStatus'
+import type { Models } from 'appwrite'
 
 const allGames = ref<Game[]>([])
 const loading = ref(true)
 const showCreateDialog = ref(false)
+const showFilterDialog = ref(false)
+const currentUser = ref<Models.User<Models.Preferences> | null>(null)
+
+const filters = ref<FilterState>({
+  playerId: '',
+  creatorId: '',
+  myGamesOnly: false,
+  status: '',
+  isOnDevice: null,
+  dateRange: 'all',
+  sortBy: 'createdAt',
+  sortOrder: 'desc'
+})
 
 const fetchGames = async () => {
   loading.value = true
   try {
-    allGames.value = await games.listGames()
+    const [gamesList, user] = await Promise.all([
+      games.listGames(),
+      auth.getCurrentUser()
+    ])
+    allGames.value = gamesList
+    currentUser.value = user
   } catch (error) {
     console.error('Failed to fetch games:', error)
   } finally {
@@ -23,71 +44,137 @@ const fetchGames = async () => {
 
 onMounted(fetchGames)
 
+const filteredGames = computed(() => {
+  let result = [...allGames.value]
+
+  // Filter by Player ID
+  if (filters.value.playerId) {
+    result = result.filter(g => 
+      g.xPlayerId?.includes(filters.value.playerId) || 
+      g.oPlayerId?.includes(filters.value.playerId)
+    )
+  }
+
+  // Filter by Creator ID
+  if (filters.value.creatorId) {
+    result = result.filter(g => g.creatorId?.includes(filters.value.creatorId))
+  }
+
+  // My Games
+  if (filters.value.myGamesOnly && currentUser.value) {
+    const uid = currentUser.value.$id
+    result = result.filter(g => 
+      g.xPlayerId === uid || 
+      g.oPlayerId === uid || 
+      g.creatorId === uid
+    )
+  }
+
+  // Status
+  if (filters.value.status) {
+    result = result.filter(g => g.status === filters.value.status)
+  }
+
+  // On Device
+  if (filters.value.isOnDevice !== null) {
+    result = result.filter(g => g.isOnDevice === filters.value.isOnDevice)
+  }
+
+  // Date Range
+  if (filters.value.dateRange !== 'all') {
+    const now = new Date()
+    const cutoff = new Date()
+    if (filters.value.dateRange === 'today') cutoff.setHours(now.getHours() - 24)
+    else if (filters.value.dateRange === 'week') cutoff.setDate(now.getDate() - 7)
+    else if (filters.value.dateRange === 'month') cutoff.setMonth(now.getMonth() - 1)
+    
+    result = result.filter(g => new Date(g.$createdAt).getTime() >= cutoff.getTime())
+  }
+
+  // Sorting
+  result.sort((a, b) => {
+    const key = filters.value.sortBy === 'createdAt' ? '$createdAt' : '$updatedAt'
+    const valA = new Date(a[key] as string).getTime()
+    const valB = new Date(b[key] as string).getTime()
+    return filters.value.sortOrder === 'desc' ? valB - valA : valA - valB
+  })
+
+  return result
+})
+
 const activeGames = computed(() => {
-  return allGames.value.filter(g => g.status === GameStatus.IN_PROGRESS || g.status === GameStatus.WAITING_FOR_OPPONENT)
+  return filteredGames.value.filter(g => g.status === GameStatus.IN_PROGRESS || g.status === GameStatus.WAITING_FOR_OPPONENT)
 })
 
 const recentMatches = computed(() => {
-  return allGames.value.filter(g => g.status === GameStatus.FINISHED)
+  return filteredGames.value.filter(g => g.status === GameStatus.FINISHED || g.status === GameStatus.CANCELLED)
 })
+
+const handleApplyFilters = (newFilters: FilterState) => {
+  filters.value = newFilters
+}
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col space-y-4">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold text-slate-100 flex items-center space-x-3">
-        <i class="pi pi-table text-blue-500"></i>
-        <span>Active Games</span>
-      </h2>
-      <div class="flex items-center space-x-3">
-        <button @click="fetchGames" class="p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition-colors" title="Refresh">
-           <i class="pi pi-refresh" :class="{'animate-spin': loading}"></i>
+    <div class="flex items-center justify-between mb-4 px-2">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-black text-white uppercase italic">Active Operations<span class="text-indigo-500">.</span></h2>
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Live Operational Data</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button @click="fetchGames" class="w-10 h-10 rounded-xl glass border-white/5 text-white/40 hover:text-white hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group" title="Synchronize">
+           <i class="pi pi-refresh text-sm group-hover:scale-110 transition-transform" :class="{'animate-spin': loading}"></i>
         </button>
-        <button class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm font-semibold text-slate-300 hover:bg-slate-700 transition-colors flex items-center space-x-2">
-           <i class="pi pi-filter"></i>
-           <span>Filter</span>
+        <button @click="showFilterDialog = true" 
+                :class="['px-6 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 cursor-pointer', 
+                         showFilterDialog ? 'bg-indigo-500 border-indigo-400 text-white' : 'glass border-white/5 text-white/40 hover:text-white']">
+           <i class="pi pi-filter text-[10px]"></i>
+           <span>Parameters</span>
         </button>
-        <button @click="showCreateDialog = true" class="px-4 py-2 rounded-lg bg-blue-600 text-sm font-bold text-white hover:bg-blue-500 transition-colors flex items-center space-x-2">
-           <i class="pi pi-plus"></i>
-           <span>New Game</span>
+        <button @click="showCreateDialog = true" class="px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-200 transition-all shadow-xl shadow-white/5 flex items-center gap-3 cursor-pointer">
+           <i class="pi pi-plus text-[10px]"></i>
+           <span>Initialize</span>
         </button>
       </div>
     </div>
 
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="i in 3" :key="i" class="h-32 w-full bg-slate-900/40 rounded-xl border border-slate-800 animate-pulse"></div>
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div v-for="i in 3" :key="i" class="h-40 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
     </div>
 
-    <div v-else-if="activeGames.length === 0" class="py-12 flex flex-col items-center justify-center bg-slate-900/20 rounded-2xl border border-dashed border-slate-800">
-      <i class="pi pi-inbox text-4xl text-slate-700 mb-4"></i>
-      <p class="text-slate-500 font-medium">No active games found</p>
-      <button @click="showCreateDialog = true" class="mt-4 text-blue-500 text-sm font-bold hover:underline">Start a new game</button>
+    <div v-else-if="activeGames.length === 0" class="py-20 flex flex-col items-center justify-center glass border-white/[0.03] rounded-[2.5rem] border-dashed">
+      <div class="w-20 h-20 rounded-full glass border-white/5 flex items-center justify-center text-white/10 mb-6">
+        <i class="pi pi-inbox text-4xl"></i>
+      </div>
+      <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">No Active Operations Found</p>
+      <button @click="showCreateDialog = true" class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">Initiate New Protocol</button>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
        <GameListItem v-for="game in activeGames" :key="game.$id" :game="game" />
     </div>
 
     <CreateGameDialog :visible="showCreateDialog" @close="showCreateDialog = false" />
+    <GameFilterDialog :visible="showFilterDialog" :initial-filters="filters" :current-user-id="currentUser?.$id" @close="showFilterDialog = false" @apply="handleApplyFilters" />
 
-    <div class="mt-8 border-t border-slate-800 pt-8">
-       <div class="flex items-center justify-between mb-4">
-         <h2 class="text-xl font-bold text-slate-100 flex items-center space-x-3">
-           <i class="pi pi-history text-indigo-500"></i>
-           <span>Recent Matches</span>
-         </h2>
-         <button class="text-sm font-semibold text-slate-500 hover:text-blue-500 transition-colors">View All</button>
+    <div class="mt-16 pt-16 border-t border-white/[0.03]">
+       <div class="flex items-center justify-between mb-8 px-2">
+         <div class="space-y-1">
+            <h2 class="text-xl font-black text-white uppercase italic">Archives<span class="text-indigo-500">.</span></h2>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Historical Engagement Records</p>
+         </div>
        </div>
 
-       <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         <div v-for="i in 3" :key="i" class="h-32 w-full bg-slate-900/40 rounded-xl border border-slate-800 animate-pulse"></div>
+       <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+         <div v-for="i in 3" :key="i" class="h-40 w-full glass border-white/5 rounded-3xl animate-pulse"></div>
        </div>
 
-       <div v-else-if="recentMatches.length === 0" class="py-8 text-center text-slate-500 italic text-sm">
-         No recent matches
+       <div v-else-if="recentMatches.length === 0" class="py-12 text-center text-white/10 text-[10px] font-black uppercase tracking-widest italic">
+         Historical database empty
        </div>
 
-       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700">
           <GameListItem v-for="game in recentMatches" :key="game.$id" :game="game" />
        </div>
     </div>

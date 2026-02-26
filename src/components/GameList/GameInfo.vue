@@ -17,48 +17,49 @@ const formatStatus = (status: GameStatus) => {
 </script>
 
 <template>
-  <div class="h-full flex flex-col justify-between p-4 bg-slate-800/20 group-hover:bg-slate-800/40 transition-colors">
+  <div class="h-full flex flex-col justify-between p-2">
     <div class="flex items-start justify-between">
-      <div class="flex flex-col">
-        <h3 class="text-base font-semibold text-slate-100 group-hover:text-blue-400 transition-colors">
-          {{ game.status === GameStatus.FINISHED ? 'Game Over' : game.status === GameStatus.WAITING_FOR_OPPONENT ? 'Waiting' : 'Live Match' }}
+      <div class="flex flex-col gap-1">
+        <h3 class="text-sm font-black text-white uppercase tracking-tighter group-hover:text-indigo-400 transition-colors">
+          {{ game.status === GameStatus.FINISHED ? 'Concluded' : game.status === GameStatus.CANCELLED ? 'Void' : game.status === GameStatus.WAITING_FOR_OPPONENT ? 'Pending' : 'Live Match' }}
         </h3>
-        <p class="text-xs text-slate-500 font-medium">Standard • {{ formatStatus(game.status) }}</p>
+        <p class="text-[9px] font-black uppercase tracking-[0.2em] text-white/20">
+            {{ game.isOnDevice ? 'Local' : 'Network' }} // {{ formatStatus(game.status) }}
+        </p>
       </div>
 
-      <div v-if="game.status === GameStatus.IN_PROGRESS" class="px-2 py-1 rounded bg-blue-900/40 border border-blue-500/30 text-[10px] font-bold tracking-wider text-blue-400 uppercase">
+      <div v-if="game.isOnDevice" class="px-2 py-0.5 rounded-full border border-amber-500/20 bg-amber-500/5 text-[8px] font-black tracking-widest text-amber-500 uppercase">
+        Local
+      </div>
+      <div v-else-if="game.status === GameStatus.IN_PROGRESS" class="px-2 py-0.5 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-[8px] font-black tracking-widest text-indigo-500 uppercase">
         Live
       </div>
-      <div v-else class="px-2 py-1 rounded bg-slate-900 border border-slate-700 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-        {{ formatStatus(game.status) }}
+    </div>
+
+    <div class="flex items-center gap-4 py-2">
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-black marker-x opacity-60">X</span>
+        <span class="text-[10px] mono text-white/40 truncate max-w-[60px]">{{ game.xPlayerId ? game.xPlayerId.substring(0, 6) : '...' }}</span>
+      </div>
+
+      <div class="text-white/10 text-[10px] mono">vs</div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-black marker-o opacity-60">O</span>
+        <span class="text-[10px] mono text-white/40 truncate max-w-[60px]">{{ game.oPlayerId ? game.oPlayerId.substring(0, 6) : '...' }}</span>
       </div>
     </div>
 
-    <div class="flex items-center space-x-6 mt-2">
-      <div class="flex items-center space-x-2">
-        <div class="w-6 h-6 rounded-full bg-red-600/20 flex items-center justify-center text-[10px] font-bold text-red-400 border border-red-500/20">X</div>
-        <span class="text-sm text-slate-300 truncate max-w-[80px]">{{ game.xPlayerId ? game.xPlayerId.substring(0, 8) : 'Pending' }}</span>
-      </div>
-
-      <div class="text-slate-600 text-xs">vs</div>
-
-      <div class="flex items-center space-x-2">
-        <div class="w-6 h-6 rounded-full bg-blue-600/20 flex items-center justify-center text-[10px] font-bold text-blue-400 border border-blue-500/20">O</div>
-        <span class="text-sm text-slate-300 font-medium truncate max-w-[80px]">{{ game.oPlayerId ? game.oPlayerId.substring(0, 8) : 'Waiting...' }}</span>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between mt-auto pt-2 border-t border-slate-700/30">
-        <div class="flex items-center space-x-1">
-           <i class="pi pi-clock text-[10px] text-slate-500"></i>
-           <span class="text-[10px] text-slate-500 font-medium tracking-tight">
+    <div class="flex items-center justify-between mt-auto pt-2 border-t border-white/[0.03]">
+        <div class="flex items-center gap-2">
+           <span class="text-[9px] mono text-white/20 uppercase font-bold">
              {{ formatTime(game.$createdAt) }}
            </span>
         </div>
 
-        <button class="text-xs font-semibold text-blue-500 hover:text-blue-400 flex items-center space-x-1 group/btn">
-           <span>{{ game.status === GameStatus.IN_PROGRESS ? 'Watch' : game.status === GameStatus.WAITING_FOR_OPPONENT ? 'Join' : 'View' }}</span>
-           <i class="pi pi-chevron-right text-[8px] transform group-hover/btn:translate-x-0.5 transition-transform"></i>
+        <button class="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-500 group-hover:text-white transition-colors flex items-center gap-1">
+           <span>{{ game.status === GameStatus.IN_PROGRESS ? 'Engage' : 'View' }}</span>
+           <i class="pi pi-arrow-right text-[8px] transition-transform group-hover:translate-x-0.5"></i>
         </button>
     </div>
   </div>

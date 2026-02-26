@@ -1,45 +1,61 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
 const menuItems = [
-  { label: 'Home', icon: 'pi pi-home', route: '/' },
-  { label: 'Play', icon: 'pi pi-play', route: '/' },
-  { label: 'Games', icon: 'pi pi-table', route: '/' },
-  { label: 'Learn', icon: 'pi pi-book', route: '/how-to-play' },
-  { label: 'Settings', icon: 'pi pi-cog', route: '/' },
+  { label: 'Match', icon: 'pi pi-compass', route: '/' },
+  { label: 'Tactics', icon: 'pi pi-book', route: '/how-to-play' },
 ]
 
-const navigateTo = (route: string) => {
-  router.push(route)
+const navigateTo = (routePath: string) => {
+  router.push(routePath)
 }
 </script>
 
 <template>
-  <aside class="w-64 h-full bg-slate-900 border-r border-slate-800 flex flex-col p-4">
-    <div class="mb-8 px-4 flex items-center space-x-3" @click="navigateTo('/')">
-      <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">TT</div>
-      <h1 class="text-xl font-bold tracking-tight text-white">tixo</h1>
+  <aside class="w-24 h-full bg-void border-r border-white/[0.05] flex flex-col items-center py-8">
+    <div class="mb-12 cursor-pointer group" @click="navigateTo('/')">
+      <div class="text-xl font-black tracking-tighter uppercase italic group-hover:scale-105 transition-transform">
+        T<span class="text-indigo-500">.</span>
+      </div>
     </div>
 
-    <nav class="flex-1 space-y-1">
+    <nav class="flex-1 flex flex-col gap-8">
       <button
         v-for="item in menuItems"
         :key="item.label"
         @click="navigateTo(item.route)"
-        class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 group hover:bg-slate-800 text-slate-400 hover:text-white"
+        :class="[
+          'relative w-12 h-12 flex items-center justify-center rounded-2xl glass transition-all group overflow-hidden',
+          route.path === item.route ? 'border-indigo-500/40 bg-indigo-500/5' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
+        ]"
       >
-        <i :class="[item.icon, 'text-lg group-hover:text-blue-500 transition-colors']"></i>
-        <span>{{ item.label }}</span>
+        <div v-if="route.path === item.route" class="absolute inset-y-0 left-0 w-[2px] bg-indigo-500"></div>
+        <i :class="[item.icon, 'text-lg transition-all group-hover:scale-110', route.path === item.route ? 'text-indigo-500' : 'text-slate-500 group-hover:text-white']"></i>
+        
+        <!-- Tooltip -->
+        <span class="absolute left-full ml-4 px-2 py-1 rounded bg-slate-800 text-[10px] font-bold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+          {{ item.label }}
+        </span>
       </button>
     </nav>
 
-    <div class="mt-auto border-t border-slate-800 pt-4">
-      <button class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-        <i class="pi pi-user text-lg"></i>
-        <span>My Profile</span>
+    <div class="mt-auto flex flex-col gap-6">
+      <button @click="navigateTo('/profile')" :class="[
+          'relative w-12 h-12 flex items-center justify-center rounded-2xl glass transition-all group overflow-hidden',
+          route.path === '/profile' ? 'border-indigo-500/40 bg-indigo-500/5' : 'border-white/5 hover:border-blue-500/30'
+        ]">
+        <i :class="['pi pi-user text-lg group-hover:text-white transition-all', route.path === '/profile' ? 'text-indigo-500' : 'text-slate-500']"></i>
+        <span class="absolute left-full ml-4 px-2 py-1 rounded bg-slate-800 text-[10px] font-bold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+          Profile
+        </span>
       </button>
+      
+      <div class="h-8 w-[1px] bg-white/5 mx-auto"></div>
+      
+      <div class="w-2 h-2 rounded-full bg-green-500/40 ring-4 ring-green-500/10"></div>
     </div>
   </aside>
 </template>

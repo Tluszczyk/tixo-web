@@ -7,12 +7,13 @@ import type { JoinGameRequest } from '@/api/requests/JoinGameRequest.ts'
 
 class GamesService {
   @HandleAppwriteErrors({}, null)
-  async createGame(symbol: 'X' | 'O'): Promise<string | null> {
-    const body: CreateGameRequest = { symbol: symbol }
+  async createGame(symbol: 'X' | 'O', isOnDevice: boolean = false): Promise<string | null> {
+    const body: CreateGameRequest = { symbol, isOnDevice }
 
     const execution = await functions.createExecution({
-      functionId: "create-game",
+      functionId: "games-handler",
       body: JSON.stringify(body),
+      xpath: "/create"
     });
 
     if (execution.status === 'completed') {
@@ -28,13 +29,14 @@ class GamesService {
     return null;
   }
 
-  @HandleAppwriteErrors({}, null)
+  @HandleAppwriteErrors({}, false)
   async joinGame(gameId: string): Promise<boolean> {
     const body: JoinGameRequest = { gameId: gameId }
 
     const execution = await functions.createExecution({
-      functionId: "join-game",
+      functionId: "games-handler",
       body: JSON.stringify(body),
+      xpath: "/join"
     });
 
     if (execution.status === 'completed') {
@@ -68,6 +70,45 @@ class GamesService {
       rowId: gameId
     })
   }
-}
 
+  @HandleAppwriteErrors({}, false)
+  async submitMove(gameId: string, x: number, y: number): Promise<boolean> {
+    const body = { gameId, move: { x, y } }
+    const execution = await functions.createExecution({
+      functionId: 'games-handler',
+      body: JSON.stringify(body),
+      xpath: "/move"
+    });
+    if (execution.status === 'completed') {
+      try {
+        const response = JSON.parse(execution.responseBody);
+        return !!response.success;
+      } catch (e) {
+        console.error('Failed to parse submitMove response', e);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  @HandleAppwriteErrors({}, false)
+  async abandonGame(gameId: string): Promise<boolean> {
+    const body = { gameId }
+    const execution = await functions.createExecution({
+      functionId: 'games-handler',
+      body: JSON.stringify(body),
+      xpath: "/abandon"
+    });
+    if (execution.status === 'completed') {
+      try {
+        const response = JSON.parse(execution.responseBody);
+        return !!response.success;
+      } catch (e) {
+        console.error('Failed to parse abandonGame response', e);
+        return false;
+      }
+    }
+    return false;
+  }
+}
 export const games = new GamesService();

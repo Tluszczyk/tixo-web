@@ -7,7 +7,6 @@ import Board from '@/components/Board.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import { games } from '@/api/games'
-import type {Game} from "@/api/dto/Game.ts";
 
 const router = useRouter()
 const showCreateDialog = ref(false)
@@ -40,54 +39,60 @@ const goToFeatured = () => {
   <AuthenticatedView>
     <DashboardLayout>
       <template #header-left>
-        <div class="flex items-center space-x-2">
-          <i class="pi pi-compass text-blue-500 text-xl animate-pulse"></i>
-          <span class="text-xl font-bold text-slate-100 tracking-tight">Game Browser</span>
+        <div class="flex items-center gap-4">
+          <div class="text-2xl font-black tracking-tighter uppercase italic">Browser<span class="text-indigo-500">.</span></div>
         </div>
       </template>
 
-      <template #header-right>
-        <button class="relative w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-          <i class="pi pi-bell text-xl"></i>
-          <span class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full"></span>
-        </button>
-      </template>
-
-      <div class="space-y-12 pb-12">
-        <!-- Hero Section with Board -->
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div class="space-y-6">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
+      <div class="space-y-20 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <!-- Hero Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div class="space-y-8">
+            <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full glass border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">
                <span class="relative flex h-2 w-2">
-                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                 <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                 <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                </span>
-               <span>Featured Match</span>
+               <span>Live Operational Status</span>
             </div>
-            <h1 class="text-5xl font-extrabold text-white leading-tight tracking-tighter">
-              The Ultimate Strategy <br/>
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Tic-Tac-Tactics.</span>
-            </h1>
-            <p class="text-lg text-slate-400 max-w-lg leading-relaxed">
-              Experience the depth of classic Tic-Tac-Toe reimagined. Think three moves ahead in this fractal battle for board supremacy.
+            
+            <div class="space-y-2">
+                <h1 class="text-6xl font-black text-white leading-[0.9] tracking-tighter uppercase italic">
+                  Tactical <br/>
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-500">Superiority.</span>
+                </h1>
+                <p class="text-sm font-bold uppercase tracking-[0.3em] text-white/20 pt-4">Ultimate Strategy Redefined</p>
+            </div>
+
+            <p class="text-white/40 text-sm leading-relaxed max-w-md font-medium">
+              Experience the depth of classic Tic-Tac-Toe reimagined as a fractal battle for board supremacy. Precision, logic, and cold-blooded tactics.
             </p>
-            <div class="flex items-center space-x-4 pt-4">
-              <button @click="showCreateDialog = true" class="px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98]">
-                 {{ latestGameId ? 'Jump into Match' : 'Play Quick Game' }}
+
+            <div class="flex items-center gap-6 pt-4">
+              <button @click="showCreateDialog = true" class="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-slate-200 transition-all shadow-2xl shadow-white/5 active:scale-95">
+                 Initiate Match
               </button>
-              <button @click="router.push('/how-to-play')" class="px-8 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-slate-200 font-bold hover:bg-slate-700 transition-all active:scale-[0.98]">
-                 How to Play
+              <button @click="router.push('/how-to-play')" class="px-10 py-4 glass border-white/[0.05] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/5 transition-all">
+                 Intel
               </button>
             </div>
           </div>
 
-          <div class="flex justify-center lg:justify-end cursor-pointer" @click="goToFeatured">
-             <Board :board="featuredBoard" :tile-winners="featuredWinners" readonly />
+          <div class="flex justify-center lg:justify-end cursor-pointer group" @click="goToFeatured">
+             <div class="relative">
+                <!-- Decorative Glow -->
+                <div class="absolute inset-0 bg-indigo-500/10 blur-[100px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-1000"></div>
+                <Board :board="featuredBoard" :tile-winners="featuredWinners" readonly size="md" />
+             </div>
           </div>
         </section>
 
         <!-- Game List Section -->
-        <section>
+        <section class="space-y-10">
+          <div class="flex items-center gap-4">
+              <h3 class="text-2xl font-black text-white tracking-tight uppercase italic text-white/80">Operational Field<span class="text-indigo-500">.</span></h3>
+              <div class="h-[1px] flex-1 bg-white/5"></div>
+          </div>
           <GameList />
         </section>
       </div>
@@ -96,6 +101,3 @@ const goToFeatured = () => {
     </DashboardLayout>
   </AuthenticatedView>
 </template>
-
-<style lang="css">
-</style>

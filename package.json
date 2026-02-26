@@ -7,7 +7,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -51,6 +51,7 @@
     "prettier": "3.7.4",
     "typescript": "~5.9.3",
     "vite": "^7.3.1",
+    "vite-plugin-qrcode": "^0.3.0",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vitest": "^4.0.16",
     "vue-intellisense": "^1.0.3",

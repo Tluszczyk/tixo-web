@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import GameView from '@/views/GameView.vue'
 import HowToPlayView from '@/views/HowToPlayView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,11 @@ const router = createRouter({
       path: '/how-to-play',
       name: 'how-to-play',
       component: HowToPlayView,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
     },
     {
       path: '/login',

@@ -16,4 +16,7 @@ export interface Game extends Models.DefaultRow {
 
   board: string;
   tileWinners: string;
+  availableMoves: string;
+
+  isOnDevice: boolean;
 }

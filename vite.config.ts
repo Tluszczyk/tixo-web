@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
+import { qrcode } from 'vite-plugin-qrcode'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -11,15 +12,10 @@ export default defineConfig({
   esbuild: {
     target: 'es2020',
   },
-  plugins: [
-    vue(),
-    vueJsx(),
-    vueDevTools(),
-    tailwindcss(),
-  ],
+  plugins: [vue(), vueJsx(), vueDevTools(), tailwindcss(), qrcode()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
@@ -27,7 +23,7 @@ export default defineConfig({
     port: 5173, // The internal port (inside container)
     strictPort: true,
     hmr: {
-      clientPort: 3000 // The external port the browser uses
-    }
-  }
+      clientPort: 3000, // The external port the browser uses
+    },
+  },
 })
