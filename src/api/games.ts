@@ -7,13 +7,20 @@ import type { JoinGameRequest } from '@/api/requests/JoinGameRequest.ts'
 
 class GamesService {
   @HandleAppwriteErrors({}, null)
-  async createGame(symbol: 'X' | 'O', isOnDevice: boolean = false): Promise<string | null> {
-    const body: CreateGameRequest = { symbol, isOnDevice }
+  async createGame(
+    symbol: 'X' | 'O',
+    isOnDevice: boolean = false,
+    requestedOpponentId: string | null = null
+  ): Promise<string | null> {
+    const body: CreateGameRequest = { symbol, isOnDevice, requestedOpponentId }
 
     const execution = await functions.createExecution({
       functionId: "games-handler",
       body: JSON.stringify(body),
-      xpath: "/create"
+      xpath: "/create",
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
     if (execution.status === 'completed') {
@@ -36,7 +43,10 @@ class GamesService {
     const execution = await functions.createExecution({
       functionId: "games-handler",
       body: JSON.stringify(body),
-      xpath: "/join"
+      xpath: "/join",
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
     if (execution.status === 'completed') {
@@ -77,7 +87,10 @@ class GamesService {
     const execution = await functions.createExecution({
       functionId: 'games-handler',
       body: JSON.stringify(body),
-      xpath: "/move"
+      xpath: "/move",
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     if (execution.status === 'completed') {
       try {
@@ -97,7 +110,10 @@ class GamesService {
     const execution = await functions.createExecution({
       functionId: 'games-handler',
       body: JSON.stringify(body),
-      xpath: "/abandon"
+      xpath: "/abandon",
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     if (execution.status === 'completed') {
       try {

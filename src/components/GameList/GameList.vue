@@ -19,7 +19,7 @@ const filters = ref<FilterState>({
   playerId: '',
   creatorId: '',
   myGamesOnly: false,
-  status: '',
+  statuses: [],
   isOnDevice: null,
   dateRange: 'all',
   sortBy: 'createdAt',
@@ -70,9 +70,9 @@ const filteredGames = computed(() => {
     )
   }
 
-  // Status
-  if (filters.value.status) {
-    result = result.filter(g => g.status === filters.value.status)
+  // Statuses
+  if (filters.value.statuses.length > 0) {
+    result = result.filter(g => filters.value.statuses.includes(g.status))
   }
 
   // On Device

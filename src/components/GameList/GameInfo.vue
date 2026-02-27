@@ -1,10 +1,27 @@
 <script setup lang="ts">
+import { ref, onMounted, watch } from 'vue'
 import type { Game } from '@/api/dto/Game'
 import { GameStatus } from '@/api/dto/GameStatus'
+import { users, type User } from '@/api/users'
 
-defineProps<{
+const props = defineProps<{
   game: Game
 }>()
+
+const xPlayer = ref<User | null>(null)
+const oPlayer = ref<User | null>(null)
+
+const fetchPlayers = async () => {
+  if (props.game.xPlayerId) {
+    xPlayer.value = await users.getUser(props.game.xPlayerId)
+  }
+  if (props.game.oPlayerId) {
+    oPlayer.value = await users.getUser(props.game.oPlayerId)
+  }
+}
+
+onMounted(fetchPlayers)
+watch(() => props.game, fetchPlayers)
 
 const formatTime = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -42,8 +59,11 @@ const formatStatus = (status: GameStatus) => {
             <span class="text-sm font-black marker-x">X</span>
         </div>
         <div class="flex flex-col">
-            <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none mb-1">Player X</span>
-            <span class="text-xs mono text-white/70 font-bold truncate max-w-[100px]">{{ game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...' }}</span>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">Player X</span>
+              <span v-if="xPlayer?.rating" class="text-[9px] font-black text-indigo-400 mono px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">{{ xPlayer.rating }}</span>
+            </div>
+            <span class="text-xs mono text-white/70 font-bold truncate max-w-[100px]">{{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}</span>
         </div>
       </div>
 
@@ -54,8 +74,11 @@ const formatStatus = (status: GameStatus) => {
             <span class="text-sm font-black marker-o">O</span>
         </div>
         <div class="flex flex-col">
-            <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none mb-1">Player O</span>
-            <span class="text-xs mono text-white/70 font-bold truncate max-w-[100px]">{{ game.oPlayerId ? game.oPlayerId.substring(0, 12) : '...' }}</span>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">Player O</span>
+              <span v-if="oPlayer?.rating" class="text-[9px] font-black text-indigo-400 mono px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">{{ oPlayer.rating }}</span>
+            </div>
+            <span class="text-xs mono text-white/70 font-bold truncate max-w-[100px]">{{ oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 12) : '...') }}</span>
         </div>
       </div>
     </div>

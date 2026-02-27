@@ -4,6 +4,7 @@ import LoginView from '@/views/LoginView.vue'
 import GameView from '@/views/GameView.vue'
 import HowToPlayView from '@/views/HowToPlayView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import UsersView from '@/views/UsersView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -12,6 +13,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersView,
     },
     {
       path: '/how-to-play',

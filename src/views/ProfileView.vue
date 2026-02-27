@@ -17,8 +17,8 @@ const loading = ref(true)
 
 const userGames = computed(() => {
   if (!currentUser.value) return []
-  return allGames.value.filter(g => 
-    g.xPlayerId === currentUser.value?.$id || 
+  return allGames.value.filter(g =>
+    g.xPlayerId === currentUser.value?.$id ||
     g.oPlayerId === currentUser.value?.$id ||
     g.creatorId === currentUser.value?.$id
   ).sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())
@@ -28,7 +28,7 @@ const stats = computed(() => {
   if (!currentUser.value) return { total: 0, wins: 0, losses: 0, ties: 0 }
   const myGames = userGames.value.filter(g => g.status === 'FINISHED')
   let wins = 0, losses = 0, ties = 0
-  
+
   myGames.forEach(g => {
     if (g.winner === 'D' || g.winner === 'TIE') ties++
     else {
@@ -37,7 +37,7 @@ const stats = computed(() => {
       else losses++
     }
   })
-  
+
   return { total: userGames.value.length, wins, losses, ties }
 })
 
@@ -84,17 +84,21 @@ onMounted(async () => {
       <div v-else class="space-y-12 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <!-- Profile Header/Stats -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div class="lg:col-span-1 glass border-white/[0.05] rounded-[2rem] p-10 flex flex-col items-center text-center space-y-8">
+          <div class="lg:col-span-1 glass border-white/5 rounded-4xl p-10 flex flex-col items-center text-center space-y-8">
             <div class="w-32 h-32 rounded-[2.5rem] glass flex items-center justify-center border-indigo-500/30 shadow-2xl shadow-indigo-500/10">
               <i class="pi pi-user text-5xl text-indigo-500"></i>
             </div>
-            
+
             <div class="space-y-2">
               <h2 class="text-3xl font-black text-white tracking-tight leading-none">{{ currentUser?.name || 'Player' }}</h2>
               <p class="text-white/30 text-xs font-bold uppercase tracking-[0.2em]">{{ currentUser?.email }}</p>
             </div>
 
             <div class="w-full space-y-3">
+               <div class="flex items-center justify-between p-4 rounded-2xl glass border-indigo-500/10 bg-indigo-500/5">
+                  <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Glicko-2 Rating</span>
+                  <span class="text-xl font-black text-white mono">{{ userDetails?.rating || 1500 }}</span>
+               </div>
                <div class="flex items-center justify-between p-4 rounded-2xl glass border-white/[0.02]">
                   <span class="text-[10px] font-black text-white/20 uppercase tracking-widest">Joined</span>
                   <span class="text-xs font-bold text-white/60">{{ new Date(currentUser?.registration || '').toLocaleDateString() }}</span>

@@ -13,7 +13,8 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const selectedSymbol = ref<'X' | 'O'>('X')
-const isOnDevice = ref(false)
+const gameMode = ref<'ONLINE' | 'LOCAL' | 'AI'>('ONLINE')
+const requestedOpponentId = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -21,7 +22,19 @@ const handleCreate = async () => {
   loading.value = true
   error.value = null
   try {
-    const gameId = await games.createGame(selectedSymbol.value, isOnDevice.value)
+    const isOnDevice = gameMode.value === 'LOCAL' || gameMode.value === 'AI'
+    let opponentId = gameMode.value === 'ONLINE' ? requestedOpponentId.value.trim() || null : null
+    
+    if (gameMode.value === 'AI') {
+      // If user chose X, AI is O. If user chose O, AI is X.
+      opponentId = selectedSymbol.value === 'X' ? 'AI_O' : 'AI_X'
+    }
+
+    const gameId = await games.createGame(
+      selectedSymbol.value,
+      isOnDevice,
+      opponentId
+    )
     if (gameId) {
       emit('close')
       router.push(`/game/${gameId}`)
@@ -83,33 +96,67 @@ const handleCreate = async () => {
           </button>
         </div>
 
-        <!-- On Device Toggle -->
-        <div 
-          @click="isOnDevice = !isOnDevice"
-          class="flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
-          :class="isOnDevice ? 'border-amber-500/50 bg-amber-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
-        >
-          <div class="flex items-center space-x-4">
-            <div 
-              class="w-12 h-12 rounded-xl flex items-center justify-center"
-              :class="isOnDevice ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'"
+        <!-- Game Mode Selection -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Game Mode</label>
+          <div class="grid grid-cols-1 gap-3">
+            <button 
+              @click="gameMode = 'ONLINE'"
+              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
+              :class="gameMode === 'ONLINE' ? 'border-blue-500/50 bg-blue-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
             >
-              <i class="pi pi-mobile text-xl"></i>
-            </div>
-            <div>
-              <p class="font-bold text-sm" :class="isOnDevice ? 'text-amber-500' : 'text-slate-300'">Play on one device</p>
-              <p class="text-xs text-slate-500">Two players, one screen</p>
-            </div>
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'ONLINE' ? 'bg-blue-500/20 text-blue-500' : 'bg-slate-800 text-slate-500'">
+                <i class="pi pi-globe text-xl"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-slate-300'">Online Multiplayer</p>
+                <p class="text-xs text-slate-500">Play against someone else</p>
+              </div>
+            </button>
+
+            <button 
+              @click="gameMode = 'AI'"
+              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
+              :class="gameMode === 'AI' ? 'border-purple-500/50 bg-purple-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+            >
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'AI' ? 'bg-purple-500/20 text-purple-500' : 'bg-slate-800 text-slate-500'">
+                <i class="pi pi-android text-xl"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" :class="gameMode === 'AI' ? 'text-purple-500' : 'text-slate-300'">Play vs AI</p>
+                <p class="text-xs text-slate-500">Challenge the model</p>
+              </div>
+            </button>
+
+            <button 
+              @click="gameMode = 'LOCAL'"
+              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
+              :class="gameMode === 'LOCAL' ? 'border-amber-500/50 bg-amber-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+            >
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'LOCAL' ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'">
+                <i class="pi pi-mobile text-xl"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-slate-300'">Pass & Play</p>
+                <p class="text-xs text-slate-500">Two players, one device</p>
+              </div>
+            </button>
           </div>
-          <div 
-            class="w-12 h-6 rounded-full relative transition-colors duration-300"
-            :class="isOnDevice ? 'bg-amber-500' : 'bg-slate-700'"
-          >
-            <div 
-              class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300"
-              :class="isOnDevice ? 'left-7' : 'left-1'"
-            ></div>
+        </div>
+
+        <!-- Opponent Selection -->
+        <div v-if="gameMode === 'ONLINE'" class="space-y-3">
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Invite Opponent (Optional)</label>
+          <div class="relative group">
+            <i class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors"></i>
+            <input 
+              v-model="requestedOpponentId"
+              type="text" 
+              placeholder="Enter User ID"
+              class="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white text-sm font-bold placeholder:text-slate-700 focus:border-blue-500 outline-none transition-all"
+            />
           </div>
+          <p class="text-[9px] text-slate-600 font-medium">Only the specified user will be able to join this match.</p>
         </div>
 
         <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">

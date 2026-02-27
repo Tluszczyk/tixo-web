@@ -7,21 +7,55 @@ import Board from '@/components/Board.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import { games } from '@/api/games'
+import { auth } from '@/api/authentication'
+import { GameStatus } from '@/api/dto/GameStatus'
 
 const router = useRouter()
 const showCreateDialog = ref(false)
-const featuredBoard = ref('X.O...X..'.repeat(9))
-const featuredWinners = ref('X.O......')
+const featuredBoard = ref('.........'.repeat(9))
+const featuredWinners = ref('.........')
+const featuredAvailableMoves = ref('')
+const featuredCurrentPlayer = ref<'X' | 'O'>('X')
 const latestGameId = ref<string | null>(null)
+const isMyTurn = ref(false)
 
 onMounted(async () => {
   try {
-    const allGames = await games.listGames()
+    const [allGames, currentUser] = await Promise.all([
+      games.listGames(),
+      auth.getCurrentUser()
+    ])
+    
     if (allGames.length > 0) {
-      const active = allGames[0] ?? null;
-      latestGameId.value = active?.$id ?? null;
-      featuredBoard.value = active?.board ?? ".........".repeat(9);
-      featuredWinners.value = active?.tileWinners ?? ".........";
+      // 1. Game that awaits your move
+      let featured = allGames.find(g => 
+        g.status === GameStatus.IN_PROGRESS && 
+        currentUser && 
+        g.nextPlayerId === currentUser.$id
+      )
+
+      if (featured) {
+        isMyTurn.value = true
+      } else {
+        isMyTurn.value = false
+        // 2. Most recently updated active game
+        const activeGames = allGames.filter(g => 
+          g.status === GameStatus.IN_PROGRESS || 
+          g.status === GameStatus.WAITING_FOR_OPPONENT
+        )
+        if (activeGames.length > 0) {
+          activeGames.sort((a, b) => new Date(b.$updatedAt).getTime() - new Date(a.$updatedAt).getTime())
+          featured = activeGames[0]
+        }
+      }
+
+      if (featured) {
+        latestGameId.value = featured.$id
+        featuredBoard.value = featured.board
+        featuredWinners.value = featured.tileWinners
+        featuredAvailableMoves.value = featured.availableMoves || ''
+        featuredCurrentPlayer.value = featured.nextPlayerId === featured.oPlayerId ? 'O' : 'X'
+      }
     }
   } catch (e) {
     console.error('Failed to load featured game', e)
@@ -78,11 +112,19 @@ const goToFeatured = () => {
             </div>
           </div>
 
-          <div class="flex justify-center lg:justify-end cursor-pointer group w-full" @click="goToFeatured">
-             <div class="relative w-full max-w-[min(90vw,65vh)] lg:max-w-[70vh]">
+          <div class="flex justify-center lg:justify-end w-full">
+             <div class="relative w-full max-w-[min(90vw,65vh)] lg:max-w-[70vh] cursor-pointer group" @click="goToFeatured">
                 <!-- Decorative Glow -->
                 <div class="absolute inset-0 bg-indigo-500/10 blur-[100px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-1000"></div>
-                <Board :board="featuredBoard" :tile-winners="featuredWinners" readonly size="lg" />
+                
+                <Board 
+                  :board="featuredBoard" 
+                  :tile-winners="featuredWinners" 
+                  :available-moves="isMyTurn ? featuredAvailableMoves : ''"
+                  :current-player="featuredCurrentPlayer"
+                  :readonly="!isMyTurn"
+                  size="lg" 
+                />
              </div>
           </div>
         </section>

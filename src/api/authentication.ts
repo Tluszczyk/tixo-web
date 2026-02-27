@@ -55,7 +55,6 @@ class AuthService {
   async getUserDetails(): Promise<string | null> {
     const execution = await functions.createExecution({
       functionId: 'users-handler',
-      body: '{}',
       xpath: '/details',
       method: ExecutionMethod.GET,
     })

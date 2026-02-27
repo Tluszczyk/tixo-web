@@ -19,4 +19,5 @@ export interface Game extends Models.DefaultRow {
   availableMoves: string;
 
   isOnDevice: boolean;
+  requestedOpponentId: string | null;
 }
