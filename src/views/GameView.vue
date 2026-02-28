@@ -12,7 +12,7 @@ import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import type { Models } from 'appwrite'
-import { GameState, getBestMove, Player } from '@/utils/engine'
+import { GameState, getBestMove, Player, AI_MODELS } from '@/utils/engine'
 
 type RealtimeSubscription = {
   close: () => Promise<void>
@@ -233,8 +233,8 @@ const isAITurn = computed(() => {
   if (!game.value.isOnDevice) return false;
   
   const historyLen = game.value.moveHistory?.length || 0;
-  if (game.value.requestedOpponentId === 'AI_O' && historyLen % 2 !== 0) return true;
-  if (game.value.requestedOpponentId === 'AI_X' && historyLen % 2 === 0) return true;
+  if (game.value.requestedOpponentId?.startsWith('AI_O') && historyLen % 2 !== 0) return true;
+  if (game.value.requestedOpponentId?.startsWith('AI_X') && historyLen % 2 === 0) return true;
   return false;
 });
 
@@ -263,15 +263,19 @@ const makeAIMove = async () => {
   await new Promise(r => setTimeout(r, 500));
   
   const state = rebuildGameState(game.value.moveHistory || []);
-  const aiPlayer = game.value.requestedOpponentId === 'AI_X' ? Player.X : Player.O;
-  const weights = [5.40, 5.41, 0.42, 2.27, -2.26, -1.58]; // Best weights
-  const depth = 5; // Good balance of speed and skill
+  const isX = game.value.requestedOpponentId?.startsWith('AI_X');
+  const aiPlayer = isX ? Player.X : Player.O;
+  
+  const modelMatch = game.value.requestedOpponentId?.match(/AI_[XO]_(M[1-5])/);
+  const modelName: string = modelMatch?.[1] || 'M5';
+  const model = AI_MODELS[modelName] || AI_MODELS['M5'];
+  if (!model) return;
   
   // Need to run this asynchronously to not block the UI completely if possible, 
   // but JS is single threaded. Use a timeout to allow UI to render 'Thinking' state.
   await new Promise(r => setTimeout(r, 50)); 
   
-  const bestMove = getBestMove(state, depth, weights, aiPlayer);
+  const bestMove = getBestMove(state, model.depth, model.weights, aiPlayer, model.errorRate);
   
   if (bestMove !== -1) {
     const sbIdx = Math.floor(bestMove / 9);
@@ -409,12 +413,12 @@ const goBack = () => {
             <div class="flex items-center gap-2">
               <span class="text-sm font-bold text-slate-100 flex items-center gap-1.5">
                 <span class="marker-x text-xs">X</span>
-                {{ game.requestedOpponentId === 'AI_X' ? 'Tixo AI' : (xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 10) : 'Pending')) }}
-                <span v-if="xPlayer?.rating && game.requestedOpponentId !== 'AI_X'" class="text-[10px] mono text-indigo-400 font-black">({{ xPlayer.rating }})</span>
+                {{ game.requestedOpponentId?.startsWith('AI_X') ? 'Tixo AI' : (xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 10) : 'Pending')) }}
+                <span v-if="xPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_X')" class="text-[10px] mono text-indigo-400 font-black">({{ xPlayer.rating }})</span>
                 <span class="mx-1 text-white/20 font-black text-[10px] uppercase">vs</span>
                 <span class="marker-o text-xs">O</span>
-                {{ game.requestedOpponentId === 'AI_O' ? 'Tixo AI' : (game.isOnDevice && game.requestedOpponentId !== 'AI_X' ? (oPlayer?.name || 'Local Player') : (oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 10) : 'Waiting...'))) }}
-                <span v-if="oPlayer?.rating && game.requestedOpponentId !== 'AI_O'" class="text-[10px] mono text-indigo-400 font-black">({{ oPlayer.rating }})</span>
+                {{ game.requestedOpponentId?.startsWith('AI_O') ? 'Tixo AI' : (game.isOnDevice && !game.requestedOpponentId?.startsWith('AI_X') ? (oPlayer?.name || 'Local Player') : (oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 10) : 'Waiting...'))) }}
+                <span v-if="oPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_O')" class="text-[10px] mono text-indigo-400 font-black">({{ oPlayer.rating }})</span>
               </span>
             </div>
             <div class="flex items-center mt-0.5 space-x-2">

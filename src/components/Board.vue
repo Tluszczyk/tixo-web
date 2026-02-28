@@ -46,8 +46,25 @@ const targetTileIndex = computed(() => {
   return cy * 3 + cx
 })
 
+const isTargetHighlight = (tileIndex: number) => {
+  if (targetTileIndex.value === null) return false
+  
+  const targetIsUnavailable = deserializedTileWinners.value[targetTileIndex.value] !== "."
+  
+  if (!targetIsUnavailable) {
+    return tileIndex === targetTileIndex.value
+  }
+  
+  // Target is unavailable, so any active tile should be highlighted as a target
+  return isTileActive(tileIndex)
+}
+
 const isTileActive = (tileIndex: number) => {
   if (props.readonly) return true 
+  
+  // Won boards are never active for moves
+  if (deserializedTileWinners.value[tileIndex] !== ".") return false
+
   if (!props.availableMoves) return true
   
   const tx = (tileIndex % 3) * 3
@@ -178,7 +195,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         <div v-for="(tileArr, i) in deserializedBoard" :key="i" 
              class="small-board transition-all duration-200 relative overflow-hidden aspect-square grid grid-cols-3 grid-rows-3 gap-0.5 lg:gap-1 p-0.5 lg:p-1.5"
              :class="[
-               i === targetTileIndex ? 'target-highlight ring-4 ring-yellow-400/80 z-30' : 
+               isTargetHighlight(i) ? 'target-highlight ring-4 ring-yellow-400/80 z-30' : 
                isTileActive(i) ? 'active ring-2 ring-indigo-500/50' : 'opacity-80',
                deserializedTileWinners[i] === 'X' ? 'won-x' : 
                deserializedTileWinners[i] === 'O' ? 'won-o' : 

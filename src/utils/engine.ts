@@ -71,25 +71,25 @@ export class GameState {
     const moves: number[] = [];
     if (this.checkWin() !== null) return moves;
 
-    const forbiddenCell = this.lastMove !== -1 ? Math.floor(this.lastMove / 9) : -1;
-
-    // Try to move in the active macro board
-    if (this.activeMacroBoard !== -1) {
+    // Try to move in the active macro board if it's still available
+    if (this.activeMacroBoard !== -1 && this.macroBoard[this.activeMacroBoard] === MacroState.None) {
       const m = this.activeMacroBoard;
       for (let i = 0; i < 9; i++) {
-        if (i !== forbiddenCell && this.board[m * 9 + i] === Player.None) {
+        if (this.board[m * 9 + i] === Player.None) {
           moves.push(m * 9 + i);
         }
       }
     }
 
-    // If no moves are possible in the active macro board (or it was -1),
-    // then all available squares in any board are legal (except forbidden cell rule).
+    // If no moves are possible in the active macro board (or it was -1, or it was won/tied),
+    // then all available squares in any AVAILABLE board are legal.
     if (moves.length === 0) {
       for (let m = 0; m < 9; m++) {
-        for (let i = 0; i < 9; i++) {
-          if (i !== forbiddenCell && this.board[m * 9 + i] === Player.None) {
-            moves.push(m * 9 + i);
+        if (this.macroBoard[m] === MacroState.None) {
+          for (let i = 0; i < 9; i++) {
+            if (this.board[m * 9 + i] === Player.None) {
+              moves.push(m * 9 + i);
+            }
           }
         }
       }
@@ -140,7 +140,11 @@ export class GameState {
     }
 
     // Set next active macro board
-    this.activeMacroBoard = localMove;
+    if (this.macroBoard[localMove] !== MacroState.None) {
+      this.activeMacroBoard = -1;
+    } else {
+      this.activeMacroBoard = localMove;
+    }
   }
 
   /**
@@ -345,6 +349,46 @@ export function minimax(
   }
 }
 
+export interface AIModel {
+  name: string;
+  depth: number;
+  errorRate: number;
+  weights: EvaluationWeights;
+}
+
+export const AI_MODELS: Record<string, AIModel> = {
+  "M5": {
+    name: "M5",
+    depth: 3,
+    errorRate: 0,
+    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+  },
+  "M4": {
+    name: "M4",
+    depth: 3,
+    errorRate: 0.18,
+    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+  },
+  "M3": {
+    name: "M3",
+    depth: 3,
+    errorRate: 0.31,
+    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+  },
+  "M2": {
+    name: "M2",
+    depth: 3,
+    errorRate: 0.4800000000000001,
+    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+  },
+  "M1": {
+    name: "M1",
+    depth: 3,
+    errorRate: 0.6700000000000003,
+    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+  }
+};
+
 /**
  * Calculates the best move for a given player using minimax.
  */
@@ -352,20 +396,24 @@ export function getBestMove(
   state: GameState,
   depth: number,
   weights: EvaluationWeights,
-  player: Player
+  player: Player,
+  errorRate: number = 0
 ): number {
-  let bestMove = -1;
-  let bestValue = -Infinity;
-  const alphaInitial = -Infinity;
-  const betaInitial = Infinity;
-
   const moves = state.getLegalMoves();
   if (moves.length === 0) return -1;
   
   const firstMove = moves[0];
   if (moves.length === 1 && firstMove !== undefined) return firstMove;
 
-  let alpha = alphaInitial;
+  if (Math.random() < errorRate) {
+    return moves[Math.floor(Math.random() * moves.length)] as number;
+  }
+
+  let bestMoves: number[] = [];
+  let bestValue = -Infinity;
+  let alpha = -Infinity;
+  const beta = Infinity;
+
   for (const move of moves) {
     const childState = state.clone();
     childState.makeMove(move, player);
@@ -373,7 +421,7 @@ export function getBestMove(
       childState,
       depth - 1,
       alpha,
-      betaInitial,
+      beta,
       player,
       weights,
       player === Player.X ? Player.O : Player.X
@@ -381,11 +429,16 @@ export function getBestMove(
 
     if (moveValue > bestValue) {
       bestValue = moveValue;
-      bestMove = move;
+      bestMoves = [move];
+    } else if (moveValue === bestValue) {
+      bestMoves.push(move);
     }
     alpha = Math.max(alpha, bestValue);
   }
 
-  if (bestMove !== -1) return bestMove;
+  if (bestMoves.length > 0) {
+    return bestMoves[Math.floor(Math.random() * bestMoves.length)] as number;
+  }
+
   return moves[0] ?? -1;
 }
