@@ -189,7 +189,7 @@ onMounted(async () => {
           </div>
 
           <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <GameListItem v-for="game in userGames" :key="game.$id" :game="game" />
+            <GameListItem v-for="game in userGames" :key="game.$id" :game="game" :current-user="currentUser" />
           </div>
         </section>
       </div>
