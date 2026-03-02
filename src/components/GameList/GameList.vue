@@ -152,7 +152,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
     </div>
 
     <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-       <GameListItem v-for="game in activeGames" :key="game.$id" :game="game" />
+       <GameListItem v-for="game in activeGames" :key="game.$id" :game="game" :current-user="currentUser" />
     </div>
 
     <CreateGameDialog :visible="showCreateDialog" @close="showCreateDialog = false" />
@@ -175,7 +175,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
        </div>
 
        <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700">
-          <GameListItem v-for="game in recentMatches" :key="game.$id" :game="game" />
+          <GameListItem v-for="game in recentMatches" :key="game.$id" :game="game" :current-user="currentUser" />
        </div>
     </div>
   </div>

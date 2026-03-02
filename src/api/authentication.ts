@@ -54,8 +54,8 @@ class AuthService {
   @HandleAppwriteErrors({}, null)
   async getUserDetails(): Promise<string | null> {
     const execution = await functions.createExecution({
-      functionId: 'users-handler',
-      xpath: '/details',
+      functionId: 'app-handler',
+      xpath: '/users/details',
       method: ExecutionMethod.GET,
     })
     if (execution.status === 'completed') {

@@ -18,9 +18,9 @@ const userCache = ref<Record<string, User>>({})
 class UserService {
   @HandleAppwriteErrors({}, [])
   async listUsers(search?: string): Promise<User[]> {
-    const xpath = search ? `/list?id=${encodeURIComponent(search)}` : '/list'
+    const xpath = search ? `/users/list?id=${encodeURIComponent(search)}` : '/users/list'
     const execution = await functions.createExecution({
-      functionId: 'users-handler',
+      functionId: 'app-handler',
       xpath: xpath,
       method: ExecutionMethod.GET,
     })
@@ -47,8 +47,8 @@ class UserService {
     if (userCache.value[userId]) return userCache.value[userId]
 
     const execution = await functions.createExecution({
-      functionId: 'users-handler',
-      xpath: `/details?id=${userId}`,
+      functionId: 'app-handler',
+      xpath: `/users/details?id=${userId}`,
       method: ExecutionMethod.GET,
       body: JSON.stringify({ id: userId })
     })

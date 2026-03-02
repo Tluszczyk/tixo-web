@@ -15,9 +15,9 @@ class GamesService {
     const body: CreateGameRequest = { symbol, isOnDevice, requestedOpponentId }
 
     const execution = await functions.createExecution({
-      functionId: "games-handler",
+      functionId: "app-handler",
       body: JSON.stringify(body),
-      xpath: "/create",
+      xpath: "/games/create",
       headers: {
         'Content-Type': 'application/json'
       }
@@ -41,9 +41,9 @@ class GamesService {
     const body: JoinGameRequest = { gameId: gameId }
 
     const execution = await functions.createExecution({
-      functionId: "games-handler",
+      functionId: "app-handler",
       body: JSON.stringify(body),
-      xpath: "/join",
+      xpath: "/games/join",
       headers: {
         'Content-Type': 'application/json'
       }
@@ -85,9 +85,9 @@ class GamesService {
   async submitMove(gameId: string, x: number, y: number): Promise<boolean> {
     const body = { gameId, move: { x, y } }
     const execution = await functions.createExecution({
-      functionId: 'games-handler',
+      functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/move",
+      xpath: "/games/move",
       headers: {
         'Content-Type': 'application/json'
       }
@@ -108,9 +108,9 @@ class GamesService {
   async abandonGame(gameId: string): Promise<boolean> {
     const body = { gameId }
     const execution = await functions.createExecution({
-      functionId: 'games-handler',
+      functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/abandon",
+      xpath: "/games/abandon",
       headers: {
         'Content-Type': 'application/json'
       }

@@ -55,8 +55,8 @@ const isTargetHighlight = (tileIndex: number) => {
     return tileIndex === targetTileIndex.value
   }
   
-  // Target is unavailable, so any active tile should be highlighted as a target
-  return isTileActive(tileIndex)
+  // Target is unavailable, so any non-won/drawn tile should be highlighted as a target
+  return deserializedTileWinners.value[tileIndex] === "."
 }
 
 const isTileActive = (tileIndex: number) => {
