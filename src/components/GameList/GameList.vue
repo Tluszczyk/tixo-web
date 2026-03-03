@@ -5,6 +5,7 @@ import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import GameFilterDialog, { type FilterState } from '@/components/GameList/GameFilterDialog.vue'
 import {games} from '@/api/games'
 import {auth} from '@/api/authentication'
+import {users} from '@/api/users'
 import type {Game} from '@/api/dto/Game'
 import {GameStatus} from '@/api/dto/GameStatus'
 import type { Models } from 'appwrite'
@@ -35,6 +36,18 @@ const fetchGames = async () => {
     ])
     allGames.value = gamesList
     currentUser.value = user
+
+    // Pre-fetch all unique player details in one batch
+    const playerIds = new Set<string>()
+    gamesList.forEach(g => {
+      if (g.xPlayerId) playerIds.add(g.xPlayerId)
+      if (g.oPlayerId) playerIds.add(g.oPlayerId)
+    })
+    
+    if (playerIds.size > 0) {
+      // This will populate the userCache in UserService
+      await users.fetchUsersByIds(Array.from(playerIds))
+    }
   } catch (error) {
     console.error('Failed to fetch games:', error)
   } finally {

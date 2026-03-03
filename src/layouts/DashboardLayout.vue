@@ -36,8 +36,24 @@ const fetchNotifications = async () => {
 const handleNotificationClick = async (notif: Notification) => {
   showNotifications.value = false
   newNotification.value = null
+  
+  if (!notif.isOpened) {
+    await notifications.markAsRead(notif.$id)
+    // Update local state immediately for better UX
+    const idx = notificationList.value.findIndex(n => n.$id === notif.$id)
+    if (idx !== -1) notificationList.value[idx].isOpened = true
+  }
+
   if (notif.redirectPath) {
     await router.push(notif.redirectPath)
+  }
+}
+
+const handleMarkAllRead = async () => {
+  if (unreadCount.value === 0) return
+  const success = await notifications.markAllAsRead()
+  if (success) {
+    notificationList.value.forEach(n => n.isOpened = true)
   }
 }
 
@@ -166,7 +182,16 @@ onUnmounted(async () => {
                      class="absolute right-0 mt-4 w-96 bg-void/95 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100]">
                   <div class="p-6 border-b border-white/[0.05] flex items-center justify-between">
                      <span class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">Communications</span>
-                     <span class="text-[9px] font-bold text-white/20 uppercase mono">{{ notificationList.length }} TOTAL</span>
+                     <div class="flex items-center gap-4">
+                        <button 
+                           v-if="unreadCount > 0"
+                           @click.stop="handleMarkAllRead"
+                           class="text-[9px] font-black uppercase tracking-widest text-indigo-400/60 hover:text-indigo-400 transition-colors"
+                        >
+                           Mark all read
+                        </button>
+                        <span class="text-[9px] font-bold text-white/20 uppercase mono">{{ notificationList.length }} TOTAL</span>
+                     </div>
                   </div>
 
                   <div class="max-h-96 overflow-y-auto custom-scrollbar">

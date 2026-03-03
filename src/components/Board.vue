@@ -6,6 +6,7 @@ const props = defineProps<{
   tileWinners?: string
   size?: "sm" | "md" | "lg"
   selectedCell?: number | null
+  highlightedCell?: number | null
   currentPlayer?: "X" | "O"
   readonly?: boolean
   availableMoves?: string
@@ -212,6 +213,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
                  cellClasses,
                  { 
                    'bg-indigo-500/30 border-indigo-500/50 ring-2 ring-indigo-500/40 scale-95': selectedCell === getAbsoluteIndex(i, j),
+                   'ring-4 ring-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.6)] z-20 scale-110 border-indigo-400': highlightedCell === getAbsoluteIndex(i, j),
                    'available-cell hover:bg-yellow-500/20 hover:border-yellow-500/60 hover:ring-2 hover:ring-yellow-500/30': isCellAvailable(i, j),
                    'hover:bg-white/10 hover:border-white/20': !isCellAvailable(i, j) && !readonly
                  }

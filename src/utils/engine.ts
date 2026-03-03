@@ -25,7 +25,7 @@ export enum MacroState {
 /**
  * Weights for the evaluation function
  */
-export type EvaluationWeights = number[] | [number, number, number, number, number, number];
+export type EvaluationWeights = number[];
 
 /**
  * Winning combinations for a 3x3 grid
@@ -56,8 +56,8 @@ export class GameState {
    */
   public clone(): GameState {
     const clone = new GameState();
-    clone.board.set(this.board);
-    clone.macroBoard.set(this.macroBoard);
+    clone.board = new Int8Array(this.board);
+    clone.macroBoard = new Int8Array(this.macroBoard);
     clone.activeMacroBoard = this.activeMacroBoard;
     clone.lastMove = this.lastMove;
     clone.lastPlayer = this.lastPlayer;
@@ -189,7 +189,7 @@ export function evaluateBoard(
   weights: EvaluationWeights,
   maximizingPlayer: Player = Player.X
 ): number {
-  let f1 = 0, f2 = 0, f3 = 0, f4 = 0, f5 = 0, f6 = 0;
+  let f = new Float64Array(10);
   const p = maximizingPlayer;
   const opp = (p === Player.X ? Player.O : Player.X);
 
@@ -197,54 +197,67 @@ export function evaluateBoard(
   for (let m = 0; m < 9; m++) {
     const owner = state.macroBoard[m];
     if (owner === (p as unknown as MacroState)) {
-      f1 += 1;
-      if (m === 4) f2 += 1;
-      else if (m === 0 || m === 2 || m === 6 || m === 8) f2 += 0.5;
+      f[0] += 1;
+      if (m === 4) f[1] += 1;
+      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] += 0.5;
     } else if (owner === (opp as unknown as MacroState)) {
-      f1 -= 1;
-      if (m === 4) f2 -= 1;
-      else if (m === 0 || m === 2 || m === 6 || m === 8) f2 -= 0.5;
+      f[0] -= 1;
+      if (m === 4) f[1] -= 1;
+      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] -= 0.5;
     }
   }
 
   // Feature 3: Micro Centers
   for (let m = 0; m < 9; m++) {
     const centerIdx = m * 9 + 4;
-    if (state.board[centerIdx] === p) f3 += 1;
-    else if (state.board[centerIdx] === opp) f3 -= 1;
+    if (state.board[centerIdx] === p) f[2] += 1;
+    else if (state.board[centerIdx] === opp) f[2] -= 1;
   }
 
-  // Feature 4: Two-in-a-rows (Micro and Macro)
-  const countTwos = (arr: Int8Array, offset: number, player: number) => {
+  // Feature 4: Two-in-a-rows & Threat Generation (Feature 9)
+  const countLines = (arr: Int8Array, offset: number, player: number) => {
     let twos = 0;
-    for (const [a, b, c] of WIN_LINES) {
+    let threats = 0;
+    for (let i = 0; i < WIN_LINES.length; i++) {
+      const [a, b, c] = WIN_LINES[i];
       let pCnt = 0, eCnt = 0;
+      
+      const valA = arr[offset + a];
+      const valB = arr[offset + b];
+      const valC = arr[offset + c];
 
-      const vals = [arr[offset + a], arr[offset + b], arr[offset + c]];
-      for (const val of vals) {
-        if (val === player) pCnt++;
-        else if (val === 0) eCnt++;
-      }
+      if (valA === player) pCnt++; else if (valA === 0) eCnt++;
+      if (valB === player) pCnt++; else if (valB === 0) eCnt++;
+      if (valC === player) pCnt++; else if (valC === 0) eCnt++;
 
       if (pCnt === 2 && eCnt === 1) twos++;
+      if (pCnt === 1 && eCnt === 2) threats++;
     }
-    return twos;
+    return { twos, threats };
   };
 
-  let maxTwos = countTwos(state.macroBoard, 0, p);
-  let minTwos = countTwos(state.macroBoard, 0, opp);
+  let maxTwos = countLines(state.macroBoard, 0, p).twos;
+  let minTwos = countLines(state.macroBoard, 0, opp).twos;
+  let maxThreats = 0;
+  let minThreats = 0;
+
   for (let m = 0; m < 9; m++) {
     if (state.macroBoard[m] === MacroState.None) {
-      maxTwos += countTwos(state.board, m * 9, p);
-      minTwos += countTwos(state.board, m * 9, opp);
+      const pStats = countLines(state.board, m * 9, p);
+      const oStats = countLines(state.board, m * 9, opp);
+      maxTwos += pStats.twos;
+      minTwos += oStats.twos;
+      maxThreats += pStats.threats;
+      minThreats += oStats.threats;
     }
   }
-  f4 = maxTwos - minTwos;
+  f[3] = maxTwos - minTwos;
+  f[8] = maxThreats - minThreats; // Feature 9: Threat Generation
 
-  // Feature 5: The Penalty
+  // Feature 5: The Penalty (Sending opponent to -1)
   if (state.activeMacroBoard === -1 && state.lastPlayer !== Player.None) {
-    if (state.lastPlayer === p) f5 = -1;
-    else if (state.lastPlayer === opp) f5 = 1;
+    if (state.lastPlayer === p) f[4] = -1; // We (p) moved, gave opp a free move -> Bad
+    else if (state.lastPlayer === opp) f[4] = 1; // Opp moved, gave us (p) a free move -> Good
   }
 
   // Feature 6: Blocking
@@ -255,29 +268,51 @@ export function evaluateBoard(
     const lp = state.lastPlayer;
     let blocked = 0;
 
-    for (const line of WIN_LINES) {
+    for (let i = 0; i < WIN_LINES.length; i++) {
+      const line = WIN_LINES[i];
       if (line.includes(local)) {
         let oppCnt = 0, selfCnt = 0;
-        for (const cellIdx of line) {
-          const val = state.board[m * 9 + cellIdx];
+        for (let j = 0; j < 3; j++) {
+          const val = state.board[m * 9 + line[j]];
           if (val === -lp) oppCnt++;
           else if (val === lp) selfCnt++;
         }
         if (oppCnt === 2 && selfCnt === 1) blocked++;
       }
     }
-    if (lp === p) f6 = blocked;
-    else if (lp === opp) f6 = -blocked;
+    if (lp === p) f[5] = blocked;
+    else if (lp === opp) f[5] = -blocked;
   }
 
-  return (
-    weights[0] * f1 +
-    weights[1] * f2 +
-    weights[2] * f3 +
-    weights[3] * f4 +
-    weights[4] * f5 +
-    weights[5] * f6
-  );
+  // Feature 7: Target Board Safety
+  // Evaluate the macro-board the opponent is being sent to.
+  // Score -1 for every piece the opponent owns in that board, +1 for every piece we own in it.
+  if (state.activeMacroBoard !== -1) {
+    const target = state.activeMacroBoard;
+    let pieceScore = 0;
+    for (let i = 0; i < 9; i++) {
+      const val = state.board[target * 9 + i];
+      if (val === (p as number)) pieceScore += 1;
+      else if (val === (opp as number)) pieceScore -= 1;
+    }
+    f[6] = pieceScore;
+  } else {
+    f[6] = 0;
+  }
+
+  // Feature 8: Absolute Center Control
+  const centerOwner = state.board[40]; // 4*9 + 4
+  if (centerOwner === p) f[7] = 1;
+  else if (centerOwner === opp) f[7] = -1;
+
+  // Feature 10: Toxicity (Nullified)
+  f[9] = 0; // Nullified duplicate to prevent double-penalty
+
+  let score = 0;
+  for (let i = 0; i < 10; i++) {
+    score += weights[i] * f[i];
+  }
+  return score;
 }
 
 /**
@@ -359,33 +394,33 @@ export interface AIModel {
 export const AI_MODELS: Record<string, AIModel> = {
   "M5": {
     name: "M5",
-    depth: 3,
+    depth: 6,
     errorRate: 0,
-    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+    weights: [1.0722847064602274, 1.4099713598070003, -0.009565251809416253, 0.2679157953837268, 0.09227479044701148, 0.541491870400754, -0.4631768174001959, 0.2625262833174409, -0.751406896310592, -0.6551348804123012]
   },
   "M4": {
     name: "M4",
-    depth: 3,
-    errorRate: 0.18,
-    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+    depth: 5,
+    errorRate: 0,
+    weights: [1.0722847064602274, 1.4099713598070003, -0.009565251809416253, 0.2679157953837268, 0.09227479044701148, 0.541491870400754, -0.4631768174001959, 0.2625262833174409, -0.751406896310592, -0.6551348804123012]
   },
   "M3": {
     name: "M3",
-    depth: 3,
-    errorRate: 0.31,
-    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+    depth: 4,
+    errorRate: 0,
+    weights: [1.0722847064602274, 1.4099713598070003, -0.009565251809416253, 0.2679157953837268, 0.09227479044701148, 0.541491870400754, -0.4631768174001959, 0.2625262833174409, -0.751406896310592, -0.6551348804123012]
   },
   "M2": {
     name: "M2",
     depth: 3,
-    errorRate: 0.4800000000000001,
-    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+    errorRate: 0,
+    weights: [1.0722847064602274, 1.4099713598070003, -0.009565251809416253, 0.2679157953837268, 0.09227479044701148, 0.541491870400754, -0.4631768174001959, 0.2625262833174409, -0.751406896310592, -0.6551348804123012]
   },
   "M1": {
     name: "M1",
-    depth: 3,
-    errorRate: 0.6700000000000003,
-    weights: [4.791876510684078, 2.200592306065337, -0.41240583392210495, 0.8161467538544307, 0.2967644390015915, -2.786420976913702]
+    depth: 2,
+    errorRate: 0,
+    weights: [1.0722847064602274, 1.4099713598070003, -0.009565251809416253, 0.2679157953837268, 0.09227479044701148, 0.541491870400754, -0.4631768174001959, 0.2625262833174409, -0.751406896310592, -0.6551348804123012]
   }
 };
 

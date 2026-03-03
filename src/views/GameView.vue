@@ -125,6 +125,12 @@ const historicalState = computed(() => {
   }
 })
 
+const highlightedHistoryCell = computed(() => {
+  if (selectedHistoryIndex.value === null || !game.value || !game.value.moveHistory) return null
+  const move = game.value.moveHistory[selectedHistoryIndex.value]
+  return move ? coordToIndex(move) : null
+})
+
 const indexToCoord = (index: number) => {
   const x = index % 9
   const y = Math.floor(index / 9)
@@ -138,15 +144,28 @@ const isCellAvailable = (index: number) => {
   if (game.value.board[index] !== '.') return false
   const coord = indexToCoord(index)
   const moves = game.value.availableMoves ?? ''
-  if (moves.startsWith('ALL_AVAILABLE_EXCEPT:')) {
+  if (moves.startsWith('ALL_AVAILABLE_EXCEPT_TILES:')) {
     const parts = moves.split(':')
-    const except = parts[1] ? parts[1].split(',') : []
+    const exceptTiles = parts[1] ? parts[1].split(',').filter(Boolean) : []
+    const exceptCells = parts[3] ? parts[3].split(',').filter(Boolean) : []
+
+    const cx = index % 9
+    const cy = Math.floor(index / 9)
+    const tx = Math.floor(cx / 3) * 3
+    const ty = Math.floor(cy / 3) * 3
+    const tileCoord = `${String.fromCharCode(65 + tx)}${ty + 1}`
+
+    if (exceptTiles.includes(tileCoord)) return false
+    return !exceptCells.includes(coord)
+  } else if (moves.startsWith('ALL_AVAILABLE_EXCEPT:')) {
+    const parts = moves.split(':')
+    const except = parts[1] ? parts[1].split(',').filter(Boolean) : []
     return !except.includes(coord)
   } else if (moves.startsWith('AVAILABLE_IN_TILE:')) {
     const parts = moves.split(':')
     const tileCoord = parts[1]
     if (!tileCoord) return true
-    const except = parts[3] ? parts[3].split(',') : []
+    const except = parts[3] ? parts[3].split(',').filter(Boolean) : []
     const tx = tileCoord.charCodeAt(0) - 65
     const ty = parseInt(tileCoord.substring(1)) - 1
     const cx = index % 9
@@ -541,6 +560,7 @@ const goBack = () => {
                 selectedHistoryIndex !== null ? historicalState?.tileWinners : game.tileWinners
               "
               :selected-cell="selectedCell"
+              :highlighted-cell="highlightedHistoryCell"
               :current-player="currentPlayer"
               :readonly="selectedHistoryIndex !== null || game.status !== GameStatus.IN_PROGRESS"
               @cell-click="handleCellClick"

@@ -63,7 +63,7 @@ const formatStatus = (status: GameStatus) => {
               <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none">Player X</span>
               <span v-if="xPlayer?.rating" class="text-[9px] font-black text-indigo-400 mono px-1.5 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">{{ xPlayer.rating }}</span>
             </div>
-            <span class="text-xs mono text-white/70 font-bold truncate max-w-[100px]">{{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}</span>
+            <span class="text-xs mono text-white/70 font-bold truncate max-w-25">{{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}</span>
         </div>
       </div>
 

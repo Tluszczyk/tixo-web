@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { games } from '@/api/games'
+import { users, type User } from '@/api/users'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
 }>()
 
@@ -19,16 +20,51 @@ const requestedOpponentId = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+const bots = ref<User[]>([])
+const selectedBotId = ref<string | null>(null)
+const loadingBots = ref(false)
+
+const fetchBots = async () => {
+  loadingBots.value = true
+  try {
+    bots.value = await users.listBots()
+    if (bots.value.length > 0) {
+      selectedBotId.value = bots.value[0].$id
+    }
+  } catch (e) {
+    console.error('Failed to fetch bots:', e)
+  } finally {
+    loadingBots.value = false
+  }
+}
+
+watch(() => props.visible, (newVal) => {
+  if (newVal && gameMode.value === 'AI') {
+    fetchBots()
+  }
+})
+
+watch(gameMode, (newMode) => {
+  if (newMode === 'AI' && props.visible && bots.value.length === 0) {
+    fetchBots()
+  }
+})
+
 const handleCreate = async () => {
   loading.value = true
   error.value = null
   try {
-    const isOnDevice = gameMode.value === 'LOCAL' || gameMode.value === 'AI'
+    const isOnDevice = gameMode.value === 'LOCAL'
     let opponentId = gameMode.value === 'ONLINE' ? requestedOpponentId.value.trim() || null : null
 
     if (gameMode.value === 'AI') {
-      // If user chose X, AI is O. If user chose O, AI is X.
-      opponentId = selectedSymbol.value === 'X' ? `AI_O_${selectedModel.value}` : `AI_X_${selectedModel.value}`
+      if (selectedBotId.value) {
+        opponentId = selectedBotId.value
+      } else {
+        // Fallback to old behavior if no bots fetched
+        // If user chose X, AI is O. If user chose O, AI is X.
+        opponentId = selectedSymbol.value === 'X' ? `AI_O_${selectedModel.value}` : `AI_X_${selectedModel.value}`
+      }
     }
 
     const gameId = await games.createGame(
@@ -145,27 +181,38 @@ const handleCreate = async () => {
           </div>
         </div>
 
-        <!-- AI Model Selection -->
+        <!-- AI Bot Selection -->
         <div v-if="gameMode === 'AI'" class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">AI Difficulty</label>
-          <div class="grid grid-cols-5 gap-2">
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Select Opponent AI</label>
+          <div v-if="loadingBots" class="flex justify-center py-4">
+            <i class="pi pi-spin pi-spinner text-purple-500"></i>
+          </div>
+          <div v-else-if="bots.length > 0" class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
             <button
-              v-for="model in ['M1', 'M2', 'M3', 'M4', 'M5']"
-              :key="model"
-              @click="selectedModel = model as 'M1' | 'M2' | 'M3' | 'M4' | 'M5'"
-              class="py-3 rounded-xl border-2 text-sm font-bold transition-all duration-300"
-              :class="selectedModel === model ? 'border-purple-500 bg-purple-500/10 text-purple-400' : 'border-slate-800 bg-slate-900 text-slate-500 hover:border-slate-700'"
+              v-for="bot in bots"
+              :key="bot.$id"
+              @click="selectedBotId = bot.$id"
+              class="w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-300 text-left"
+              :class="selectedBotId === bot.$id ? 'border-purple-500/50 bg-purple-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
             >
-              {{ model }}
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" :class="selectedBotId === bot.$id ? 'bg-purple-500/20 text-purple-500' : 'bg-slate-800 text-slate-500'">
+                  <i class="pi pi-android text-sm"></i>
+                </div>
+                <div>
+                  <p class="font-bold text-xs" :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-slate-300'">{{ bot.name }}</p>
+                  <p class="text-[10px] text-slate-500 capitalize">{{ bot.prefs?.modelName?.toLowerCase() || 'Heuristic' }} AI</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-[10px] font-black text-purple-500">{{ bot.rating || 1500 }}</p>
+                <p class="text-[8px] text-slate-600 uppercase tracking-tighter">Rating</p>
+              </div>
             </button>
           </div>
-          <p class="text-[9px] text-slate-600 font-medium text-center">
-            <span v-if="selectedModel === 'M1'">Beginner - Makes many mistakes</span>
-            <span v-if="selectedModel === 'M2'">Easy - Occasionally makes mistakes</span>
-            <span v-if="selectedModel === 'M3'">Medium - A balanced challenge</span>
-            <span v-if="selectedModel === 'M4'">Hard - Tough opponent</span>
-            <span v-if="selectedModel === 'M5'">Expert - Plays optimally</span>
-          </p>
+          <div v-else class="text-center py-4 text-slate-500 text-xs">
+            No AI bots available.
+          </div>
         </div>
 
         <!-- Opponent Selection -->
