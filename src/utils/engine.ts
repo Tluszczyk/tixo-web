@@ -197,29 +197,28 @@ export function evaluateBoard(
   for (let m = 0; m < 9; m++) {
     const owner = state.macroBoard[m];
     if (owner === (p as unknown as MacroState)) {
-      f[0] += 1;
-      if (m === 4) f[1] += 1;
-      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] += 0.5;
+      f[0] = (f[0] ?? 0) + 1;
+      if (m === 4) f[1] = (f[1] ?? 0) + 1;
+      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] = (f[1] ?? 0) + 0.5;
     } else if (owner === (opp as unknown as MacroState)) {
-      f[0] -= 1;
-      if (m === 4) f[1] -= 1;
-      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] -= 0.5;
+      f[0] = (f[0] ?? 0) - 1;
+      if (m === 4) f[1] = (f[1] ?? 0) - 1;
+      else if (m === 0 || m === 2 || m === 6 || m === 8) f[1] = (f[1] ?? 0) - 0.5;
     }
   }
 
   // Feature 3: Micro Centers
   for (let m = 0; m < 9; m++) {
     const centerIdx = m * 9 + 4;
-    if (state.board[centerIdx] === p) f[2] += 1;
-    else if (state.board[centerIdx] === opp) f[2] -= 1;
+    if (state.board[centerIdx] === p) f[2] = (f[2] ?? 0) + 1;
+    else if (state.board[centerIdx] === opp) f[2] = (f[2] ?? 0) - 1;
   }
 
   // Feature 4: Two-in-a-rows & Threat Generation (Feature 9)
   const countLines = (arr: Int8Array, offset: number, player: number) => {
     let twos = 0;
     let threats = 0;
-    for (let i = 0; i < WIN_LINES.length; i++) {
-      const [a, b, c] = WIN_LINES[i];
+    for (const [a, b, c] of WIN_LINES) {
       let pCnt = 0, eCnt = 0;
       
       const valA = arr[offset + a];
@@ -268,12 +267,11 @@ export function evaluateBoard(
     const lp = state.lastPlayer;
     let blocked = 0;
 
-    for (let i = 0; i < WIN_LINES.length; i++) {
-      const line = WIN_LINES[i];
+    for (const line of WIN_LINES) {
       if (line.includes(local)) {
         let oppCnt = 0, selfCnt = 0;
         for (let j = 0; j < 3; j++) {
-          const val = state.board[m * 9 + line[j]];
+          const val = state.board[m * 9 + (line[j] ?? 0)];
           if (val === -lp) oppCnt++;
           else if (val === lp) selfCnt++;
         }
@@ -310,7 +308,7 @@ export function evaluateBoard(
 
   let score = 0;
   for (let i = 0; i < 10; i++) {
-    score += weights[i] * f[i];
+    score += (weights[i] ?? 0) * (f[i] ?? 0);
   }
   return score;
 }

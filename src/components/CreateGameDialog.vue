@@ -28,8 +28,9 @@ const fetchBots = async () => {
   loadingBots.value = true
   try {
     bots.value = await users.listBots()
-    if (bots.value.length > 0) {
-      selectedBotId.value = bots.value[0].$id
+    const firstBot = bots.value[0]
+    if (firstBot) {
+      selectedBotId.value = firstBot.$id
     }
   } catch (e) {
     console.error('Failed to fetch bots:', e)

@@ -41,7 +41,8 @@ const handleNotificationClick = async (notif: Notification) => {
     await notifications.markAsRead(notif.$id)
     // Update local state immediately for better UX
     const idx = notificationList.value.findIndex(n => n.$id === notif.$id)
-    if (idx !== -1) notificationList.value[idx].isOpened = true
+    const target = notificationList.value[idx]
+    if (target) target.isOpened = true
   }
 
   if (notif.redirectPath) {
