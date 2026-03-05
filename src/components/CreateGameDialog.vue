@@ -39,11 +39,14 @@ const fetchBots = async () => {
   }
 }
 
-watch(() => props.visible, (newVal) => {
-  if (newVal && gameMode.value === 'AI') {
-    fetchBots()
-  }
-})
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal && gameMode.value === 'AI') {
+      fetchBots()
+    }
+  },
+)
 
 watch(gameMode, (newMode) => {
   if (newMode === 'AI' && props.visible && bots.value.length === 0) {
@@ -64,15 +67,14 @@ const handleCreate = async () => {
       } else {
         // Fallback to old behavior if no bots fetched
         // If user chose X, AI is O. If user chose O, AI is X.
-        opponentId = selectedSymbol.value === 'X' ? `AI_O_${selectedModel.value}` : `AI_X_${selectedModel.value}`
+        opponentId =
+          selectedSymbol.value === 'X'
+            ? `AI_O_${selectedModel.value}`
+            : `AI_X_${selectedModel.value}`
       }
     }
 
-    const gameId = await games.createGame(
-      selectedSymbol.value,
-      isOnDevice,
-      opponentId
-    )
+    const gameId = await games.createGame(selectedSymbol.value, isOnDevice, opponentId)
     if (gameId) {
       emit('close')
       await router.push(`/game/${gameId}`)
@@ -94,7 +96,9 @@ const handleCreate = async () => {
     <div @click="emit('close')" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
 
     <!-- Dialog -->
-    <div class="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+    <div
+      class="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300"
+    >
       <div class="p-8 space-y-8">
         <div class="text-center space-y-2">
           <h3 class="text-3xl font-black text-white tracking-tight">New Match</h3>
@@ -107,13 +111,26 @@ const handleCreate = async () => {
             @click="selectedSymbol = 'X'"
             :class="[
               'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
-              selectedSymbol === 'X' ? 'border-red-500 bg-red-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              selectedSymbol === 'X'
+                ? 'border-red-500 bg-red-500/10'
+                : 'border-slate-800 bg-slate-900 hover:border-slate-700',
             ]"
           >
-            <span class="text-6xl font-black mb-2 transition-transform group-hover:scale-110" :class="selectedSymbol === 'X' ? 'text-red-500' : 'text-slate-700'">X</span>
-            <span class="text-xs font-bold uppercase tracking-widest" :class="selectedSymbol === 'X' ? 'text-red-400' : 'text-slate-500'">Player 1</span>
+            <span
+              class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
+              :class="selectedSymbol === 'X' ? 'text-red-500' : 'text-slate-700'"
+              >X</span
+            >
+            <span
+              class="text-xs font-bold uppercase tracking-widest"
+              :class="selectedSymbol === 'X' ? 'text-red-400' : 'text-slate-500'"
+              >Player 1</span
+            >
 
-            <div v-if="selectedSymbol === 'X'" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in">
+            <div
+              v-if="selectedSymbol === 'X'"
+              class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in"
+            >
               <i class="pi pi-check text-[10px] text-white font-bold"></i>
             </div>
           </button>
@@ -122,13 +139,26 @@ const handleCreate = async () => {
             @click="selectedSymbol = 'O'"
             :class="[
               'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
-              selectedSymbol === 'O' ? 'border-blue-500 bg-blue-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              selectedSymbol === 'O'
+                ? 'border-blue-500 bg-blue-500/10'
+                : 'border-slate-800 bg-slate-900 hover:border-slate-700',
             ]"
           >
-            <span class="text-6xl font-black mb-2 transition-transform group-hover:scale-110" :class="selectedSymbol === 'O' ? 'text-blue-500' : 'text-slate-700'">O</span>
-            <span class="text-xs font-bold uppercase tracking-widest" :class="selectedSymbol === 'O' ? 'text-blue-400' : 'text-slate-500'">Player 2</span>
+            <span
+              class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
+              :class="selectedSymbol === 'O' ? 'text-blue-500' : 'text-slate-700'"
+              >O</span
+            >
+            <span
+              class="text-xs font-bold uppercase tracking-widest"
+              :class="selectedSymbol === 'O' ? 'text-blue-400' : 'text-slate-500'"
+              >Player 2</span
+            >
 
-            <div v-if="selectedSymbol === 'O'" class="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in">
+            <div
+              v-if="selectedSymbol === 'O'"
+              class="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in"
+            >
               <i class="pi pi-check text-[10px] text-white font-bold"></i>
             </div>
           </button>
@@ -136,18 +166,36 @@ const handleCreate = async () => {
 
         <!-- Game Mode Selection -->
         <div class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Game Mode</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+            >Game Mode</label
+          >
           <div class="grid grid-cols-1 gap-3">
             <button
               @click="gameMode = 'ONLINE'"
               class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="gameMode === 'ONLINE' ? 'border-blue-500/50 bg-blue-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+              :class="
+                gameMode === 'ONLINE'
+                  ? 'border-blue-500/50 bg-blue-500/10'
+                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              "
             >
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'ONLINE' ? 'bg-blue-500/20 text-blue-500' : 'bg-slate-800 text-slate-500'">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                :class="
+                  gameMode === 'ONLINE'
+                    ? 'bg-blue-500/20 text-blue-500'
+                    : 'bg-slate-800 text-slate-500'
+                "
+              >
                 <i class="pi pi-globe text-xl"></i>
               </div>
               <div>
-                <p class="font-bold text-sm" :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-slate-300'">Online Multiplayer</p>
+                <p
+                  class="font-bold text-sm"
+                  :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-slate-300'"
+                >
+                  Online Multiplayer
+                </p>
                 <p class="text-xs text-slate-500">Play against someone else</p>
               </div>
             </button>
@@ -155,13 +203,29 @@ const handleCreate = async () => {
             <button
               @click="gameMode = 'AI'"
               class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="gameMode === 'AI' ? 'border-purple-500/50 bg-purple-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+              :class="
+                gameMode === 'AI'
+                  ? 'border-purple-500/50 bg-purple-500/10'
+                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              "
             >
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'AI' ? 'bg-purple-500/20 text-purple-500' : 'bg-slate-800 text-slate-500'">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                :class="
+                  gameMode === 'AI'
+                    ? 'bg-purple-500/20 text-purple-500'
+                    : 'bg-slate-800 text-slate-500'
+                "
+              >
                 <i class="pi pi-android text-xl"></i>
               </div>
               <div>
-                <p class="font-bold text-sm" :class="gameMode === 'AI' ? 'text-purple-500' : 'text-slate-300'">Play vs AI</p>
+                <p
+                  class="font-bold text-sm"
+                  :class="gameMode === 'AI' ? 'text-purple-500' : 'text-slate-300'"
+                >
+                  Play vs AI
+                </p>
                 <p class="text-xs text-slate-500">Challenge the model</p>
               </div>
             </button>
@@ -169,13 +233,29 @@ const handleCreate = async () => {
             <button
               @click="gameMode = 'LOCAL'"
               class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="gameMode === 'LOCAL' ? 'border-amber-500/50 bg-amber-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+              :class="
+                gameMode === 'LOCAL'
+                  ? 'border-amber-500/50 bg-amber-500/10'
+                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              "
             >
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" :class="gameMode === 'LOCAL' ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                :class="
+                  gameMode === 'LOCAL'
+                    ? 'bg-amber-500/20 text-amber-500'
+                    : 'bg-slate-800 text-slate-500'
+                "
+              >
                 <i class="pi pi-mobile text-xl"></i>
               </div>
               <div>
-                <p class="font-bold text-sm" :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-slate-300'">Pass & Play</p>
+                <p
+                  class="font-bold text-sm"
+                  :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-slate-300'"
+                >
+                  Pass & Play
+                </p>
                 <p class="text-xs text-slate-500">Two players, one device</p>
               </div>
             </button>
@@ -184,25 +264,48 @@ const handleCreate = async () => {
 
         <!-- AI Bot Selection -->
         <div v-if="gameMode === 'AI'" class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Select Opponent AI</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+            >Select Opponent AI</label
+          >
           <div v-if="loadingBots" class="flex justify-center py-4">
             <i class="pi pi-spin pi-spinner text-purple-500"></i>
           </div>
-          <div v-else-if="bots.length > 0" class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+          <div
+            v-else-if="bots.length > 0"
+            class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar"
+          >
             <button
               v-for="bot in bots"
               :key="bot.$id"
               @click="selectedBotId = bot.$id"
               class="w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-300 text-left"
-              :class="selectedBotId === bot.$id ? 'border-purple-500/50 bg-purple-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-700'"
+              :class="
+                selectedBotId === bot.$id
+                  ? 'border-purple-500/50 bg-purple-500/10'
+                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+              "
             >
               <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" :class="selectedBotId === bot.$id ? 'bg-purple-500/20 text-purple-500' : 'bg-slate-800 text-slate-500'">
+                <div
+                  class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                  :class="
+                    selectedBotId === bot.$id
+                      ? 'bg-purple-500/20 text-purple-500'
+                      : 'bg-slate-800 text-slate-500'
+                  "
+                >
                   <i class="pi pi-android text-sm"></i>
                 </div>
                 <div>
-                  <p class="font-bold text-xs" :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-slate-300'">{{ bot.name }}</p>
-                  <p class="text-[10px] text-slate-500 capitalize">{{ bot.prefs?.modelName?.toLowerCase() || 'Heuristic' }} AI</p>
+                  <p
+                    class="font-bold text-xs"
+                    :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-slate-300'"
+                  >
+                    {{ bot.name }}
+                  </p>
+                  <p class="text-[10px] text-slate-500 capitalize">
+                    {{ bot.prefs?.modelName?.toLowerCase() || 'Heuristic' }} AI
+                  </p>
                 </div>
               </div>
               <div class="text-right">
@@ -211,16 +314,18 @@ const handleCreate = async () => {
               </div>
             </button>
           </div>
-          <div v-else class="text-center py-4 text-slate-500 text-xs">
-            No AI bots available.
-          </div>
+          <div v-else class="text-center py-4 text-slate-500 text-xs">No AI bots available.</div>
         </div>
 
         <!-- Opponent Selection -->
         <div v-if="gameMode === 'ONLINE'" class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block">Invite Opponent (Optional)</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+            >Invite Opponent (Optional)</label
+          >
           <div class="relative group">
-            <i class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors"></i>
+            <i
+              class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors"
+            ></i>
             <input
               v-model="requestedOpponentId"
               type="text"
@@ -228,10 +333,15 @@ const handleCreate = async () => {
               class="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white text-sm font-bold placeholder:text-slate-700 focus:border-blue-500 outline-none transition-all"
             />
           </div>
-          <p class="text-[9px] text-slate-600 font-medium">Only the specified user will be able to join this match.</p>
+          <p class="text-[9px] text-slate-600 font-medium">
+            Only the specified user will be able to join this match.
+          </p>
         </div>
 
-        <div v-if="error" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+        <div
+          v-if="error"
+          class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+        >
           {{ error }}
         </div>
 

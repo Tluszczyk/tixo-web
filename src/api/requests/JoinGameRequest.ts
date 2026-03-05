@@ -1,1 +1,3 @@
-export interface JoinGameRequest { gameId: string; }
+export interface JoinGameRequest {
+  gameId: string
+}

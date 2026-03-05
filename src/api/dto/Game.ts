@@ -1,23 +1,24 @@
-import type {Models} from "appwrite";
-import { GameStatus } from "./GameStatus";
+import type { Models } from 'appwrite'
+import { GameStatus } from './GameStatus'
 
 export interface Game extends Models.DefaultRow {
-  xPlayerId: string;
-  oPlayerId: string;
+  xPlayerId: string
+  oPlayerId: string
 
-  createdBy: string;
+  createdBy: string
 
-  winnerId: string;
-  nextPlayerId: string;
+  winnerId: string
+  nextPlayerId: string
 
-  winner: string;
-  status: GameStatus;
-  moveHistory: string[];
+  winner: string
+  status: GameStatus
+  moveHistory: string[]
 
-  board: string;
-  tileWinners: string;
-  availableMoves: string;
+  board: string
+  tileWinners: string
+  availableMoves: string
 
-  isOnDevice: boolean;
-  requestedOpponentId: string | null;
+  isOnDevice: boolean
+  requestedOpponentId: string | null
+  isAnalyzed: boolean
 }

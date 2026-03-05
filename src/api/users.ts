@@ -52,18 +52,18 @@ class UserService {
   @HandleAppwriteErrors({}, [])
   async fetchUsersByIds(ids: string[]): Promise<User[]> {
     if (ids.length === 0) return []
-    
+
     // Filter out IDs already in cache
-    const missingIds = ids.filter(id => !userCache.value[id])
+    const missingIds = ids.filter((id) => !userCache.value[id])
     if (missingIds.length === 0) {
-      return ids.map(id => userCache.value[id]).filter((u): u is User => !!u)
+      return ids.map((id) => userCache.value[id]).filter((u): u is User => !!u)
     }
 
     const execution = await functions.createExecution({
       functionId: 'app-handler',
       xpath: '/users/list',
       method: ExecutionMethod.POST,
-      body: JSON.stringify({ ids: missingIds })
+      body: JSON.stringify({ ids: missingIds }),
     })
 
     if (execution.status === 'completed') {
@@ -74,7 +74,7 @@ class UserService {
         userList.forEach((u: User) => {
           userCache.value[u.$id] = u
         })
-        return ids.map(id => userCache.value[id]).filter((u): u is User => !!u)
+        return ids.map((id) => userCache.value[id]).filter((u): u is User => !!u)
       } catch (e) {
         console.error('Failed to parse fetchUsersByIds response', e)
         return []
@@ -123,7 +123,7 @@ class UserService {
           functionId: 'app-handler',
           xpath: `/users/details?id=${userId}`,
           method: ExecutionMethod.GET,
-          body: JSON.stringify({ id: userId })
+          body: JSON.stringify({ id: userId }),
         })
 
         if (execution.status === 'completed') {

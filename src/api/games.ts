@@ -1,7 +1,7 @@
-import {functions, tablesDB} from "@/api/appwriteClient";
-import type {Game} from "@/api/dto/Game";
-import {HandleAppwriteErrors} from "@/api/utils/decorators";
-import type {Models} from "appwrite";
+import { functions, tablesDB } from '@/api/appwriteClient'
+import type { Game } from '@/api/dto/Game'
+import { HandleAppwriteErrors } from '@/api/utils/decorators'
+import type { Models } from 'appwrite'
 import type { CreateGameRequest } from '@/api/requests/CreateGameRequest.ts'
 import type { JoinGameRequest } from '@/api/requests/JoinGameRequest.ts'
 
@@ -10,30 +10,30 @@ class GamesService {
   async createGame(
     symbol: 'X' | 'O',
     isOnDevice: boolean = false,
-    requestedOpponentId: string | null = null
+    requestedOpponentId: string | null = null,
   ): Promise<string | null> {
     const body: CreateGameRequest = { symbol, isOnDevice, requestedOpponentId }
 
     const execution = await functions.createExecution({
-      functionId: "app-handler",
+      functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/games/create",
+      xpath: '/games/create',
       headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+        'Content-Type': 'application/json',
+      },
+    })
 
     if (execution.status === 'completed') {
       try {
-        const response = JSON.parse(execution.responseBody);
-        return response.gameId || response.$id || null;
+        const response = JSON.parse(execution.responseBody)
+        return response.gameId || response.$id || null
       } catch (e) {
-        console.error('Failed to parse createGame response', e);
-        return null;
+        console.error('Failed to parse createGame response', e)
+        return null
       }
     }
 
-    return null;
+    return null
   }
 
   @HandleAppwriteErrors({}, false)
@@ -41,67 +41,70 @@ class GamesService {
     const body: JoinGameRequest = { gameId: gameId }
 
     const execution = await functions.createExecution({
-      functionId: "app-handler",
+      functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/games/join",
+      xpath: '/games/join',
       headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+        'Content-Type': 'application/json',
+      },
+    })
 
     if (execution.status === 'completed') {
       try {
-        const response = JSON.parse(execution.responseBody);
-        return !!response.success;
+        const response = JSON.parse(execution.responseBody)
+        return !!response.success
       } catch (e) {
-        console.error('Failed to parse joinGame response', e);
-        return false;
+        console.error('Failed to parse joinGame response', e)
+        return false
       }
     }
 
-    return false;
+    return false
   }
 
-  @HandleAppwriteErrors({},[])
+  @HandleAppwriteErrors({}, [])
   async listGames(): Promise<Game[]> {
     const rowList: Models.RowList<Game> = await tablesDB.listRows({
-        databaseId: "tixo",
-        tableId: "games"
+      databaseId: 'tixo',
+      tableId: 'games',
     })
 
-    return rowList.rows;
+    return rowList.rows
   }
 
-  @HandleAppwriteErrors({},null)
+  @HandleAppwriteErrors({}, null)
   async getGame(gameId: string): Promise<Game | null> {
     return await tablesDB.getRow<Game>({
-      databaseId: "tixo",
-      tableId: "games",
-      rowId: gameId
+      databaseId: 'tixo',
+      tableId: 'games',
+      rowId: gameId,
     })
   }
 
-  @HandleAppwriteErrors({}, false)
-  async submitMove(gameId: string, x: number, y: number): Promise<boolean> {
+  @HandleAppwriteErrors({}, null)
+  async submitMove(
+    gameId: string,
+    x: number,
+    y: number,
+  ): Promise<{ success: boolean; status: string; winner: string; availableMoves: string } | null> {
     const body = { gameId, move: { x, y } }
     const execution = await functions.createExecution({
       functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/games/move",
+      xpath: '/games/move',
       headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+        'Content-Type': 'application/json',
+      },
+    })
     if (execution.status === 'completed') {
       try {
-        const response = JSON.parse(execution.responseBody);
-        return !!response.success;
+        return JSON.parse(execution.responseBody)
       } catch (e) {
-        console.error('Failed to parse submitMove response', e);
-        return false;
+        console.error('Failed to parse submitMove response', e)
+        return null
       }
     }
-    return false;
+    return null
   }
 
   @HandleAppwriteErrors({}, false)
@@ -110,21 +113,48 @@ class GamesService {
     const execution = await functions.createExecution({
       functionId: 'app-handler',
       body: JSON.stringify(body),
-      xpath: "/games/abandon",
+      xpath: '/games/abandon',
       headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+        'Content-Type': 'application/json',
+      },
+    })
     if (execution.status === 'completed') {
       try {
-        const response = JSON.parse(execution.responseBody);
-        return !!response.success;
+        const response = JSON.parse(execution.responseBody)
+        return !!response.success
       } catch (e) {
-        console.error('Failed to parse abandonGame response', e);
-        return false;
+        console.error('Failed to parse abandonGame response', e)
+        return false
       }
     }
-    return false;
+    return false
+  }
+
+  @HandleAppwriteErrors({}, false)
+  async analyzeGame(
+    gameId: string,
+    modelName: 'neural' | 'heuristic' = 'neural',
+  ): Promise<boolean> {
+    const body = { gameId, modelName }
+    const execution = await functions.createExecution({
+      functionId: 'ai-handler',
+      body: JSON.stringify(body),
+      xpath: '/ai/analysis',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (execution.status === 'completed') {
+      try {
+        const response = JSON.parse(execution.responseBody)
+        return !!response.success
+      } catch (e) {
+        console.error('Failed to parse analyzeGame response', e)
+        return false
+      }
+    }
+    return false
   }
 }
-export const games = new GamesService();
+export const games = new GamesService()
