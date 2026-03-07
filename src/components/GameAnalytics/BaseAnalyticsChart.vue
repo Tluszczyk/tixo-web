@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import VChart from 'vue-echarts'
+import { useThemeStore } from '@/stores/theme'
 
 const props = defineProps<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   option: any
   loading?: boolean
   selectedTurn?: number | null
@@ -10,6 +12,9 @@ const props = defineProps<{
 
 const emit = defineEmits(['turn-select'])
 
+const themeStore = useThemeStore()
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const chartRef = ref<any>(null)
 
 /**
@@ -34,12 +39,12 @@ const computedOption = computed(() => {
       if (props.selectedTurn !== null && props.selectedTurn !== undefined) {
         const turnLabel = (props.selectedTurn + 1).toString()
         
-        // Full-column greyish highlight
+        // Adaptive highlight
         markAreaData.push([
           { 
             xAxis: turnLabel,
             itemStyle: { 
-              color: 'rgba(255, 255, 255, 0.12)',
+              color: themeStore.theme === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
               visualMap: false 
             } 
           },
@@ -67,6 +72,7 @@ const initInteraction = () => {
 
   const zr = chartInstance.getZr()
   zr.off('click')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   zr.on('click', (params: any) => {
     // Only handle left clicks for mouse. Touch events typically don't have a 'button' property.
     if (params.event.button !== undefined && params.event.button !== 0) return
@@ -79,6 +85,7 @@ const initInteraction = () => {
         const xIndex = Math.round(pointInGrid[0])
         
         const option = chartInstance.getOption()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dataLen = (option.series as any[])[0]?.data?.length || 0
         
         if (xIndex >= 0 && xIndex < dataLen) {

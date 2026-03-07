@@ -31,15 +31,15 @@ const emit = defineEmits<{
       leave-to-class="transform translate-y-4 opacity-0"
     >
       <div v-if="selectedHistoryIndex !== null" class="flex flex-col items-center">
-        <span class="text-[10px] uppercase font-black tracking-[0.3em] text-white/60 mb-2"
+        <span class="text-[10px] uppercase font-black tracking-[0.3em] text-app-text-muted opacity-60 mb-2"
           >History View</span
         >
         <div class="flex items-center gap-6">
-          <span class="text-2xl font-black text-white">Move {{ selectedHistoryIndex + 1 }}</span>
-          <div class="h-8 w-[1px] bg-white/10"></div>
+          <span class="text-2xl font-black text-app-text">Move {{ selectedHistoryIndex + 1 }}</span>
+          <div class="h-8 w-[1px] bg-glass-border"></div>
           <button
             @click="emit('clear-history')"
-            class="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+            class="text-xs font-bold uppercase tracking-widest text-app-text-muted opacity-40 hover:text-app-text transition-colors"
           >
             Return to Live
           </button>
@@ -49,28 +49,28 @@ const emit = defineEmits<{
       <div v-else-if="selectedCell !== null" class="flex items-center gap-6">
         <button
           @click="emit('clear-selection')"
-          class="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+          class="text-xs font-bold uppercase tracking-widest text-app-text-muted opacity-40 hover:text-app-text transition-colors"
         >
           Cancel
         </button>
         <button
           @click="emit('submit-move')"
-          class="px-12 py-4 bg-white text-black text-xs font-black uppercase tracking-[0.2em] rounded-xl hover:bg-slate-200 transition-all shadow-2xl shadow-white/5 active:scale-95"
+          class="px-12 py-4 bg-app-text text-void text-xs font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
         >
           Submit Move
         </button>
       </div>
 
       <div v-else-if="gameStatus === GameStatus.IN_PROGRESS" class="flex flex-col items-center">
-        <span class="text-[10px] uppercase font-black tracking-[0.3em] text-white/20 mb-2">
+        <span class="text-[10px] uppercase font-black tracking-[0.3em] text-app-text-muted opacity-20 mb-2">
           {{ isAITurn ? 'AI is thinking...' : isMyTurn ? 'Your Turn' : 'Opponent Turn' }}
         </span>
         <div class="flex items-center gap-6">
           <span :class="['text-4xl font-black', currentPlayer === 'X' ? 'marker-x' : 'marker-o']">
             {{ currentPlayer }}
           </span>
-          <div class="h-8 w-[1px] bg-white/10"></div>
-          <span class="text-xl font-light mono text-white/40 italic flex items-center">
+          <div class="h-8 w-[1px] bg-glass-border"></div>
+          <span class="text-xl font-light mono text-app-text-muted opacity-40 italic flex items-center">
             <i v-if="isAITurn" class="pi pi-spin pi-spinner mr-3 text-purple-500"></i>
             {{ isAITurn ? 'Computing...' : 'Waiting...' }}
           </span>
@@ -91,12 +91,12 @@ const emit = defineEmits<{
           Join Match
         </button>
         <div v-else class="flex flex-col items-center">
-          <span class="text-[10px] uppercase font-black tracking-[0.3em] text-white/20 mb-2"
+          <span class="text-[10px] uppercase font-black tracking-[0.3em] text-app-text-muted opacity-20 mb-2"
             >Match Status</span
           >
           <div class="flex items-center gap-6">
             <i class="pi pi-spin pi-spinner text-indigo-500"></i>
-            <span class="text-xl font-light mono text-white/40 italic"
+            <span class="text-xl font-light mono text-app-text-muted opacity-40 italic"
               >Waiting for opponent...</span
             >
           </div>

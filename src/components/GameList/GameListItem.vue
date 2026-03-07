@@ -37,11 +37,11 @@ const openGame = () => {
       'group flex flex-row h-44 sm:h-48 w-full glass rounded-2xl sm:rounded-3xl transition-all duration-500 cursor-pointer overflow-hidden p-3 sm:p-4 gap-3 sm:gap-6 hover:shadow-2xl active:scale-[0.98]',
       isMyTurn
         ? 'border-yellow-500/50 bg-yellow-500/[0.05] hover:border-yellow-500/80 hover:bg-yellow-500/[0.1] hover:shadow-yellow-500/10'
-        : 'border-white/[0.1] hover:border-indigo-500/50 hover:bg-white/[0.08] hover:shadow-indigo-500/10',
+        : 'border-glass-border hover:border-indigo-500/50 hover:bg-glass-white hover:shadow-indigo-500/10',
     ]"
   >
     <div
-      class="h-full aspect-square shrink-0 rounded-xl sm:rounded-2xl overflow-hidden glass border-white/[0.05] shadow-inner p-1"
+      class="h-full aspect-square shrink-0 rounded-xl sm:rounded-2xl overflow-hidden glass border-glass-border shadow-inner p-1"
     >
       <GameThumbnail :board="game.board" :tile-winners="game.tileWinners" />
     </div>

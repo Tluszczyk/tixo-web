@@ -6,11 +6,13 @@ import { auth } from '@/api/authentication'
 import { notifications } from '@/api/notifications'
 import { realtime } from '@/api/appwriteClient'
 import type { Notification } from '@/api/dto/Notification'
+import { useThemeStore } from '@/stores/theme'
 
 const isSidebarOpen = ref(false)
 const showNotifications = ref(false)
 const route = useRoute()
 const router = useRouter()
+const themeStore = useThemeStore()
 
 const userName = ref('Player')
 const notificationList = ref<Notification[]>([])
@@ -103,6 +105,7 @@ onMounted(async () => {
 
       subscription = await realtime.subscribe(
         ['databases.tixo.collections.in-app-notifications.documents'],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (response: any) => {
           if (response.events.some((e: string) => e.includes('.create'))) {
             notificationList.value.unshift(response.payload)
@@ -151,13 +154,13 @@ onUnmounted(async () => {
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
       <header
-        class="h-20 flex items-center justify-between px-6 lg:px-12 border-b border-white/[0.05] bg-void/50 backdrop-blur-md shrink-0 z-20"
+        class="h-20 flex items-center justify-between px-6 lg:px-12 border-b border-glass-border bg-void/50 backdrop-blur-md shrink-0 z-20"
       >
         <div class="flex items-center gap-6">
           <!-- Hamburger Button -->
           <button
             @click.stop="toggleSidebar"
-            class="lg:hidden p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+            class="lg:hidden p-2 rounded-lg text-app-text-muted hover:text-app-text hover:bg-glass-white transition-all"
           >
             <i class="pi" :class="isSidebarOpen ? 'pi-times' : 'pi-bars'"></i>
           </button>
@@ -169,11 +172,23 @@ onUnmounted(async () => {
           <slot name="header-right" />
 
           <div class="flex items-center gap-6">
+            <!-- Theme Toggle -->
+            <button
+              @click="themeStore.toggleTheme"
+              class="w-10 h-10 rounded-xl glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text hover:border-indigo-500/30 transition-all"
+              title="Toggle Theme"
+            >
+              <i
+                class="pi"
+                :class="themeStore.theme === 'dark' ? 'pi-sun' : 'pi-moon'"
+              ></i>
+            </button>
+
             <!-- Notifications -->
             <div class="relative">
               <button
                 @click.stop="showNotifications = !showNotifications"
-                class="w-10 h-10 rounded-xl glass border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:border-indigo-500/30 transition-all relative"
+                class="w-10 h-10 rounded-xl glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text hover:border-indigo-500/30 transition-all relative"
               >
                 <i class="pi pi-bell text-sm"></i>
                 <div
@@ -196,9 +211,9 @@ onUnmounted(async () => {
                 <div
                   v-if="showNotifications"
                   @click.stop
-                  class="absolute right-0 mt-4 w-96 bg-void/95 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100]"
+                  class="absolute right-0 mt-4 w-96 bg-void/95 backdrop-blur-3xl border border-glass-border rounded-3xl shadow-2xl overflow-hidden z-[100]"
                 >
-                  <div class="p-6 border-b border-white/[0.05] flex items-center justify-between">
+                  <div class="p-6 border-b border-glass-border flex items-center justify-between">
                     <span class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500"
                       >Communications</span
                     >
@@ -210,7 +225,7 @@ onUnmounted(async () => {
                       >
                         Mark all read
                       </button>
-                      <span class="text-[9px] font-bold text-white/20 uppercase mono"
+                      <span class="text-[9px] font-bold text-app-text-muted uppercase mono"
                         >{{ notificationList.length }} TOTAL</span
                       >
                     </div>
@@ -221,7 +236,7 @@ onUnmounted(async () => {
                       v-for="notif in notificationList"
                       :key="notif.$id"
                       @click="handleNotificationClick(notif)"
-                      class="p-6 hover:bg-white/[0.03] transition-all cursor-pointer border-b border-white/[0.02] last:border-0 relative group"
+                      class="p-6 hover:bg-glass-white transition-all cursor-pointer border-b border-glass-border/30 last:border-0 relative group"
                     >
                       <div
                         v-if="!notif.isOpened"
@@ -230,13 +245,13 @@ onUnmounted(async () => {
                       <p
                         class="text-[13px] leading-relaxed mb-1.5"
                         :class="
-                          notif.isOpened ? 'text-white/40 font-medium' : 'text-white/90 font-black'
+                          notif.isOpened ? 'text-app-text-muted font-medium' : 'text-app-text font-black'
                         "
                       >
                         {{ notif.message }}
                       </p>
                       <span
-                        class="text-[10px] font-bold uppercase tracking-[0.1em] text-white/20"
+                        class="text-[10px] font-bold uppercase tracking-[0.1em] text-app-text-muted"
                         >{{ new Date(notif.$createdAt).toLocaleTimeString() }}</span
                       >
                     </div>
@@ -245,8 +260,8 @@ onUnmounted(async () => {
                       v-if="notificationList.length === 0"
                       class="p-12 text-center flex flex-col items-center gap-3"
                     >
-                      <i class="pi pi-bell-slash text-2xl text-white/5"></i>
-                      <span class="text-[10px] font-black uppercase tracking-widest text-white/10"
+                      <i class="pi pi-bell-slash text-2xl text-app-text-muted opacity-20"></i>
+                      <span class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-20"
                         >No Communications</span
                       >
                     </div>
@@ -257,19 +272,19 @@ onUnmounted(async () => {
 
             <div @click="handleProfileClick" class="flex items-center gap-3 cursor-pointer group">
               <div class="text-right hidden sm:block">
-                <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                <p class="text-[10px] font-bold text-app-text-muted uppercase tracking-[0.2em]">
                   Profile
                 </p>
                 <p
-                  class="text-xs font-bold text-slate-100 group-hover:text-blue-400 transition-colors"
+                  class="text-xs font-bold text-app-text group-hover:text-blue-400 transition-colors"
                 >
                   {{ userName }}
                 </p>
               </div>
               <div
-                class="w-10 h-10 rounded-full glass flex items-center justify-center border-white/5 group-hover:border-blue-500/30 transition-all"
+                class="w-10 h-10 rounded-full glass flex items-center justify-center border-glass-border group-hover:border-blue-500/30 transition-all"
               >
-                <i class="pi pi-user text-slate-400 text-sm group-hover:text-white"></i>
+                <i class="pi pi-user text-app-text-muted text-sm group-hover:text-app-text"></i>
               </div>
             </div>
           </div>
@@ -303,7 +318,7 @@ onUnmounted(async () => {
           class="fixed bottom-8 right-8 z-[200]"
         >
           <div
-            class="bg-void/95 backdrop-blur-3xl border border-indigo-500/30 p-8 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-md flex items-center gap-8"
+            class="bg-void/95 backdrop-blur-3xl border border-indigo-500/30 p-8 rounded-[2.5rem] shadow-2xl max-w-md flex items-center gap-8"
           >
             <div
               class="h-16 w-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20"
@@ -314,13 +329,13 @@ onUnmounted(async () => {
               <p class="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
                 Incoming Transmission
               </p>
-              <p class="text-sm font-bold text-white leading-relaxed">
+              <p class="text-sm font-bold text-app-text leading-relaxed">
                 {{ newNotification.message }}
               </p>
               <div class="flex items-center gap-4 pt-3">
                 <button
                   @click="newNotification = null"
-                  class="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.2em] transition-colors"
+                  class="text-[10px] font-black text-app-text-muted opacity-30 hover:text-app-text uppercase tracking-[0.2em] transition-colors"
                 >
                   Ignore
                 </button>
@@ -347,10 +362,10 @@ onUnmounted(async () => {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--scrollbar-thumb-hover);
 }
 </style>

@@ -353,7 +353,7 @@ const goBack = () => {
 
       <div v-if="loading" class="flex flex-col items-center justify-center min-h-[60vh]">
         <i class="pi pi-spin pi-spinner text-4xl text-blue-500 mb-4"></i>
-        <p class="text-slate-400 animate-pulse">Loading game state...</p>
+        <p class="text-app-text-muted opacity-40 animate-pulse">Loading game state...</p>
       </div>
 
       <div
@@ -361,13 +361,13 @@ const goBack = () => {
         class="flex flex-col items-center justify-center min-h-[60vh] text-center"
       >
         <i class="pi pi-exclamation-triangle text-4xl text-amber-500 mb-4"></i>
-        <h2 class="text-2xl font-bold text-white mb-2">Game Not Found</h2>
-        <p class="text-slate-400 mb-6">
+        <h2 class="text-2xl font-bold text-app-text mb-2">Game Not Found</h2>
+        <p class="text-app-text-muted opacity-40 mb-6">
           The game you're looking for doesn't exist or has been removed.
         </p>
         <button
           @click="goBack"
-          class="px-6 py-2 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all"
+          class="px-6 py-2 rounded-xl bg-glass-white text-app-text font-bold hover:bg-indigo-500/20 transition-all border border-glass-border"
         >
           Go Back
         </button>
@@ -422,9 +422,9 @@ const goBack = () => {
               />
 
               <!-- Footer -->
-              <div class="flex flex-col items-center gap-1 opacity-20 hover:opacity-100 transition-opacity pt-12 border-t border-white/5 w-full">
-                 <span class="text-[8px] font-black uppercase tracking-[0.4em] text-white/20">Game Session Key</span>
-                 <span class="text-[9px] mono text-white/30">{{ game.$id }}</span>
+              <div class="flex flex-col items-center gap-1 opacity-20 hover:opacity-100 transition-opacity pt-12 border-t border-glass-border w-full">
+                 <span class="text-[8px] font-black uppercase tracking-[0.4em] text-app-text-muted opacity-20">Game Session Key</span>
+                 <span class="text-[9px] mono text-app-text-muted opacity-30">{{ game.$id }}</span>
               </div>
             </div>
           </div>
@@ -445,7 +445,7 @@ const goBack = () => {
                 class="h-full flex flex-col items-center justify-center"
               >
                 <div
-                  class="glass p-12 rounded-[3rem] border-white/5 flex flex-col items-center text-center space-y-8 max-w-md shadow-2xl"
+                  class="glass p-12 rounded-[3rem] border-glass-border flex flex-col items-center text-center space-y-8 max-w-md shadow-2xl"
                 >
                   <div
                     class="w-24 h-24 rounded-[2rem] glass flex items-center justify-center border-indigo-500/20 text-indigo-500 shadow-2xl shadow-indigo-500/10"
@@ -453,10 +453,10 @@ const goBack = () => {
                     <i class="pi pi-bolt text-5xl"></i>
                   </div>
                   <div class="space-y-2">
-                    <h4 class="text-2xl font-black text-white uppercase italic tracking-tight">
+                    <h4 class="text-2xl font-black text-app-text uppercase italic tracking-tight">
                       Tactical Synthesis
                     </h4>
-                    <p class="text-[11px] font-black uppercase tracking-[0.3em] text-white/20">
+                    <p class="text-[11px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-20">
                       Unlock deep tactical insights & move evaluations
                     </p>
                   </div>
@@ -477,10 +477,10 @@ const goBack = () => {
             >
               <div
                 v-if="isAnalyzing"
-                class="h-full flex flex-col items-center justify-center glass rounded-3xl border border-white/5"
+                class="h-full flex flex-col items-center justify-center glass rounded-3xl border border-glass-border"
               >
                 <i class="pi pi-spin pi-spinner text-4xl text-indigo-500 mb-4"></i>
-                <p class="text-[10px] font-black uppercase tracking-widest text-white/40">
+                <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">
                   Conducting Tactical AI Analysis...
                 </p>
               </div>
@@ -502,7 +502,7 @@ const goBack = () => {
           enter-to-class="opacity-100 translate-y-0"
         >
           <div v-if="game.status === GameStatus.FINISHED && game" class="lg:hidden mt-8 px-4 pb-12">
-            <h3 class="text-xl font-black text-white uppercase italic mb-6">
+            <h3 class="text-xl font-black text-app-text uppercase italic mb-6">
               Tactical Analysis<span class="text-indigo-500">.</span>
             </h3>
 
@@ -513,9 +513,9 @@ const goBack = () => {
             >
               <div
                 v-if="!game.isAnalyzed && !isAnalyzing"
-                class="py-12 flex flex-col items-center justify-center glass rounded-3xl border border-white/5 space-y-6 shadow-2xl"
+                class="py-12 flex flex-col items-center justify-center glass rounded-3xl border border-glass-border space-y-6 shadow-2xl"
               >
-                <p class="text-[10px] font-black uppercase tracking-widest text-white/20">
+                <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-20">
                   Tactical data is available for review
                 </p>
                 <button
@@ -529,10 +529,10 @@ const goBack = () => {
 
             <div
               v-if="isAnalyzing"
-              class="py-20 flex flex-col items-center justify-center glass rounded-3xl border border-white/5"
+              class="py-20 flex flex-col items-center justify-center glass rounded-3xl border border-glass-border"
             >
               <i class="pi pi-spin pi-spinner text-4xl text-indigo-500 mb-4"></i>
-              <p class="text-[10px] font-black uppercase tracking-widest text-white/40">
+              <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">
                 Calculating Probabilities...
               </p>
             </div>

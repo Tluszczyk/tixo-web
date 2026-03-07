@@ -67,21 +67,21 @@ const resetFilters = () => {
     <div @click="emit('close')" class="absolute inset-0 bg-void/90 backdrop-blur-md"></div>
 
     <div
-      class="relative w-full max-w-2xl glass border-white/[0.05] rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300"
+      class="relative w-full max-w-2xl glass border-glass-border rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300"
     >
       <div class="p-8 lg:p-12 space-y-10">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <h3 class="text-3xl font-black text-white uppercase italic">
+            <h3 class="text-3xl font-black text-app-text uppercase italic">
               Filters<span class="text-indigo-500">.</span>
             </h3>
-            <p class="text-xs font-black uppercase tracking-[0.2em] text-white/20">
+            <p class="text-xs font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20">
               Refine Operational Data
             </p>
           </div>
           <button
             @click="resetFilters"
-            class="text-xs font-black uppercase tracking-widest text-indigo-500 hover:text-white transition-colors"
+            class="text-xs font-black uppercase tracking-widest text-indigo-500 hover:text-app-text transition-colors"
           >
             Reset All
           </button>
@@ -90,33 +90,33 @@ const resetFilters = () => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Player ID -->
           <div class="space-y-3">
-            <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+            <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
               >Player Identifier</label
             >
             <input
               v-model="filters.playerId"
               type="text"
               placeholder="User ID..."
-              class="w-full px-6 py-4 rounded-2xl glass border-white/5 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-indigo-500/30 transition-all mono"
+              class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-sm text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/30 transition-all mono"
             />
           </div>
 
           <!-- Creator ID -->
           <div class="space-y-3">
-            <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+            <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
               >Creator Identifier</label
             >
             <input
               v-model="filters.creatorId"
               type="text"
               placeholder="Creator ID..."
-              class="w-full px-6 py-4 rounded-2xl glass border-white/5 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-indigo-500/30 transition-all mono"
+              class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-sm text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/30 transition-all mono"
             />
           </div>
 
           <!-- Statuses (Multi-select) -->
           <div class="space-y-3 md:col-span-2">
-            <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+            <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
               >Operational Statuses</label
             >
             <div class="flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ const resetFilters = () => {
                   'px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border',
                   filters.statuses.includes(status)
                     ? 'bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20'
-                    : 'glass border-white/5 text-white/30 hover:border-white/20',
+                    : 'glass border-glass-border text-app-text-muted opacity-30 hover:border-app-text/20',
                 ]"
               >
                 {{ status.replace(/_/g, ' ') }}
@@ -138,13 +138,13 @@ const resetFilters = () => {
 
           <!-- Date Range -->
           <div class="space-y-3">
-            <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+            <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
               >Temporal Window</label
             >
             <div class="relative">
               <select
                 v-model="filters.dateRange"
-                class="w-full px-6 py-4 rounded-2xl glass border-white/5 text-sm text-white bg-void focus:outline-none focus:border-indigo-500/30 transition-all appearance-none cursor-pointer"
+                class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-sm text-app-text bg-void focus:outline-none focus:border-indigo-500/30 transition-all appearance-none cursor-pointer"
               >
                 <option value="all">All Time</option>
                 <option value="today">Last 24 Hours</option>
@@ -152,7 +152,7 @@ const resetFilters = () => {
                 <option value="month">Last 30 Days</option>
               </select>
               <div
-                class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white/20"
+                class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-app-text-muted opacity-20"
               >
                 <i class="pi pi-chevron-down"></i>
               </div>
@@ -161,17 +161,17 @@ const resetFilters = () => {
 
           <!-- On Device Toggle -->
           <div class="space-y-3">
-            <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+            <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
               >Local Protocol</label
             >
-            <div class="flex p-1.5 rounded-2xl glass border-white/5 h-[60px]">
+            <div class="flex p-1.5 rounded-2xl glass border-glass-border h-[60px]">
               <button
                 @click="filters.isOnDevice = filters.isOnDevice === true ? null : true"
                 :class="[
                   'flex-1 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.isOnDevice === true
                     ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                    : 'text-white/20 hover:text-white/40',
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Local
@@ -182,7 +182,7 @@ const resetFilters = () => {
                   'flex-1 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.isOnDevice === false
                     ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                    : 'text-white/20 hover:text-white/40',
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Remote
@@ -194,15 +194,15 @@ const resetFilters = () => {
           <div
             v-if="currentUserId"
             @click="filters.myGamesOnly = !filters.myGamesOnly"
-            class="flex items-center justify-between px-6 py-4 rounded-2xl glass border-white/5 cursor-pointer hover:bg-white/[0.02] transition-all h-[68px] mt-auto"
+            class="flex items-center justify-between px-6 py-4 rounded-2xl glass border-glass-border cursor-pointer hover:bg-glass-white transition-all h-[68px] mt-auto"
           >
-            <span class="text-xs font-black uppercase tracking-widest text-white/30"
+            <span class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30"
               >My Engagements</span
             >
             <div
               :class="[
                 'w-10 h-5 rounded-full relative transition-all duration-300',
-                filters.myGamesOnly ? 'bg-indigo-500' : 'bg-white/10',
+                filters.myGamesOnly ? 'bg-indigo-500' : 'bg-app-text/10',
               ]"
             >
               <div
@@ -216,19 +216,19 @@ const resetFilters = () => {
         </div>
 
         <!-- Sorting -->
-        <div class="space-y-4 pt-6 border-t border-white/[0.03]">
-          <label class="text-xs font-black uppercase tracking-widest text-white/30 ml-2"
+        <div class="space-y-4 pt-6 border-t border-glass-border">
+          <label class="text-xs font-black uppercase tracking-widest text-app-text-muted opacity-30 ml-2"
             >Sequencing</label
           >
           <div class="grid grid-cols-2 gap-6">
-            <div class="flex p-1.5 rounded-2xl glass border-white/5">
+            <div class="flex p-1.5 rounded-2xl glass border-glass-border">
               <button
                 @click="filters.sortBy = 'createdAt'"
                 :class="[
                   'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.sortBy === 'createdAt'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40',
+                    ? 'bg-app-text/10 text-app-text'
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Created
@@ -238,21 +238,21 @@ const resetFilters = () => {
                 :class="[
                   'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.sortBy === 'updatedAt'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40',
+                    ? 'bg-app-text/10 text-app-text'
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Updated
               </button>
             </div>
-            <div class="flex p-1.5 rounded-2xl glass border-white/5">
+            <div class="flex p-1.5 rounded-2xl glass border-glass-border">
               <button
                 @click="filters.sortOrder = 'desc'"
                 :class="[
                   'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.sortOrder === 'desc'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40',
+                    ? 'bg-app-text/10 text-app-text'
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Desc
@@ -262,8 +262,8 @@ const resetFilters = () => {
                 :class="[
                   'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
                   filters.sortOrder === 'asc'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40',
+                    ? 'bg-app-text/10 text-app-text'
+                    : 'text-app-text-muted opacity-20 hover:opacity-40',
                 ]"
               >
                 Asc
@@ -275,13 +275,13 @@ const resetFilters = () => {
         <div class="flex gap-6 pt-6">
           <button
             @click="emit('close')"
-            class="flex-1 py-5 rounded-2xl glass border-white/[0.05] text-xs font-black uppercase tracking-widest text-white/40 hover:bg-white/5 transition-all"
+            class="flex-1 py-5 rounded-2xl glass border-glass-border text-xs font-black uppercase tracking-widest text-app-text-muted opacity-40 hover:bg-glass-white transition-all"
           >
             Cancel
           </button>
           <button
             @click="applyFilters"
-            class="flex-[2] py-5 rounded-2xl bg-white text-black text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-white/5 hover:bg-slate-200 transition-all"
+            class="flex-[2] py-5 rounded-2xl bg-app-text text-void text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:opacity-90 transition-all"
           >
             Apply Parameters
           </button>

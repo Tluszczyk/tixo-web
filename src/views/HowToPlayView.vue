@@ -95,13 +95,13 @@ const prevStep = () => {
       <div class="flex items-center space-x-4">
         <button
           @click="router.push('/')"
-          class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+          class="p-2 hover:bg-glass-white rounded-lg text-app-text-muted hover:text-app-text transition-colors"
         >
           <i class="pi pi-arrow-left"></i>
         </button>
         <div class="flex items-center space-x-2">
           <i class="pi pi-book text-blue-500 text-xl"></i>
-          <span class="text-xl font-bold text-slate-100 tracking-tight">How to Play</span>
+          <span class="text-xl font-bold text-app-text tracking-tight">How to Play</span>
         </div>
       </div>
     </template>
@@ -148,17 +148,17 @@ const prevStep = () => {
             >
               Step {{ currentStep + 1 }} of {{ steps.length }}
             </div>
-            <h2 class="text-4xl font-extrabold text-white tracking-tight">
+            <h2 class="text-4xl font-extrabold text-app-text tracking-tight">
               {{ step.title }}
             </h2>
-            <p class="text-xl text-slate-400 leading-relaxed">
+            <p class="text-xl text-app-text-muted opacity-60 leading-relaxed">
               {{ step.description }}
             </p>
             <div
               v-if="step.note"
               class="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl"
             >
-              <p class="text-indigo-300 text-sm italic">
+              <p class="text-indigo-400 text-sm italic">
                 <i class="pi pi-info-circle mr-2"></i>
                 {{ step.note }}
               </p>
@@ -169,7 +169,7 @@ const prevStep = () => {
             <button
               @click="prevStep"
               :disabled="currentStep === 0"
-              class="flex-1 px-6 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-slate-200 font-bold hover:bg-slate-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-6 py-4 rounded-2xl bg-glass-white border border-glass-border text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Back
             </button>
@@ -195,7 +195,7 @@ const prevStep = () => {
               v-for="(_, i) in steps"
               :key="i"
               class="w-2 h-2 rounded-full transition-all duration-300"
-              :class="i === currentStep ? 'w-8 bg-blue-500' : 'bg-slate-700'"
+              :class="i === currentStep ? 'w-8 bg-blue-500' : 'bg-glass-border'"
             ></div>
           </div>
         </div>

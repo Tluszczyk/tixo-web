@@ -38,7 +38,7 @@ const formatStatus = (status: GameStatus) => {
     <div class="flex items-start justify-between gap-2">
       <div class="flex flex-col gap-0.5 sm:gap-1.5 min-w-0">
         <h3
-          class="text-sm sm:text-lg font-black text-white uppercase tracking-tight group-hover:text-indigo-400 transition-colors leading-none truncate"
+          class="text-sm sm:text-lg font-black text-app-text uppercase tracking-tight group-hover:text-indigo-400 transition-colors leading-none truncate"
         >
           {{
             game.status === GameStatus.FINISHED
@@ -51,7 +51,7 @@ const formatStatus = (status: GameStatus) => {
           }}
         </h3>
         <p
-          class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/40 group-hover:text-white/60 transition-colors truncate"
+          class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-app-text-muted opacity-40 group-hover:text-app-text-muted opacity-60 transition-colors truncate"
         >
           {{ game.isOnDevice ? 'Local Network' : 'Global Server' }} //
           {{ formatStatus(game.status) }}
@@ -82,7 +82,7 @@ const formatStatus = (status: GameStatus) => {
         <div class="flex flex-col min-w-0">
           <div class="flex items-center gap-1.5 sm:gap-2 mb-0.5">
             <span
-              class="text-[8px] sm:text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none"
+              class="text-[8px] sm:text-[9px] font-bold text-app-text-muted opacity-30 uppercase tracking-widest leading-none"
               >P X</span
             >
             <span
@@ -92,13 +92,13 @@ const formatStatus = (status: GameStatus) => {
             >
           </div>
           <span
-            class="text-[10px] sm:text-xs mono text-white/70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
             >{{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}</span
           >
         </div>
       </div>
 
-      <div class="hidden sm:block text-white/20 text-xs mono font-black">VS</div>
+      <div class="hidden sm:block text-app-text-muted opacity-20 text-xs mono font-black">VS</div>
 
       <div class="flex items-center gap-2 sm:gap-3 min-w-0">
         <div
@@ -109,7 +109,7 @@ const formatStatus = (status: GameStatus) => {
         <div class="flex flex-col min-w-0">
           <div class="flex items-center gap-1.5 sm:gap-2 mb-0.5">
             <span
-              class="text-[8px] sm:text-[9px] font-bold text-white/30 uppercase tracking-widest leading-none"
+              class="text-[8px] sm:text-[9px] font-bold text-app-text-muted opacity-30 uppercase tracking-widest leading-none"
               >P O</span
             >
             <span
@@ -119,7 +119,7 @@ const formatStatus = (status: GameStatus) => {
             >
           </div>
           <span
-            class="text-[10px] sm:text-xs mono text-white/70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
             >{{ oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 12) : '...') }}</span
           >
         </div>
@@ -127,17 +127,17 @@ const formatStatus = (status: GameStatus) => {
     </div>
 
     <div
-      class="flex items-center justify-between mt-auto pt-2 sm:pt-3 border-t border-white/10 gap-2"
+      class="flex items-center justify-between mt-auto pt-2 sm:pt-3 border-t border-glass-border gap-2"
     >
       <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-        <i class="pi pi-clock text-[9px] sm:text-[10px] text-white/30 shrink-0"></i>
-        <span class="text-[8px] sm:text-[10px] mono text-white/40 uppercase font-black truncate">
+        <i class="pi pi-clock text-[9px] sm:text-[10px] text-app-text-muted opacity-30 shrink-0"></i>
+        <span class="text-[8px] sm:text-[10px] mono text-app-text-muted opacity-40 uppercase font-black truncate">
           {{ formatTime(game.$createdAt) }}
         </span>
       </div>
 
       <button
-        class="shrink-0 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/60 group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-400 transition-all flex items-center gap-1.5 sm:gap-2"
+        class="shrink-0 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-glass-white border border-glass-border text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-app-text-muted opacity-60 group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-400 group-hover:opacity-100 transition-all flex items-center gap-1.5 sm:gap-2"
       >
         <span>{{ game.status === GameStatus.IN_PROGRESS ? 'Engage' : 'Inspect' }}</span>
         <i

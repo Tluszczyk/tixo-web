@@ -25,10 +25,10 @@ const router = useRouter()
   >
     <div
       v-if="show"
-      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-void/90 backdrop-blur-md"
     >
       <div
-        class="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl overflow-hidden group"
+        class="relative w-full max-w-lg glass border-glass-border rounded-3xl p-8 shadow-2xl overflow-hidden group"
       >
         <!-- Modal Background Decorations -->
         <div
@@ -41,7 +41,7 @@ const router = useRouter()
         <!-- Close Button -->
         <button
           @click="emit('close')"
-          class="absolute top-4 right-4 p-1.5 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-all z-10"
+          class="absolute top-4 right-4 p-1.5 text-app-text-muted hover:text-app-text hover:bg-glass-white rounded-lg transition-all z-10"
         >
           <i class="pi pi-times text-sm"></i>
         </button>
@@ -74,7 +74,7 @@ const router = useRouter()
             ></i>
           </div>
 
-          <h2 class="text-4xl font-black text-white mb-2 tracking-tight">
+          <h2 class="text-4xl font-black text-app-text mb-2 tracking-tight">
             {{
               matchResult === 'WIN'
                 ? 'YOU WON!'
@@ -85,7 +85,7 @@ const router = useRouter()
                     : "IT'S A DRAW!"
             }}
           </h2>
-          <p class="text-slate-400 font-medium mb-10 max-w-[280px]">
+          <p class="text-app-text-muted opacity-60 font-medium mb-10 max-w-[280px]">
             {{
               matchResult === 'WIN'
                 ? 'Exceptional performance! You have conquered the grid.'
@@ -101,21 +101,21 @@ const router = useRouter()
           <div class="w-full space-y-3">
             <button
               @click="emit('create-new')"
-              class="w-full py-4 bg-white text-slate-950 font-black rounded-2xl hover:bg-slate-100 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-white/5 active:scale-95"
+              class="w-full py-4 bg-app-text text-void font-black rounded-2xl hover:opacity-90 transition-all flex items-center justify-center space-x-3 shadow-xl active:scale-95"
             >
               <i class="pi pi-plus-circle font-bold"></i>
               <span>Create New Game</span>
             </button>
             <button
               @click="emit('close')"
-              class="w-full py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-700 transition-all flex items-center justify-center space-x-3 active:scale-95"
+              class="w-full py-4 bg-glass-white text-app-text font-bold rounded-2xl hover:bg-indigo-500/20 transition-all flex items-center justify-center space-x-3 active:scale-95 border border-glass-border"
             >
               <i class="pi pi-eye"></i>
               <span>View Board</span>
             </button>
             <button
               @click="router.push('/')"
-              class="w-full py-4 bg-slate-900/50 text-slate-400 font-bold rounded-2xl hover:bg-slate-800 hover:text-white transition-all active:scale-95 border border-slate-800"
+              class="w-full py-4 bg-glass-white text-app-text-muted font-bold rounded-2xl hover:bg-glass-white hover:text-app-text transition-all active:scale-95 border border-glass-border"
             >
               Back to Main Page
             </button>

@@ -96,7 +96,7 @@ const goToFeatured = () => {
 
             <div class="space-y-2">
               <h1
-                class="text-6xl font-black text-white leading-[0.9] tracking-tighter uppercase italic"
+                class="text-6xl font-black text-app-text leading-[0.9] tracking-tighter uppercase italic"
               >
                 Tactical <br />
                 <span
@@ -104,12 +104,12 @@ const goToFeatured = () => {
                   >Superiority.</span
                 >
               </h1>
-              <p class="text-sm font-bold uppercase tracking-[0.3em] text-white/20 pt-4">
+              <p class="text-sm font-bold uppercase tracking-[0.3em] text-app-text-muted opacity-40 pt-4">
                 Ultimate Strategy Redefined
               </p>
             </div>
 
-            <p class="text-white/40 text-sm leading-relaxed max-w-md font-medium">
+            <p class="text-app-text-muted text-sm leading-relaxed max-w-md font-medium">
               Experience the depth of classic Tic-Tac-Toe reimagined as a fractal battle for board
               supremacy. Precision, logic, and cold-blooded tactics.
             </p>
@@ -117,13 +117,13 @@ const goToFeatured = () => {
             <div class="flex items-center gap-6 pt-4">
               <button
                 @click="showCreateDialog = true"
-                class="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-slate-200 transition-all shadow-2xl shadow-white/5 active:scale-95"
+                class="px-10 py-4 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
               >
                 Initiate Match
               </button>
               <button
                 @click="router.push('/how-to-play')"
-                class="px-10 py-4 glass border-white/[0.05] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/5 transition-all"
+                class="px-10 py-4 glass border-glass-border text-app-text-muted text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-glass-white transition-all"
               >
                 Intel
               </button>
@@ -156,11 +156,11 @@ const goToFeatured = () => {
         <section class="space-y-10">
           <div class="flex items-center gap-4">
             <h3
-              class="text-2xl font-black text-white tracking-tight uppercase italic text-white/80"
+              class="text-2xl font-black text-app-text tracking-tight uppercase italic opacity-80"
             >
               Operational Field<span class="text-indigo-500">.</span>
             </h3>
-            <div class="h-[1px] flex-1 bg-white/5"></div>
+            <div class="h-[1px] flex-1 bg-glass-border"></div>
           </div>
           <GameList />
         </section>

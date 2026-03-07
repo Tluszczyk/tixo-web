@@ -1,11 +1,15 @@
 <!-- HMF stands for header-main-footer -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
+</script>
 
 <template>
-  <div class="flex flex-col w-full h-full bg-slate-950 min-h-screen">
+  <div class="flex flex-col w-full h-full bg-void min-h-screen transition-colors duration-300">
     <header
-      class="w-full flex justify-between items-center px-8 py-4 bg-slate-900 border-b border-slate-800 shrink-0 sticky top-0 z-50 backdrop-blur-md bg-slate-900/80"
+      class="w-full flex justify-between items-center px-8 py-4 bg-void/80 border-b border-glass-border shrink-0 sticky top-0 z-50 backdrop-blur-md"
     >
       <div class="flex items-center space-x-3">
         <div
@@ -13,7 +17,7 @@
         >
           TT
         </div>
-        <span class="text-xl font-bold tracking-tight text-white hidden sm:block">tixo</span>
+        <span class="text-xl font-bold tracking-tight text-app-text hidden sm:block">tixo</span>
       </div>
 
       <div class="flex-1 max-w-2xl mx-12 hidden md:block">
@@ -21,6 +25,17 @@
       </div>
 
       <div class="flex items-center space-x-4">
+        <!-- Theme Toggle -->
+        <button
+          @click="themeStore.toggleTheme"
+          class="w-10 h-10 rounded-xl glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text hover:border-indigo-500/30 transition-all"
+          title="Toggle Theme"
+        >
+          <i
+            class="pi"
+            :class="themeStore.theme === 'dark' ? 'pi-sun' : 'pi-moon'"
+          ></i>
+        </button>
         <slot name="header" />
       </div>
     </header>
@@ -31,7 +46,7 @@
       </div>
     </main>
 
-    <footer class="w-full bg-slate-900 border-t border-slate-800 py-12 shrink-0">
+    <footer class="w-full bg-void border-t border-glass-border py-12 shrink-0">
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0"
       >
@@ -42,9 +57,9 @@
             >
               TT
             </div>
-            <span class="text-sm font-bold text-slate-200">tixo Platform</span>
+            <span class="text-sm font-bold text-app-text-muted">tixo Platform</span>
           </div>
-          <p class="text-xs text-slate-500 font-medium tracking-wide uppercase">
+          <p class="text-xs text-app-text-muted opacity-40 font-medium tracking-wide uppercase">
             &copy; 2026 tixo Inc. All rights reserved.
           </p>
         </div>
@@ -52,17 +67,17 @@
         <div class="flex items-center space-x-8">
           <a
             href="#"
-            class="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+            class="text-xs font-semibold text-app-text-muted hover:text-app-text transition-colors"
             >Documentation</a
           >
           <a
             href="#"
-            class="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+            class="text-xs font-semibold text-app-text-muted hover:text-app-text transition-colors"
             >Terms of Service</a
           >
           <a
             href="#"
-            class="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+            class="text-xs font-semibold text-app-text-muted hover:text-app-text transition-colors"
             >Privacy Policy</a
           >
         </div>

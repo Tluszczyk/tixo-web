@@ -187,7 +187,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
             :key="c"
             :class="[
               'text-[10px] lg:text-base font-black font-mono text-center uppercase flex items-end justify-center pb-1 transition-all duration-200',
-              hoveredX === (t - 1) * 3 + (c - 1) ? 'text-indigo-400 scale-125' : 'text-white/30',
+              hoveredX === (t - 1) * 3 + (c - 1) ? 'text-indigo-400 scale-125' : 'text-app-text-muted',
             ]"
           >
             {{ horizontalLabels[(t - 1) * 3 + (c - 1)] }}
@@ -205,7 +205,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
             :key="c"
             :class="[
               'text-[10px] lg:text-base font-black font-mono flex items-center justify-end pr-1 transition-all duration-200',
-              hoveredY === (t - 1) * 3 + (c - 1) ? 'text-indigo-400 scale-125' : 'text-white/30',
+              hoveredY === (t - 1) * 3 + (c - 1) ? 'text-indigo-400 scale-125' : 'text-app-text-muted',
             ]"
           >
             {{ verticalLabels[(t - 1) * 3 + (c - 1)] }}
@@ -241,7 +241,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
             @click="onCellClick(i, j)"
             @mouseenter="handleCellMouseEnter(i, j)"
             @mouseleave="handleCellMouseLeave"
-            class="flex items-center justify-center aspect-square rounded-md lg:rounded-lg bg-white/[0.03] border border-white/[0.05] font-black transition-all cursor-pointer select-none active:scale-90 overflow-hidden outline-none touch-manipulation"
+            class="flex items-center justify-center aspect-square rounded-md lg:rounded-lg bg-cell-bg border border-cell-border font-black transition-all cursor-pointer select-none active:scale-90 overflow-hidden outline-none touch-manipulation"
             style="-webkit-tap-highlight-color: transparent"
             :class="[
               cellClasses,
@@ -252,7 +252,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
                   highlightedCell === getAbsoluteIndex(i, j),
                 'available-cell hover:bg-yellow-500/20 hover:border-yellow-500/60 hover:ring-2 hover:ring-yellow-500/30':
                   isCellAvailable(i, j),
-                'hover:bg-white/10 hover:border-white/20': !isCellAvailable(i, j) && !readonly,
+                'hover:bg-app-text/10 hover:border-app-text/20': !isCellAvailable(i, j) && !readonly,
               },
             ]"
           >
@@ -276,14 +276,14 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
   /* Perspective removed to fix hit-test misalignment */
 }
 .small-board {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--tile-bg);
+  border: 1px solid var(--tile-border);
   border-radius: 1rem;
 }
 .small-board.active {
   background: rgba(99, 102, 241, 0.05);
   border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px -5px var(--shadow-color);
   z-index: 20;
 }
 .small-board.won-x {
@@ -295,8 +295,8 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
   border-color: rgba(59, 130, 246, 0.3);
 }
 .small-board.won-draw {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--tile-bg);
+  border-color: var(--tile-border);
 }
 
 .available-cell {

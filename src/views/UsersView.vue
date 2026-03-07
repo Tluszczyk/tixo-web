@@ -60,7 +60,7 @@ const onSearch = () => {
 
       <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <!-- Filter Section -->
-        <section class="glass p-6 rounded-2xl border-white/5 space-y-4">
+        <section class="glass p-6 rounded-2xl border-glass-border space-y-4">
           <div
             class="flex items-center gap-3 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]"
           >
@@ -73,7 +73,7 @@ const onSearch = () => {
                 v-model="searchId"
                 type="text"
                 placeholder="Search by User ID..."
-                class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 transition-all text-sm font-medium group-hover:border-white/20"
+                class="w-full bg-void border border-glass-border rounded-xl px-4 py-3 text-app-text placeholder:text-app-text-muted opacity-20 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm font-medium"
                 @keyup.enter="onSearch"
               />
               <div v-if="isLoading" class="absolute right-4 top-1/2 -translate-y-1/2">
@@ -82,7 +82,7 @@ const onSearch = () => {
             </div>
             <button
               @click="onSearch"
-              class="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+              class="px-8 py-3 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
               :disabled="isLoading"
             >
               Query
@@ -91,53 +91,53 @@ const onSearch = () => {
         </section>
 
         <!-- Users Table -->
-        <section class="glass rounded-2xl border-white/5 overflow-hidden">
+        <section class="glass rounded-2xl border-glass-border overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full border-collapse">
               <thead>
-                <tr class="text-left border-b border-white/5 bg-white/2">
+                <tr class="text-left border-b border-glass-border bg-app-text/5">
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     ID
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     Name
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     Rating
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     Email
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     Registered
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40"
                   >
                     Status
                   </th>
                   <th
-                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 text-right"
+                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40 text-right"
                   >
                     Operations
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-white/5">
+              <tbody class="divide-y divide-glass-border">
                 <tr
                   v-for="user in userList"
                   :key="user.$id"
-                  class="hover:bg-white/2 transition-colors group"
+                  class="hover:bg-app-text/5 transition-colors group"
                 >
                   <td class="px-6 py-4">
                     <span
@@ -148,7 +148,7 @@ const onSearch = () => {
                   </td>
                   <td class="px-6 py-4">
                     <span
-                      class="text-sm font-bold text-white/80 group-hover:text-white transition-colors"
+                      class="text-sm font-bold text-app-text group-hover:text-indigo-400 transition-colors"
                     >
                       {{ user.name || 'Anonymous' }}
                     </span>
@@ -164,12 +164,12 @@ const onSearch = () => {
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="text-xs text-white/40">
+                    <span class="text-xs text-app-text-muted opacity-40">
                       {{ user.email }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
-                    <span class="text-xs text-white/40">
+                    <span class="text-xs text-app-text-muted opacity-40">
                       {{ new Date(user.registration).toLocaleDateString() }}
                     </span>
                   </td>
@@ -203,7 +203,7 @@ const onSearch = () => {
                 </tr>
                 <tr v-if="userList.length === 0 && !isLoading">
                   <td colspan="6" class="px-6 py-12 text-center">
-                    <div class="flex flex-col items-center gap-2 text-white/20">
+                    <div class="flex flex-col items-center gap-2 text-app-text-muted opacity-20">
                       <i class="pi pi-users text-3xl mb-2"></i>
                       <span class="text-xs font-black uppercase tracking-widest"
                         >No Personnel Found</span

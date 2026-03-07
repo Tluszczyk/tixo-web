@@ -45,7 +45,7 @@ const deserializedTileWinners = computed(() => {
           ? 'bg-red-500/10'
           : deserializedTileWinners[i] === 'O'
             ? 'bg-blue-500/10'
-            : 'bg-white/[0.02]',
+            : 'bg-glass-white',
       ]"
     >
       <div
@@ -65,7 +65,7 @@ const deserializedTileWinners = computed(() => {
         >
           O
         </div>
-        <div v-else class="w-[1px] h-[1px] rounded-full bg-white/10"></div>
+        <div v-else class="w-[1px] h-[1px] rounded-full bg-app-text-muted opacity-20"></div>
       </div>
 
       <!-- Tile Winner Overlay (Subtle) -->
@@ -80,7 +80,7 @@ const deserializedTileWinners = computed(() => {
               ? 'border-red-500/30 bg-red-500/5'
               : deserializedTileWinners[i] === 'O'
                 ? 'border-blue-500/30 bg-blue-500/5'
-                : 'border-white/20 bg-white/5',
+                : 'border-glass-border bg-glass-white',
           ]"
         ></div>
       </div>

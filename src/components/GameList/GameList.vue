@@ -130,17 +130,17 @@ const handleApplyFilters = (newFilters: FilterState) => {
   <div class="w-full h-full flex flex-col space-y-8">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
       <div class="space-y-1">
-        <h2 class="text-2xl lg:text-3xl font-black text-white uppercase italic">
+        <h2 class="text-2xl lg:text-3xl font-black text-app-text uppercase italic">
           Active Operations<span class="text-indigo-500">.</span>
         </h2>
-        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20">
           Live Operational Data
         </p>
       </div>
       <div class="flex items-center gap-3 w-full md:w-auto">
         <button
           @click="fetchGames"
-          class="w-12 h-12 lg:w-10 lg:h-10 rounded-xl glass border-white/10 text-white/40 hover:text-white hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group shrink-0"
+          class="w-12 h-12 lg:w-10 lg:h-10 rounded-xl glass border-glass-border text-app-text-muted opacity-40 hover:text-app-text hover:opacity-100 hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group shrink-0"
           title="Synchronize"
         >
           <i
@@ -154,7 +154,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
             'flex-1 md:flex-none px-4 lg:px-6 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 cursor-pointer',
             showFilterDialog
               ? 'bg-indigo-500 border-indigo-400 text-white'
-              : 'glass border-white/10 text-white/40 hover:text-white',
+              : 'glass border-glass-border text-app-text-muted opacity-40 hover:text-app-text hover:opacity-100 hover:border-indigo-500/30',
           ]"
         >
           <i class="pi pi-filter text-[10px]"></i>
@@ -162,7 +162,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
         </button>
         <button
           @click="showCreateDialog = true"
-          class="flex-1 md:flex-none px-4 lg:px-8 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-200 transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-3 cursor-pointer"
+          class="flex-1 md:flex-none px-4 lg:px-8 py-3 rounded-xl bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 cursor-pointer"
         >
           <i class="pi pi-plus text-[10px]"></i>
           <span>Initialize</span>
@@ -174,25 +174,25 @@ const handleApplyFilters = (newFilters: FilterState) => {
       <div
         v-for="i in 4"
         :key="i"
-        class="h-44 sm:h-48 w-full glass border-white/5 rounded-3xl animate-pulse"
+        class="h-44 sm:h-48 w-full glass border-glass-border rounded-3xl animate-pulse"
       ></div>
     </div>
 
     <div
       v-else-if="activeGames.length === 0"
-      class="py-20 flex flex-col items-center justify-center glass border-white/[0.03] rounded-[2.5rem] border-dashed"
+      class="py-20 flex flex-col items-center justify-center glass border-glass-border rounded-[2.5rem] border-dashed"
     >
       <div
-        class="w-20 h-20 rounded-full glass border-white/5 flex items-center justify-center text-white/10 mb-6"
+        class="w-20 h-20 rounded-full glass border-glass-border flex items-center justify-center text-app-text-muted opacity-10 mb-6"
       >
         <i class="pi pi-inbox text-4xl"></i>
       </div>
-      <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">
+      <p class="text-app-text-muted opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">
         No Active Operations Found
       </p>
       <button
         @click="showCreateDialog = true"
-        class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors"
+        class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-app-text transition-colors"
       >
         Initiate New Protocol
       </button>
@@ -216,13 +216,13 @@ const handleApplyFilters = (newFilters: FilterState) => {
       @apply="handleApplyFilters"
     />
 
-    <div class="mt-16 pt-16 border-t border-white/[0.03]">
+    <div class="mt-16 pt-16 border-t border-glass-border">
       <div class="flex items-center justify-between mb-8 px-2">
         <div class="space-y-1">
-          <h2 class="text-xl font-black text-white uppercase italic">
+          <h2 class="text-xl font-black text-app-text uppercase italic">
             Archives<span class="text-indigo-500">.</span>
           </h2>
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20">
             Historical Engagement Records
           </p>
         </div>
@@ -232,13 +232,13 @@ const handleApplyFilters = (newFilters: FilterState) => {
         <div
           v-for="i in 4"
           :key="i"
-          class="h-44 sm:h-48 w-full glass border-white/5 rounded-3xl animate-pulse"
+          class="h-44 sm:h-48 w-full glass border-glass-border rounded-3xl animate-pulse"
         ></div>
       </div>
 
       <div
         v-else-if="recentMatches.length === 0"
-        class="py-12 text-center text-white/10 text-[10px] font-black uppercase tracking-widest italic"
+        class="py-12 text-center text-app-text-muted opacity-10 text-[10px] font-black uppercase tracking-widest italic"
       >
         Historical database empty
       </div>

@@ -52,15 +52,15 @@ watch(
 
 <template>
   <aside
-    class="w-full lg:w-32 flex flex-col items-center border-b lg:border-b-0 lg:border-r border-white/[0.1] bg-white/[0.02] lg:bg-transparent overflow-hidden shrink-0 lg:sticky lg:top-0"
+    class="w-full lg:w-32 flex flex-col items-center border-b lg:border-b-0 lg:border-r border-glass-border bg-glass-white lg:bg-transparent overflow-hidden shrink-0 lg:sticky lg:top-0"
   >
     <div
-      class="w-full px-4 py-2 border-b border-white/[0.05] flex items-center justify-between lg:hidden"
+      class="w-full px-4 py-2 border-b border-glass-border flex items-center justify-between lg:hidden"
     >
       <span class="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]"
         >Match Timeline</span
       >
-      <span class="text-[9px] font-bold text-white/40 uppercase mono"
+      <span class="text-[9px] font-bold text-app-text-muted opacity-40 uppercase mono"
         >{{ moveHistory.length }} MOVES</span
       >
     </div>
@@ -80,8 +80,8 @@ watch(
           class="text-[10px] font-black transition-colors mono"
           :class="
             selectedHistoryIndex === idx
-              ? 'text-white'
-              : 'text-white/40 group-hover:text-white/70'
+              ? 'text-app-text'
+              : 'text-app-text-muted opacity-40 group-hover:text-app-text-muted opacity-70'
           "
         >
           {{ (idx + 1).toString().padStart(2, '0') }}
@@ -91,8 +91,8 @@ watch(
           :class="[
             'relative flex items-center justify-center transition-all duration-300 h-10 w-10 lg:w-16 lg:h-16 rounded-xl border',
             selectedHistoryIndex === idx
-              ? 'bg-white/20 border-white/60 ring-4 ring-white/10 scale-110'
-              : 'bg-white/[0.03] border-white/[0.1] hover:border-white/30 hover:bg-white/10',
+              ? 'bg-app-text/20 border-app-text/60 ring-4 ring-app-text/10 scale-110'
+              : 'bg-glass-white border-glass-border hover:border-indigo-500/30 hover:bg-glass-white',
           ]"
         >
           <span
@@ -114,7 +114,7 @@ watch(
           <!-- Active Indicator Dot -->
           <div
             v-if="selectedHistoryIndex === idx"
-            class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_#fff]"
+            class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-app-text rounded-full shadow-[0_0_8px_var(--text-primary)]"
           ></div>
         </div>
       </div>

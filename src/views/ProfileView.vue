@@ -11,6 +11,7 @@ import type { Models } from 'appwrite'
 
 const router = useRouter()
 const currentUser = ref<Models.User<Models.Preferences> | null>(null)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const userDetails = ref<any>(null)
 const allGames = ref<Game[]>([])
 const loading = ref(true)
@@ -85,14 +86,14 @@ onMounted(async () => {
 
       <div v-if="loading" class="flex flex-col items-center justify-center min-h-[60vh]">
         <i class="pi pi-spin pi-spinner text-4xl text-indigo-500 mb-4"></i>
-        <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Syncing Data</p>
+        <p class="text-app-text-muted opacity-40 font-bold uppercase tracking-widest text-[10px]">Syncing Data</p>
       </div>
 
       <div v-else class="space-y-12 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <!-- Profile Header/Stats -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div
-            class="lg:col-span-1 glass border-white/5 rounded-4xl p-10 flex flex-col items-center text-center space-y-8"
+            class="lg:col-span-1 glass border-glass-border rounded-4xl p-10 flex flex-col items-center text-center space-y-8"
           >
             <div
               class="w-32 h-32 rounded-[2.5rem] glass flex items-center justify-center border-indigo-500/30 shadow-2xl shadow-indigo-500/10"
@@ -101,10 +102,10 @@ onMounted(async () => {
             </div>
 
             <div class="space-y-2">
-              <h2 class="text-3xl font-black text-white tracking-tight leading-none">
+              <h2 class="text-3xl font-black text-app-text tracking-tight leading-none">
                 {{ currentUser?.name || 'Player' }}
               </h2>
-              <p class="text-white/30 text-xs font-bold uppercase tracking-[0.2em]">
+              <p class="text-app-text-muted opacity-30 text-xs font-bold uppercase tracking-[0.2em]">
                 {{ currentUser?.email }}
               </p>
             </div>
@@ -116,27 +117,27 @@ onMounted(async () => {
                 <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest"
                   >Glicko-2 Rating</span
                 >
-                <span class="text-xl font-black text-white mono">{{
+                <span class="text-xl font-black text-app-text mono">{{
                   userDetails?.rating || 1500
                 }}</span>
               </div>
               <div
-                class="flex items-center justify-between p-4 rounded-2xl glass border-white/[0.02]"
+                class="flex items-center justify-between p-4 rounded-2xl glass border-glass-border"
               >
-                <span class="text-[10px] font-black text-white/20 uppercase tracking-widest"
+                <span class="text-[10px] font-black text-app-text-muted opacity-20 uppercase tracking-widest"
                   >Joined</span
                 >
-                <span class="text-xs font-bold text-white/60">{{
+                <span class="text-xs font-bold text-app-text-muted opacity-60">{{
                   new Date(currentUser?.registration || '').toLocaleDateString()
                 }}</span>
               </div>
               <div
-                class="flex items-center justify-between p-4 rounded-2xl glass border-white/[0.02]"
+                class="flex items-center justify-between p-4 rounded-2xl glass border-glass-border"
               >
-                <span class="text-[10px] font-black text-white/20 uppercase tracking-widest"
+                <span class="text-[10px] font-black text-app-text-muted opacity-20 uppercase tracking-widest"
                   >ID</span
                 >
-                <span class="text-[10px] mono text-white/30 truncate ml-4">{{
+                <span class="text-[10px] mono text-app-text-muted opacity-30 truncate ml-4">{{
                   currentUser?.$id
                 }}</span>
               </div>
@@ -156,26 +157,26 @@ onMounted(async () => {
               class="col-span-2 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-[2rem] p-10 text-white relative overflow-hidden group shadow-2xl shadow-indigo-500/20"
             >
               <div
-                class="absolute -right-8 -bottom-8 text-white/10 text-9xl rotate-12 group-hover:scale-110 transition-transform duration-1000"
+                class="absolute -right-8 -bottom-8 text-white opacity-10 text-9xl rotate-12 group-hover:scale-110 transition-transform duration-1000"
               >
                 <i class="pi pi-bolt"></i>
               </div>
               <h4
-                class="text-[11px] font-black uppercase tracking-[0.3em] mb-4 relative z-10 text-white/60"
+                class="text-[11px] font-black uppercase tracking-[0.3em] mb-4 relative z-10 text-white opacity-60"
               >
                 Total Encounters
               </h4>
               <p class="text-7xl font-black relative z-10 tracking-tighter">{{ stats.total }}</p>
               <div class="mt-8 flex items-center gap-2 relative z-10">
                 <div class="h-1 w-12 bg-white rounded-full"></div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-white/40"
+                <span class="text-[10px] font-black uppercase tracking-widest text-white opacity-40"
                   >Active Records</span
                 >
               </div>
             </div>
 
             <div
-              class="glass border-white/[0.05] rounded-[2rem] p-8 flex flex-col justify-between group hover:border-green-500/30 transition-all duration-500"
+              class="glass border-glass-border rounded-[2rem] p-8 flex flex-col justify-between group hover:border-green-500/30 transition-all duration-500"
             >
               <div
                 class="w-12 h-12 rounded-2xl glass border-green-500/20 flex items-center justify-center text-green-500 mb-4 group-hover:scale-110 transition-transform"
@@ -183,15 +184,15 @@ onMounted(async () => {
                 <i class="pi pi-trophy text-xl"></i>
               </div>
               <div>
-                <p class="text-4xl font-black text-white tracking-tighter">{{ stats.wins }}</p>
-                <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                <p class="text-4xl font-black text-app-text tracking-tighter">{{ stats.wins }}</p>
+                <p class="text-[10px] font-black text-app-text-muted opacity-20 uppercase tracking-[0.2em]">
                   Victories
                 </p>
               </div>
             </div>
 
             <div
-              class="glass border-white/[0.05] rounded-[2rem] p-8 flex flex-col justify-between group hover:border-red-500/30 transition-all duration-500"
+              class="glass border-glass-border rounded-[2rem] p-8 flex flex-col justify-between group hover:border-red-500/30 transition-all duration-500"
             >
               <div
                 class="w-12 h-12 rounded-2xl glass border-red-500/20 flex items-center justify-center text-red-500 mb-4 group-hover:scale-110 transition-transform"
@@ -199,15 +200,15 @@ onMounted(async () => {
                 <i class="pi pi-times text-xl"></i>
               </div>
               <div>
-                <p class="text-4xl font-black text-white tracking-tighter">{{ stats.losses }}</p>
-                <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                <p class="text-4xl font-black text-app-text tracking-tighter">{{ stats.losses }}</p>
+                <p class="text-[10px] font-black text-app-text-muted opacity-20 uppercase tracking-[0.2em]">
                   Defeats
                 </p>
               </div>
             </div>
 
             <div
-              class="md:col-span-4 glass border-white/[0.05] rounded-[2.5rem] p-10 flex items-center justify-between overflow-hidden relative group"
+              class="md:col-span-4 glass border-glass-border rounded-[2.5rem] p-10 flex items-center justify-between overflow-hidden relative group"
             >
               <div class="flex items-center gap-8 relative z-10">
                 <div
@@ -216,19 +217,19 @@ onMounted(async () => {
                   <i class="pi pi-percentage text-3xl"></i>
                 </div>
                 <div>
-                  <h4 class="text-2xl font-black text-white tracking-tight">Tactical Precision</h4>
-                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mt-1">
+                  <h4 class="text-2xl font-black text-app-text tracking-tight">Tactical Precision</h4>
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 mt-1">
                     Weighted Win Rate
                   </p>
                 </div>
               </div>
               <div class="text-right relative z-10">
-                <p class="text-7xl font-black text-white tracking-tighter">
+                <p class="text-7xl font-black text-app-text tracking-tighter">
                   {{
                     stats.total > 0
                       ? Math.round((stats.wins / (stats.wins + stats.losses || 1)) * 100)
                       : 0
-                  }}<span class="text-3xl text-white/20">%</span>
+                  }}<span class="text-3xl text-app-text-muted opacity-20">%</span>
                 </p>
               </div>
             </div>
@@ -239,11 +240,11 @@ onMounted(async () => {
         <section class="space-y-8">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-4">
-              <h3 class="text-2xl font-black text-white tracking-tight uppercase italic">
+              <h3 class="text-2xl font-black text-app-text tracking-tight uppercase italic">
                 Chronicles<span class="text-indigo-500">.</span>
               </h3>
-              <div class="h-4 w-[1px] bg-white/10"></div>
-              <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20"
+              <div class="h-4 w-[1px] bg-glass-border"></div>
+              <span class="text-[10px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-20"
                 >{{ userGames.length }} Matches</span
               >
             </div>
@@ -251,17 +252,17 @@ onMounted(async () => {
 
           <div
             v-if="userGames.length === 0"
-            class="glass border-white/[0.05] rounded-[2.5rem] p-20 flex flex-col items-center text-center space-y-6"
+            class="glass border-glass-border rounded-[2.5rem] p-20 flex flex-col items-center text-center space-y-6"
           >
             <div
-              class="w-24 h-24 rounded-full glass border-white/5 flex items-center justify-center text-white/10"
+              class="w-24 h-24 rounded-full glass border-glass-border flex items-center justify-center text-app-text-muted opacity-10"
             >
               <i class="pi pi-table text-5xl"></i>
             </div>
             <div class="space-y-2">
-              <h4 class="text-xl font-black text-white">The board is silent.</h4>
+              <h4 class="text-xl font-black text-app-text">The board is silent.</h4>
               <p
-                class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em] max-w-xs leading-relaxed"
+                class="text-app-text-muted opacity-20 text-[10px] font-black uppercase tracking-[0.2em] max-w-xs leading-relaxed"
               >
                 Your tactical history is waiting to be written.
               </p>

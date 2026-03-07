@@ -38,13 +38,13 @@ const formatStatus = (status: GameStatus) => {
   <div class="flex items-center space-x-4">
     <button
       @click="emit('back')"
-      class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+      class="p-2 rounded-lg hover:bg-glass-white text-app-text-muted hover:text-app-text transition-colors"
     >
       <i class="pi pi-arrow-left"></i>
     </button>
     <div v-if="game" class="flex flex-col">
       <div class="flex items-center gap-2">
-        <span class="text-sm font-bold text-slate-100 flex items-center gap-1.5">
+        <span class="text-sm font-bold text-app-text flex items-center gap-1.5">
           <span class="marker-x text-xs">X</span>
           {{
             game.requestedOpponentId?.startsWith('AI_X')
@@ -56,7 +56,7 @@ const formatStatus = (status: GameStatus) => {
             class="text-[10px] mono text-indigo-400 font-black"
             >({{ xPlayer.rating }})</span
           >
-          <span class="mx-1 text-white/20 font-black text-[10px] uppercase">vs</span>
+          <span class="mx-1 text-app-text-muted opacity-20 font-black text-[10px] uppercase">vs</span>
           <span class="marker-o text-xs">O</span>
           {{
             game.requestedOpponentId?.startsWith('AI_O')

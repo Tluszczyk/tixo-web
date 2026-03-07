@@ -16,6 +16,7 @@ import {
   DataZoomComponent,
 } from 'echarts/components'
 import BaseAnalyticsChart from './BaseAnalyticsChart.vue'
+import { useThemeStore } from '@/stores/theme'
 
 // Register ECharts modules
 use([
@@ -40,6 +41,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['turn-select'])
+const themeStore = useThemeStore()
 
 interface GameAnalytics {
   gameId: string
@@ -84,6 +86,7 @@ const fetchAnalytics = async () => {
   loading.value = true
   error.value = null
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await tablesDB.listRows<any>({
       databaseId: 'tixo',
       tableId: 'game-analytics',
@@ -95,6 +98,7 @@ const fetchAnalytics = async () => {
     } else {
       error.value = 'No analytics data found for this game.'
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error('Fetch error:', err)
     error.value = 'Failed to load analysis.'
@@ -111,7 +115,6 @@ const evalOption = computed(() => {
   if (!analytics.value) return {}
 
   const rawProbs = analytics.value.winProbabilityX
-  const turns = rawProbs.map((_, i) => (i + 1).toString())
   const qualities = analytics.value.moveQualities
   const probabilities = rawProbs.map((p) => Math.round((p - 0.5) * 200))
 
@@ -126,87 +129,14 @@ const evalOption = computed(() => {
 
   return {
     backgroundColor: 'transparent',
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-      borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#fff' },
-      axisPointer: {
-        type: 'shadow',
-        shadowStyle: { color: 'rgba(255, 255, 255, 0.03)' }
-      },
-      formatter: (params: any) => {
-        const actualParam = params.find((p: any) => p.seriesName === 'Evaluation')
-        if (!actualParam) return ''
-        
-        const turn = actualParam.dataIndex
-        const pX = rawProbs[turn]
-        const quality = qualities[turn]
-
-        if (pX === undefined || quality === undefined) return ''
-
-        const player = turn % 2 === 0 ? 'X' : 'O'
-        const winProb = pX >= 0.5 ? `X ${Math.round(pX * 100)}%` : `O ${Math.round((1 - pX) * 100)}%`
-        const critical = criticalMoments.find((m) => m.turn === turn + 1)
-        const deltaHtml = critical
-          ? `<div class="text-indigo-400 font-black text-[10px] mt-1">∆ ${Math.round(critical.delta * 100)}% SHIFT</div>`
-          : ''
-
-        const qColor = qualityColors[quality] || '#fff'
-
-        const isCapture = analytics.value?.boardCaptureTurns?.includes(turn + 1)
-        const isFreeMove = analytics.value?.freeMoves?.includes(turn + 1)
-        
-        let eventsHtml = ''
-        if (isCapture) {
-          eventsHtml += `
-            <div class="text-amber-400 font-black text-[9px] mt-2 flex items-center gap-1.5 uppercase tracking-wider">
-              <i class="pi pi-shield text-[10px]"></i> Board Captured
-            </div>`
-        }
-        if (isFreeMove) {
-          eventsHtml += `
-            <div class="text-indigo-400 font-black text-[9px] mt-1 flex items-center gap-1.5 uppercase tracking-wider">
-              <i class="pi pi-bolt text-[10px]"></i> Free Move
-            </div>`
-        }
-
-        return `
-          <div class="p-2 min-w-[140px]">
-            <div class="flex justify-between items-center mb-2 gap-4">
-               <span class="text-[10px] text-white/40 uppercase font-black">Turn ${turn + 1} (${player})</span>
-               <span class="px-1.5 py-0.5 rounded text-[8px] uppercase font-black" style="background: ${qColor}33; color: ${qColor}">
-                ${quality}
-              </span>
-            </div>
-            <div class="text-xl font-black">${winProb}</div>
-            ${deltaHtml}
-            ${eventsHtml}
-          </div>
-        `
-      },
-    },
-    visualMap: {
-      show: false,
-      dimension: 1,
-      seriesIndex: 0,
-      pieces: [
-        { gt: 0, color: '#ef4444' },
-        { lte: 0, color: '#3b82f6' },
-      ],
-    },
+    tooltip: tooltipConfig.value,
     grid: { left: '5%', right: '5%', top: '5%', bottom: '5%', containLabel: true },
-    xAxis: {
-      type: 'category',
-      data: turns,
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
-      axisLabel: { color: 'rgba(255,255,255,0.3)', fontSize: 10 },
-    },
+    xAxis: xAxisConfig(evaluationScores.value.length || rawProbs.length),
     yAxis: {
       type: 'value',
       min: -100,
       max: 100,
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+      splitLine: { lineStyle: { color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } },
       axisLabel: {
         formatter: (val: number) => {
           if (val === 100) return 'X'
@@ -217,7 +147,7 @@ const evalOption = computed(() => {
         color: (val: number) => {
           if (val === 100) return '#ef4444'
           if (val === -100) return '#3b82f6'
-          return 'rgba(255,255,255,0.4)'
+          return themeStore.theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'
         },
         fontSize: 12,
         fontWeight: 'bold',
@@ -233,7 +163,7 @@ const evalOption = computed(() => {
         areaStyle: { opacity: 0.15 },
         emphasis: {
           focus: 'series',
-          itemStyle: { borderWidth: 2, borderColor: '#fff' },
+          itemStyle: { borderWidth: 2, borderColor: themeStore.theme === 'dark' ? '#fff' : '#000' },
         },
         symbol: 'none',
         markArea: {
@@ -241,7 +171,7 @@ const evalOption = computed(() => {
           data: [
             // Free moves highlights
             ...(analytics.value.freeMoves || []).map((turn) => [
-              { xAxis: turn.toString(), itemStyle: { color: 'rgba(255, 255, 255, 0.02)' } },
+              { xAxis: turn.toString(), itemStyle: { color: themeStore.theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)' } },
               { xAxis: turn.toString() },
             ]),
           ]
@@ -250,7 +180,7 @@ const evalOption = computed(() => {
           silent: true,
           symbol: 'none',
           label: { show: false },
-          lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.15)', width: 1 },
+          lineStyle: { type: 'dashed', color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)', width: 1 },
           data: (analytics.value.boardCaptureTurns || []).map((turn) => ({ xAxis: turn.toString() })),
         },
         markPoint: {
@@ -278,6 +208,7 @@ const evalOption = computed(() => {
             },
           }
         }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         symbolSize: (val: any, params: any) => (qualities[params.dataIndex] === 'blunder' ? 12 : 6),
       },
     ],
@@ -294,15 +225,10 @@ const timeOption = computed(() => {
   return {
     backgroundColor: 'transparent',
     tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-      borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#fff' },
-      axisPointer: {
-        type: 'shadow',
-        shadowStyle: { color: 'rgba(255, 255, 255, 0.03)' }
-      },
+      ...tooltipConfig.value,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       formatter: (params: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const actualParam = params.find((p: any) => p.seriesName === 'Time')
         if (!actualParam) return ''
         const turn = actualParam.dataIndex
@@ -329,7 +255,7 @@ const timeOption = computed(() => {
 
         return `
           <div class="p-2">
-            <div class="text-[10px] text-white/40 uppercase font-black mb-1">Turn ${turn + 1} (${player})</div>
+            <div class="text-[10px] text-white opacity-40 uppercase font-black mb-1">Turn ${turn + 1} (${player})</div>
             <div class="text-lg font-black text-indigo-400">${formatDuration(d)}</div>
             ${eventsHtml}
           </div>
@@ -340,18 +266,18 @@ const timeOption = computed(() => {
     xAxis: {
       type: 'category',
       data: turns,
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+      axisLine: { lineStyle: { color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
       axisLabel: { 
-        color: 'rgba(255,255,255,0.2)', 
+        color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', 
         fontSize: 8,
         interval: durations.length > 40 ? 4 : 1 
       }
     },
     yAxis: {
       type: 'value',
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.03)' } },
+      splitLine: { lineStyle: { color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' } },
       axisLabel: { 
-        color: 'rgba(255,255,255,0.2)', 
+        color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', 
         fontSize: 8,
         formatter: (val: number) => val >= 1000 ? `${(val/1000).toFixed(0)}s` : `${val}ms`
       },
@@ -374,7 +300,7 @@ const timeOption = computed(() => {
                   : 'rgba(96, 165, 250, 0.2)',
             borderRadius: [4, 4, 0, 0],
             borderWidth: i === props.selectedTurn ? 2 : 0,
-            borderColor: '#fff',
+            borderColor: themeStore.theme === 'dark' ? '#fff' : '#000',
           },
         })),
         emphasis: {
@@ -426,10 +352,10 @@ const summary = computed(() => {
   <div class="flex flex-col h-full">
     <div
       v-if="loading"
-      class="h-full flex flex-col items-center justify-center glass rounded-[2.5rem] border-white/5 py-20"
+      class="h-full flex flex-col items-center justify-center glass rounded-[2.5rem] border-glass-border py-20"
     >
       <i class="pi pi-spin pi-spinner text-5xl text-indigo-500 mb-6"></i>
-      <p class="text-xs font-black uppercase tracking-[0.3em] text-white/20">
+      <p class="text-xs font-black uppercase tracking-[0.3em] text-app-text-muted opacity-20">
         Synthesizing Tactical Data
       </p>
     </div>
@@ -448,15 +374,15 @@ const summary = computed(() => {
     >
       <!-- Top Banner: Match Result -->
       <div
-        class="glass border-white/5 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between overflow-hidden relative gap-6"
+        class="glass border-glass-border rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between overflow-hidden relative gap-6"
       >
         <div class="relative z-10 text-center sm:text-left">
           <h2
-            class="text-2xl sm:text-4xl font-black text-white uppercase italic tracking-tighter mb-1"
+            class="text-2xl sm:text-4xl font-black text-app-text uppercase italic tracking-tighter mb-1"
           >
             Match Concluded<span class="text-indigo-500">.</span>
           </h2>
-          <p class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
+          <p class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-app-text-muted opacity-30">
             Comprehensive Performance Analysis
           </p>
         </div>
@@ -464,10 +390,10 @@ const summary = computed(() => {
         <div class="flex items-center gap-6 sm:gap-8 relative z-10">
           <div class="flex flex-col items-center sm:items-end">
             <span
-              class="text-[9px] sm:text-[10px] font-black text-white/20 uppercase tracking-widest mb-1"
+              class="text-[9px] sm:text-[10px] font-black text-app-text-muted opacity-20 uppercase tracking-widest mb-1"
               >Victor</span
             >
-            <span class="text-xl sm:text-2xl font-black text-white uppercase">{{
+            <span class="text-xl sm:text-2xl font-black text-app-text uppercase">{{
               winner === 'D' ? 'Draw' : winner === 'None' ? 'Ongoing' : `Player ${winner}`
             }}</span>
           </div>
@@ -478,7 +404,7 @@ const summary = computed(() => {
                 ? 'bg-red-500 shadow-red-500/20 text-white'
                 : winner === 'O'
                   ? 'bg-blue-500 shadow-blue-500/20 text-white'
-                  : 'bg-slate-700 shadow-white/5 text-white/40',
+                  : 'bg-glass-white border border-glass-border text-app-text-muted opacity-40',
             ]"
           >
             <span v-if="winner === 'X'" class="marker-x !text-white">X</span>
@@ -494,7 +420,7 @@ const summary = computed(() => {
 
       <!-- Main Evaluation Chart - Full Width -->
       <div
-        class="glass border-white/5 rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-8 h-[400px] sm:h-[600px] shadow-inner"
+        class="glass border-glass-border rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-8 h-[400px] sm:h-[600px] shadow-inner"
       >
         <BaseAnalyticsChart 
           :option="evalOption" 
@@ -505,10 +431,10 @@ const summary = computed(() => {
 
       <!-- Temporal Delta - Full Width (Adjacent to Evaluation for alignment) -->
       <div
-        class="glass border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-6 h-48 sm:h-72 relative overflow-hidden"
+        class="glass border-glass-border rounded-[1.5rem] sm:rounded-[2rem] p-6 h-48 sm:h-72 relative overflow-hidden"
       >
         <div
-          class="absolute top-4 left-8 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 z-10 flex items-center gap-2"
+          class="absolute top-4 left-8 text-[10px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-20 z-10 flex items-center gap-2"
         >
           <i class="pi pi-clock text-indigo-500"></i>
           Temporal Delta per Move
@@ -521,9 +447,9 @@ const summary = computed(() => {
       </div>
 
       <!-- Tactical Breakdown - Full Width Comparison -->
-      <div class="glass border-white/5 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col shadow-2xl">
+      <div class="glass border-glass-border rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col shadow-2xl">
         <h4
-          class="text-[10px] sm:text-xs font-black text-white/40 uppercase tracking-[0.3em] border-b border-white/5 pb-4 sm:pb-6 mb-6 sm:mb-8 flex items-center gap-3"
+          class="text-[10px] sm:text-xs font-black text-app-text-muted opacity-40 uppercase tracking-[0.3em] border-b border-glass-border pb-4 sm:pb-6 mb-6 sm:mb-8 flex items-center gap-3"
         >
           <i class="pi pi-chart-bar text-indigo-500"></i>
           Tactical Breakdown
@@ -531,8 +457,8 @@ const summary = computed(() => {
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
           <div v-for="q in (['excellent', 'good', 'inaccuracy', 'blunder'] as const)" :key="q" 
-               class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.03] group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300">
-            <span class="text-[10px] font-black uppercase tracking-tight opacity-40 group-hover:opacity-100 transition-opacity block mb-4 border-b border-white/5 pb-2">{{ q }}</span>
+               class="p-5 rounded-2xl bg-app-text/5 border border-glass-border group hover:bg-app-text/10 transition-all duration-300">
+            <span class="text-[10px] font-black uppercase tracking-tight text-app-text-muted opacity-40 group-hover:opacity-100 transition-opacity block mb-4 border-b border-glass-border pb-2">{{ q }}</span>
             
             <div class="flex items-center justify-around gap-4">
               <div class="flex flex-col items-center">
@@ -546,7 +472,7 @@ const summary = computed(() => {
                 </span>
               </div>
               
-              <div class="h-8 w-[1px] bg-white/5"></div>
+              <div class="h-8 w-[1px] bg-glass-border"></div>
 
               <div class="flex flex-col items-center">
                 <span class="text-[8px] font-black text-blue-400 marker-o uppercase mb-1">O</span>
@@ -562,13 +488,13 @@ const summary = computed(() => {
           </div>
         </div>
 
-        <div class="mt-6 pt-6 border-t border-white/5">
+        <div class="mt-6 pt-6 border-t border-glass-border">
           <div
             class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-indigo-500/5 border border-indigo-500/10"
           >
             <i class="pi pi-info-circle text-indigo-400 mt-0.5"></i>
             <p
-              class="text-[8px] sm:text-[10px] leading-relaxed text-white/40 font-bold uppercase tracking-wide"
+              class="text-[8px] sm:text-[10px] leading-relaxed text-app-text-muted opacity-40 font-bold uppercase tracking-wide"
             >
               Critical Vectors (∆) are significant evaluation shifts identified by Tixo AI.
             </p>
@@ -577,10 +503,10 @@ const summary = computed(() => {
       </div>
 
       <div class="flex flex-col items-center gap-1 opacity-20 pb-4">
-        <span class="text-[8px] font-black text-white uppercase tracking-[0.3em]"
+        <span class="text-[8px] font-black text-app-text-muted uppercase tracking-[0.3em]"
           >Game Session Key</span
         >
-        <span class="text-[9px] mono text-white truncate max-w-full px-4">{{ gameId }}</span>
+        <span class="text-[9px] mono text-app-text-muted truncate max-w-full px-4">{{ gameId }}</span>
       </div>
     </div>
   </div>

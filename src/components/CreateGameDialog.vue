@@ -93,16 +93,16 @@ const handleCreate = async () => {
 <template>
   <div v-if="visible" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
     <!-- Overlay -->
-    <div @click="emit('close')" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
+    <div @click="emit('close')" class="absolute inset-0 bg-void/80 backdrop-blur-md"></div>
 
     <!-- Dialog -->
     <div
-      class="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300"
+      class="relative w-full max-w-md glass border-glass-border rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300"
     >
       <div class="p-8 space-y-8">
         <div class="text-center space-y-2">
-          <h3 class="text-3xl font-black text-white tracking-tight">New Match</h3>
-          <p class="text-slate-400">Choose your side to begin the battle.</p>
+          <h3 class="text-3xl font-black text-app-text tracking-tight">New Match</h3>
+          <p class="text-app-text-muted opacity-60">Choose your side to begin the battle.</p>
         </div>
 
         <!-- Symbol Selection -->
@@ -113,17 +113,17 @@ const handleCreate = async () => {
               'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
               selectedSymbol === 'X'
                 ? 'border-red-500 bg-red-500/10'
-                : 'border-slate-800 bg-slate-900 hover:border-slate-700',
+                : 'border-glass-border bg-glass-white hover:border-app-text/20',
             ]"
           >
             <span
               class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
-              :class="selectedSymbol === 'X' ? 'text-red-500' : 'text-slate-700'"
+              :class="selectedSymbol === 'X' ? 'text-red-500' : 'text-app-text-muted opacity-20'"
               >X</span
             >
             <span
               class="text-xs font-bold uppercase tracking-widest"
-              :class="selectedSymbol === 'X' ? 'text-red-400' : 'text-slate-500'"
+              :class="selectedSymbol === 'X' ? 'text-red-400' : 'text-app-text-muted opacity-40'"
               >Player 1</span
             >
 
@@ -141,17 +141,17 @@ const handleCreate = async () => {
               'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
               selectedSymbol === 'O'
                 ? 'border-blue-500 bg-blue-500/10'
-                : 'border-slate-800 bg-slate-900 hover:border-slate-700',
+                : 'border-glass-border bg-glass-white hover:border-app-text/20',
             ]"
           >
             <span
               class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
-              :class="selectedSymbol === 'O' ? 'text-blue-500' : 'text-slate-700'"
+              :class="selectedSymbol === 'O' ? 'text-blue-500' : 'text-app-text-muted opacity-20'"
               >O</span
             >
             <span
               class="text-xs font-bold uppercase tracking-widest"
-              :class="selectedSymbol === 'O' ? 'text-blue-400' : 'text-slate-500'"
+              :class="selectedSymbol === 'O' ? 'text-blue-400' : 'text-app-text-muted opacity-40'"
               >Player 2</span
             >
 
@@ -166,7 +166,7 @@ const handleCreate = async () => {
 
         <!-- Game Mode Selection -->
         <div class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-40 block"
             >Game Mode</label
           >
           <div class="grid grid-cols-1 gap-3">
@@ -176,7 +176,7 @@ const handleCreate = async () => {
               :class="
                 gameMode === 'ONLINE'
                   ? 'border-blue-500/50 bg-blue-500/10'
-                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
               "
             >
               <div
@@ -184,7 +184,7 @@ const handleCreate = async () => {
                 :class="
                   gameMode === 'ONLINE'
                     ? 'bg-blue-500/20 text-blue-500'
-                    : 'bg-slate-800 text-slate-500'
+                    : 'bg-app-text/10 text-app-text-muted opacity-40'
                 "
               >
                 <i class="pi pi-globe text-xl"></i>
@@ -192,11 +192,11 @@ const handleCreate = async () => {
               <div>
                 <p
                   class="font-bold text-sm"
-                  :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-slate-300'"
+                  :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-app-text'"
                 >
                   Online Multiplayer
                 </p>
-                <p class="text-xs text-slate-500">Play against someone else</p>
+                <p class="text-xs text-app-text-muted opacity-40">Play against someone else</p>
               </div>
             </button>
 
@@ -206,7 +206,7 @@ const handleCreate = async () => {
               :class="
                 gameMode === 'AI'
                   ? 'border-purple-500/50 bg-purple-500/10'
-                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
               "
             >
               <div
@@ -214,7 +214,7 @@ const handleCreate = async () => {
                 :class="
                   gameMode === 'AI'
                     ? 'bg-purple-500/20 text-purple-500'
-                    : 'bg-slate-800 text-slate-500'
+                    : 'bg-app-text/10 text-app-text-muted opacity-40'
                 "
               >
                 <i class="pi pi-android text-xl"></i>
@@ -222,11 +222,11 @@ const handleCreate = async () => {
               <div>
                 <p
                   class="font-bold text-sm"
-                  :class="gameMode === 'AI' ? 'text-purple-500' : 'text-slate-300'"
+                  :class="gameMode === 'AI' ? 'text-purple-500' : 'text-app-text'"
                 >
                   Play vs AI
                 </p>
-                <p class="text-xs text-slate-500">Challenge the model</p>
+                <p class="text-xs text-app-text-muted opacity-40">Challenge the model</p>
               </div>
             </button>
 
@@ -236,7 +236,7 @@ const handleCreate = async () => {
               :class="
                 gameMode === 'LOCAL'
                   ? 'border-amber-500/50 bg-amber-500/10'
-                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
               "
             >
               <div
@@ -244,7 +244,7 @@ const handleCreate = async () => {
                 :class="
                   gameMode === 'LOCAL'
                     ? 'bg-amber-500/20 text-amber-500'
-                    : 'bg-slate-800 text-slate-500'
+                    : 'bg-app-text/10 text-app-text-muted opacity-40'
                 "
               >
                 <i class="pi pi-mobile text-xl"></i>
@@ -252,11 +252,11 @@ const handleCreate = async () => {
               <div>
                 <p
                   class="font-bold text-sm"
-                  :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-slate-300'"
+                  :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-app-text'"
                 >
                   Pass & Play
                 </p>
-                <p class="text-xs text-slate-500">Two players, one device</p>
+                <p class="text-xs text-app-text-muted opacity-40">Two players, one device</p>
               </div>
             </button>
           </div>
@@ -264,7 +264,7 @@ const handleCreate = async () => {
 
         <!-- AI Bot Selection -->
         <div v-if="gameMode === 'AI'" class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-40 block"
             >Select Opponent AI</label
           >
           <div v-if="loadingBots" class="flex justify-center py-4">
@@ -282,7 +282,7 @@ const handleCreate = async () => {
               :class="
                 selectedBotId === bot.$id
                   ? 'border-purple-500/50 bg-purple-500/10'
-                  : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
               "
             >
               <div class="flex items-center space-x-3">
@@ -291,7 +291,7 @@ const handleCreate = async () => {
                   :class="
                     selectedBotId === bot.$id
                       ? 'bg-purple-500/20 text-purple-500'
-                      : 'bg-slate-800 text-slate-500'
+                      : 'bg-app-text/10 text-app-text-muted opacity-40'
                   "
                 >
                   <i class="pi pi-android text-sm"></i>
@@ -299,41 +299,41 @@ const handleCreate = async () => {
                 <div>
                   <p
                     class="font-bold text-xs"
-                    :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-slate-300'"
+                    :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-app-text'"
                   >
                     {{ bot.name }}
                   </p>
-                  <p class="text-[10px] text-slate-500 capitalize">
+                  <p class="text-[10px] text-app-text-muted opacity-40 capitalize">
                     {{ bot.prefs?.modelName?.toLowerCase() || 'Heuristic' }} AI
                   </p>
                 </div>
               </div>
               <div class="text-right">
                 <p class="text-[10px] font-black text-purple-500">{{ bot.rating || 1500 }}</p>
-                <p class="text-[8px] text-slate-600 uppercase tracking-tighter">Rating</p>
+                <p class="text-[8px] text-app-text-muted opacity-40 uppercase tracking-tighter">Rating</p>
               </div>
             </button>
           </div>
-          <div v-else class="text-center py-4 text-slate-500 text-xs">No AI bots available.</div>
+          <div v-else class="text-center py-4 text-app-text-muted opacity-40 text-xs">No AI bots available.</div>
         </div>
 
         <!-- Opponent Selection -->
         <div v-if="gameMode === 'ONLINE'" class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block"
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-40 block"
             >Invite Opponent (Optional)</label
           >
           <div class="relative group">
             <i
-              class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors"
+              class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted opacity-40 group-focus-within:text-blue-500 transition-colors"
             ></i>
             <input
               v-model="requestedOpponentId"
               type="text"
               placeholder="Enter User ID"
-              class="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white text-sm font-bold placeholder:text-slate-700 focus:border-blue-500 outline-none transition-all"
+              class="w-full bg-void border-2 border-glass-border rounded-2xl py-4 pl-12 pr-4 text-app-text text-sm font-bold placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:border-blue-500 outline-none transition-all"
             />
           </div>
-          <p class="text-[9px] text-slate-600 font-medium">
+          <p class="text-[9px] text-app-text-muted opacity-40 font-medium">
             Only the specified user will be able to join this match.
           </p>
         </div>
@@ -349,7 +349,7 @@ const handleCreate = async () => {
           <button
             @click="handleCreate"
             :disabled="loading"
-            class="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
+            class="w-full py-4 rounded-2xl bg-app-text text-void font-bold hover:opacity-90 transition-all shadow-xl disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             <i v-if="loading" class="pi pi-spin pi-spinner"></i>
             <span>{{ loading ? 'Creating Match...' : 'Create Match' }}</span>
@@ -358,7 +358,7 @@ const handleCreate = async () => {
           <button
             @click="emit('close')"
             :disabled="loading"
-            class="w-full py-4 rounded-2xl bg-slate-800 border border-slate-700 text-slate-400 font-bold hover:bg-slate-700 hover:text-white transition-all active:scale-[0.98]"
+            class="w-full py-4 rounded-2xl bg-glass-white border border-glass-border text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all active:scale-[0.98]"
           >
             Cancel
           </button>

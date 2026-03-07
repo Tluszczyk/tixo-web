@@ -25,10 +25,10 @@ const emit = defineEmits<{
   >
     <div
       v-if="show"
-      class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+      class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-void/80 backdrop-blur-sm"
     >
       <div
-        class="relative w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl"
+        class="relative w-full max-w-sm glass border-glass-border rounded-3xl p-6 shadow-2xl"
       >
         <div class="flex flex-col items-center text-center space-y-4">
           <div
@@ -37,10 +37,10 @@ const emit = defineEmits<{
             <i class="pi pi-exclamation-triangle text-2xl"></i>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-white">
+            <h3 class="text-xl font-bold text-app-text">
               {{ (game?.moveHistory || []).length < 2 ? 'Cancel Match?' : 'Abandon Match?' }}
             </h3>
-            <p class="text-sm text-slate-400 mt-1">
+            <p class="text-sm text-app-text-muted opacity-60 mt-1">
               {{
                 (game?.moveHistory || []).length < 2 ||
                 game?.status === GameStatus.WAITING_FOR_OPPONENT
@@ -53,7 +53,7 @@ const emit = defineEmits<{
             <button
               @click="emit('close')"
               :disabled="abandoning"
-              class="py-3 rounded-xl bg-slate-800 text-slate-200 font-bold hover:bg-slate-700 transition-all"
+              class="py-3 rounded-xl bg-glass-white text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all border border-glass-border"
             >
               No, stay
             </button>

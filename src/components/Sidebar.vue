@@ -1,14 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { auth } from '@/api/authentication'
 
 const router = useRouter()
 const route = useRoute()
-const isExpanded = ref(false)
+const isExpanded = ref(window.innerWidth < 1024)
 
-const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value
+const updateDefaultExpanded = () => {
+  if (window.innerWidth < 1024) {
+    isExpanded.value = true
+  } else {
+    isExpanded.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateDefaultExpanded)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateDefaultExpanded)
+})
+
+const handleMouseEnter = () => {
+  if (window.innerWidth >= 1024) {
+    isExpanded.value = true
+  }
+}
+
+const handleMouseLeave = () => {
+  if (window.innerWidth >= 1024) {
+    isExpanded.value = false
+  }
 }
 
 const menuItems = [
@@ -35,8 +59,10 @@ const handleLogout = async () => {
 
 <template>
   <aside
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
     :class="[
-      'h-full bg-[#050608] border-r border-white/10 flex flex-col py-8 transition-all duration-500 ease-in-out relative z-60',
+      'h-full bg-sidebar border-r border-glass-border flex flex-col py-8 transition-all duration-500 ease-in-out relative z-60',
       isExpanded ? 'w-64 px-6' : 'w-24 px-4 items-center',
     ]"
   >
@@ -48,7 +74,7 @@ const handleLogout = async () => {
     >
       <div
         @click="navigateTo('/')"
-        class="text-2xl font-black tracking-tighter uppercase italic text-white flex items-center gap-2 cursor-pointer transition-all duration-500 overflow-hidden"
+        class="text-2xl font-black tracking-tighter uppercase italic text-app-text flex items-center gap-2 cursor-pointer transition-all duration-500 overflow-hidden"
       >
         <span class="shrink-0"
           >T<span
@@ -69,14 +95,6 @@ const handleLogout = async () => {
           IXO<span class="text-indigo-500">.</span>
         </span>
       </div>
-
-      <button
-        @click="toggleExpand"
-        class="p-2 rounded-xl glass border-white/5 text-white/40 hover:text-white hover:border-indigo-500/30 transition-all ml-2"
-        :title="isExpanded ? 'Collapse' : 'Expand'"
-      >
-        <i :class="['pi text-xs', isExpanded ? 'pi-angle-double-left' : 'pi-bars']"></i>
-      </button>
     </div>
 
     <!-- Main Navigation -->
@@ -90,7 +108,7 @@ const handleLogout = async () => {
           isExpanded ? 'px-4 h-12 gap-4 w-full' : 'w-14 h-14 justify-center',
           route.path === item.route
             ? 'border-indigo-500/60 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
-            : 'border-white/10 hover:border-white/30 hover:bg-white/10',
+            : 'border-glass-border hover:border-indigo-500/30 hover:bg-glass-white',
         ]"
       >
         <div
@@ -102,7 +120,7 @@ const handleLogout = async () => {
             item.icon,
             'text-lg transition-all duration-500 shrink-0',
             isExpanded ? '' : 'group-hover:scale-110',
-            route.path === item.route ? 'text-indigo-400' : 'text-slate-400 group-hover:text-white',
+            route.path === item.route ? 'text-indigo-400' : 'text-app-text-muted group-hover:text-app-text',
           ]"
         ></i>
 
@@ -127,7 +145,7 @@ const handleLogout = async () => {
     </nav>
 
     <!-- Secondary Navigation -->
-    <div class="mt-auto pt-8 border-t border-white/5 flex flex-col gap-4 w-full">
+    <div class="mt-auto pt-8 border-t border-glass-border flex flex-col gap-4 w-full">
       <button
         v-for="item in secondaryItems"
         :key="item.label"
@@ -137,7 +155,7 @@ const handleLogout = async () => {
           isExpanded ? 'px-4 h-10 gap-4 w-full' : 'w-14 h-10 justify-center',
           route.path === item.route
             ? 'border-indigo-500/60 bg-indigo-500/10'
-            : 'border-white/10 hover:border-white/30 hover:bg-white/10',
+            : 'border-glass-border hover:border-indigo-500/30 hover:bg-glass-white',
         ]"
       >
         <i
@@ -145,7 +163,7 @@ const handleLogout = async () => {
             item.icon,
             'text-sm transition-all duration-500 shrink-0',
             isExpanded ? '' : 'group-hover:scale-110',
-            route.path === item.route ? 'text-indigo-400' : 'text-slate-400 group-hover:text-white',
+            route.path === item.route ? 'text-indigo-400' : 'text-app-text-muted group-hover:text-app-text',
           ]"
         ></i>
 
@@ -162,7 +180,7 @@ const handleLogout = async () => {
         <!-- Tooltip -->
         <span
           v-if="!isExpanded"
-          class="absolute left-full ml-4 px-3 py-1.5 rounded-lg bg-slate-800 text-[10px] font-black uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2.5 group-hover:translate-x-0 pointer-events-none whitespace-nowrap z-50 shadow-xl shadow-black/50"
+          class="absolute left-full ml-4 px-3 py-1.5 rounded-lg bg-sidebar text-[10px] font-black uppercase tracking-widest text-app-text opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2.5 group-hover:translate-x-0 pointer-events-none whitespace-nowrap z-50 shadow-xl"
         >
           {{ item.label }}
         </span>
@@ -184,6 +202,7 @@ const handleLogout = async () => {
             'text-[9px] font-bold uppercase tracking-widest overflow-hidden whitespace-nowrap transition-all duration-500',
             isExpanded ? 'opacity-100 max-w-24' : 'opacity-0 max-w-0',
             isExpanded ? 'delay-300' : '',
+            'text-app-text-muted group-hover:text-red-500',
           ]"
         >
           Disconnect
@@ -192,7 +211,5 @@ const handleLogout = async () => {
     </div>
   </aside>
 </template>
-
-<style scoped></style>
 
 <style scoped></style>
