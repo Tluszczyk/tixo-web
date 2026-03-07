@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import GameList from '@/components/GameList/GameList.vue'
 import Board from '@/components/Board.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
-import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import { games } from '@/api/games'
-import { auth } from '@/api/authentication'
 import { GameStatus } from '@/api/dto/GameStatus'
 
+const authStore = useAuthStore()
 const router = useRouter()
 const showCreateDialog = ref(false)
 const featuredBoard = ref('.........'.repeat(9))
@@ -21,13 +21,17 @@ const isMyTurn = ref(false)
 
 onMounted(async () => {
   try {
-    const [allGames, currentUser] = await Promise.all([games.listGames(), auth.getCurrentUser()])
+    if (!authStore.user) {
+      await authStore.checkAuth()
+    }
+
+    const allGames = await games.listGames()
 
     if (allGames.length > 0) {
       // 1. Game that awaits your move
       let featured = allGames.find(
         (g) =>
-          g.status === GameStatus.IN_PROGRESS && currentUser && g.nextPlayerId === currentUser.$id,
+          g.status === GameStatus.IN_PROGRESS && authStore.user && g.nextPlayerId === authStore.user.$id,
       )
 
       if (featured) {
@@ -60,6 +64,14 @@ onMounted(async () => {
   }
 })
 
+const handleInitiateMatch = () => {
+  if (authStore.isLoggedIn) {
+    showCreateDialog.value = true
+  } else {
+    authStore.openLoginModal('/')
+  }
+}
+
 const goToFeatured = () => {
   if (latestGameId.value) {
     router.push(`/game/${latestGameId.value}`)
@@ -68,7 +80,7 @@ const goToFeatured = () => {
 </script>
 
 <template>
-  <AuthenticatedView>
+  <div class="contents">
     <DashboardLayout>
       <template #header-left>
         <div class="flex items-center gap-4">
@@ -116,7 +128,7 @@ const goToFeatured = () => {
 
             <div class="flex items-center gap-6 pt-4">
               <button
-                @click="showCreateDialog = true"
+                @click="handleInitiateMatch"
                 class="px-10 py-4 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
               >
                 Initiate Match
@@ -164,9 +176,28 @@ const goToFeatured = () => {
           </div>
           <GameList />
         </section>
+
+        <!-- Guest Call to Action -->
+        <section v-if="!authStore.isLoggedIn" class="py-16 flex flex-col items-center justify-center glass border-glass-border rounded-[2.5rem] border-dashed bg-indigo-500/[0.02]">
+          <div class="flex flex-col items-center text-center space-y-6">
+            <div class="w-16 h-16 rounded-2xl glass border-indigo-500/20 flex items-center justify-center text-indigo-500/40">
+              <i class="pi pi-shield text-2xl"></i>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-black text-app-text uppercase italic">Elevate Your Command</h3>
+              <p class="text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-widest">Authorize to track your personal progress and engage in new operations</p>
+            </div>
+            <button
+              @click="authStore.openLoginModal('/')"
+              class="px-10 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-95"
+            >
+              Authorize Protocol
+            </button>
+          </div>
+        </section>
       </div>
 
       <CreateGameDialog :visible="showCreateDialog" @close="showCreateDialog = false" />
     </DashboardLayout>
-  </AuthenticatedView>
+  </div>
 </template>

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { users, type User } from '@/api/users'
 import { games } from '@/api/games'
+import { useAuthStore } from '@/stores/auth'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import AuthenticatedView from '@/views/AuthenticatedView.vue'
 
+const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 const userList = ref<User[]>([])
 const searchId = ref('')
 const isLoading = ref(false)
@@ -25,6 +27,10 @@ const fetchUsers = async () => {
 
 const requestGame = async (targetUserId: string) => {
   if (requestingGame.value) return
+  if (!authStore.isLoggedIn) {
+    authStore.openLoginModal(route.fullPath)
+    return
+  }
   requestingGame.value = targetUserId
   try {
     const gameId = await games.createGame('X', false, targetUserId)
@@ -48,7 +54,7 @@ const onSearch = () => {
 </script>
 
 <template>
-  <AuthenticatedView>
+  <div class="contents">
     <DashboardLayout>
       <template #header-left>
         <div class="flex items-center gap-4">
@@ -217,7 +223,7 @@ const onSearch = () => {
         </section>
       </div>
     </DashboardLayout>
-  </AuthenticatedView>
+  </div>
 </template>
 
 <style scoped>

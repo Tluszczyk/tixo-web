@@ -2,7 +2,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import GameListItem from '@/components/GameList/GameListItem.vue'
 import { auth } from '@/api/authentication'
 import { games } from '@/api/games'
@@ -74,7 +73,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AuthenticatedView>
+  <div class="contents">
     <DashboardLayout>
       <template #header-left>
         <div class="flex items-center gap-4">
@@ -286,5 +285,5 @@ onMounted(async () => {
         </section>
       </div>
     </DashboardLayout>
-  </AuthenticatedView>
+  </div>
 </template>

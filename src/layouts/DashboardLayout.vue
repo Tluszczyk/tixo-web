@@ -2,19 +2,20 @@
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Sidebar from '@/components/Sidebar.vue'
-import { auth } from '@/api/authentication'
+import { useAuthStore } from '@/stores/auth'
 import { notifications } from '@/api/notifications'
 import { realtime } from '@/api/appwriteClient'
 import type { Notification } from '@/api/dto/Notification'
 import { useThemeStore } from '@/stores/theme'
 
+const authStore = useAuthStore()
 const isSidebarOpen = ref(false)
 const showNotifications = ref(false)
 const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 
-const userName = ref('Player')
+const userName = computed(() => authStore.user?.name || 'Player')
 const notificationList = ref<Notification[]>([])
 const newNotification = ref<Notification | null>(null)
 const popUpTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -98,10 +99,42 @@ const handleProfileClick = () => {
 
 onMounted(async () => {
   try {
-    const user = await auth.getCurrentUser()
-    if (user) {
-      userName.value = user.name || 'Player'
+    if (!authStore.user) {
+      await authStore.checkAuth()
+    }
+
+    if (authStore.user) {
       await fetchNotifications()
+
+      // Step 4: Implement the Login Handoff (Sync to Appwrite)
+      const guestGameDataStr = localStorage.getItem('guestGameData')
+      if (guestGameDataStr && authStore.user.email) {
+        try {
+          const guestGameData = JSON.parse(guestGameDataStr)
+          const { tablesDB, ID } = await import('@/api/appwriteClient')
+          
+          // Remove ID from guestGameData to let Appwrite generate a new one if needed, 
+          // or keep it if it's the gameId. 
+          // Actually, we want to create a NEW row in game-analytics table.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { $id, $createdAt, $updatedAt, $permissions, $databaseId, $collectionId, ...dataToSync } = guestGameData
+          
+          const newRow = await tablesDB.createRow({
+            databaseId: 'tixo',
+            tableId: 'game-analytics',
+            rowId: ID.unique(),
+            data: dataToSync,
+          })
+
+          if (newRow) {
+            localStorage.removeItem('guestGameData')
+            // Redirect to analysis
+            router.push(`/analysis/${dataToSync.gameId}`)
+          }
+        } catch (syncError) {
+          console.error('Failed to sync guest game data', syncError)
+        }
+      }
 
       subscription = await realtime.subscribe(
         ['databases.tixo.collections.in-app-notifications.documents'],

@@ -3,16 +3,14 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { realtime } from '@/api/appwriteClient'
 import { games } from '@/api/games'
-import { auth } from '@/api/authentication'
+import { useAuthStore } from '@/stores/auth'
 import { users, type User } from '@/api/users'
 import type { Game } from '@/api/dto/Game'
 import { GameStatus } from '@/api/dto/GameStatus'
 import Board from '@/components/Board.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import AuthenticatedView from '@/views/AuthenticatedView.vue'
 import GameAnalyticsDashboard from '@/components/GameAnalytics/GameAnalyticsDashboard.vue'
-import type { Models } from 'appwrite'
 import { Player, AI_MODELS, getBestMove } from '@/utils/engine'
 import {
   coordToIndex,
@@ -33,10 +31,10 @@ type RealtimeSubscription = {
   close: () => Promise<void>
 }
 
+const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const game = ref<Game | null>(null)
-const currentUser = ref<Models.User<Models.Preferences> | null>(null)
 const xPlayer = ref<User | null>(null)
 const oPlayer = ref<User | null>(null)
 const loading = ref(true)
@@ -53,6 +51,10 @@ const showAnalytics = ref(false)
 
 const triggerAnalysis = async () => {
   if (!game.value || game.value.status !== GameStatus.FINISHED) return
+  if (!authStore.isLoggedIn) {
+    authStore.openLoginModal(route.fullPath)
+    return
+  }
   isAnalyzing.value = true
   try {
     const success = await games.analyzeGame(game.value.$id)
@@ -141,7 +143,16 @@ const fetchGame = async () => {
   loading.value = true
   const gameId = route.params.id as string
   try {
-    const [gameData, userData] = await Promise.all([games.getGame(gameId), auth.getCurrentUser()])
+    if (!authStore.user) {
+      await authStore.checkAuth()
+    }
+    
+    if (!gameId) {
+      loading.value = false
+      return
+    }
+
+    const gameData = await games.getGame(gameId)
 
     if (gameData) {
       game.value = gameData
@@ -153,8 +164,6 @@ const fetchGame = async () => {
     } else {
       console.error('Game not found')
     }
-
-    currentUser.value = userData
   } catch (error) {
     console.error('Failed to fetch game or user:', error)
   } finally {
@@ -162,8 +171,44 @@ const fetchGame = async () => {
   }
 }
 
+const isGuest = computed(() => {
+  return !authStore.isLoggedIn
+})
+
+const handleGameEnd = async () => {
+  if (!game.value) return
+  
+  if (isGuest.value) {
+    try {
+      if (!game.value.isAnalyzed) {
+        await games.analyzeGame(game.value.$id)
+      }
+      
+      const { tablesDB } = await import('@/api/appwriteClient')
+      const { Query } = await import('appwrite')
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await tablesDB.listRows<any>({
+        databaseId: 'tixo',
+        tableId: 'game-analytics',
+        queries: [Query.equal('gameId', game.value.$id)],
+      })
+
+      if (response.total > 0) {
+        localStorage.setItem('guestGameData', JSON.stringify(response.rows[0]))
+      }
+    } catch (e) {
+      console.error('Failed to save guest game data', e)
+    }
+  }
+}
+
 const joinMatch = async () => {
   if (!game.value || joining.value) return
+  if (!authStore.isLoggedIn) {
+    authStore.openLoginModal(route.fullPath)
+    return
+  }
   joining.value = true
   try {
     const success = await games.joinGame(game.value.$id)
@@ -178,19 +223,19 @@ const joinMatch = async () => {
 }
 
 const isPlayerInGame = computed(() => {
-  if (!game.value || !currentUser.value) return false
-  if (game.value.isOnDevice) return game.value.creatorId === currentUser.value.$id
+  if (!game.value || !authStore.user) return false
+  if (game.value.isOnDevice) return game.value.creatorId === authStore.user.$id
   return (
-    game.value.xPlayerId === currentUser.value.$id || game.value.oPlayerId === currentUser.value.$id
+    game.value.xPlayerId === authStore.user.$id || game.value.oPlayerId === authStore.user.$id
   )
 })
 
 const isMyTurn = computed(() => {
-  if (!game.value || !currentUser.value || game.value.status !== GameStatus.IN_PROGRESS)
+  if (!game.value || !authStore.user || game.value.status !== GameStatus.IN_PROGRESS)
     return false
   if (isAITurn.value) return false
-  if (game.value.isOnDevice) return game.value.creatorId === currentUser.value.$id
-  return game.value.nextPlayerId === currentUser.value.$id
+  if (game.value.isOnDevice) return game.value.creatorId === authStore.user.$id
+  return game.value.nextPlayerId === authStore.user.$id
 })
 
 const currentPlayer = computed(() => {
@@ -242,6 +287,7 @@ const makeAIMove = async () => {
     await fetchGame()
     if (result?.status === GameStatus.FINISHED || result?.status === GameStatus.CANCELLED) {
       showGameOverModal.value = true
+      await handleGameEnd()
     }
   }
   isAILoading.value = false
@@ -270,6 +316,10 @@ const displayBoard = computed(() => {
 
 const handleCellClick = (index: number) => {
   if (game.value?.status !== GameStatus.IN_PROGRESS) return
+  if (isGuest.value) {
+    authStore.openLoginModal(route.fullPath)
+    return
+  }
   if (!isPlayerInGame.value) return
   if (!isMyTurn.value) return
 
@@ -294,6 +344,7 @@ const submitMove = () => {
       fetchGame().then(() => {
         if (result.status === GameStatus.FINISHED || result.status === GameStatus.CANCELLED) {
           showGameOverModal.value = true
+          handleGameEnd()
         }
       })
     }
@@ -302,8 +353,38 @@ const submitMove = () => {
 
 onMounted(fetchGame)
 
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    fetchGame()
+    // Re-subscribe if needed
+    if (subscription) subscription.close()
+    realtime.subscribe(
+      [`databases.tixo.collections.games.documents.${newId}`],
+      (response) => {
+        if (response.events.some((e) => e.includes('.update') || e.includes('.patch'))) {
+          const oldStatus = game.value?.status
+          const newGame = response.payload as Game
+          game.value = newGame
+          fetchPlayers()
+
+          if (
+            (newGame.status === GameStatus.FINISHED || newGame.status === GameStatus.CANCELLED) &&
+            oldStatus &&
+            oldStatus !== GameStatus.FINISHED &&
+            oldStatus !== GameStatus.CANCELLED
+          ) {
+            showGameOverModal.value = true
+          }
+        }
+      },
+    ).then(s => subscription = s)
+  }
+})
+
 onMounted(async () => {
   const gameId = route.params.id as string
+  if (!gameId) return
+  
   subscription = await realtime.subscribe(
     [`databases.tixo.collections.games.documents.${gameId}`],
     (response) => {
@@ -327,11 +408,11 @@ onMounted(async () => {
 })
 
 const matchResult = computed(() => {
-  if (!game.value || !currentUser.value) return ''
+  if (!game.value || !authStore.user) return ''
   if (game.value.status === GameStatus.CANCELLED) return 'CANCELLED'
   if (game.value.winner === 'None') return ''
   if (game.value.winner === 'D') return 'DRAW'
-  const userSymbol = game.value.xPlayerId === currentUser.value.$id ? 'X' : 'O'
+  const userSymbol = game.value.xPlayerId === authStore.user.$id ? 'X' : 'O'
   return game.value.winner === userSymbol ? 'WIN' : 'LOSS'
 })
 
@@ -345,7 +426,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <AuthenticatedView>
+  <div class="contents">
     <DashboardLayout>
       <template #header-left>
         <GameHeader :game="game" :x-player="xPlayer" :o-player="oPlayer" @back="goBack" />
@@ -432,9 +513,29 @@ const goBack = () => {
           <!-- Analytics Container (Desktop Right) -->
           <div 
             v-if="game.status === GameStatus.FINISHED"
-            class="hidden lg:flex flex-col w-[800px] shrink-0 transition-all duration-1000 ease-out p-4"
-            :class="game.status === GameStatus.FINISHED ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20 pointer-events-none absolute right-0'"
+            class="hidden lg:flex flex-col w-[800px] shrink-0 transition-all duration-1000 ease-out p-4 relative"
           >
+            <div 
+              v-if="isGuest"
+              class="absolute inset-0 z-50 flex items-center justify-center p-8 bg-void/20 backdrop-blur-sm"
+            >
+              <div class="glass p-12 rounded-[3rem] border-indigo-500/30 flex flex-col items-center text-center space-y-8 shadow-2xl">
+                <div class="w-20 h-20 rounded-3xl glass flex items-center justify-center border-indigo-500/20 text-indigo-500">
+                  <i class="pi pi-lock text-3xl"></i>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="text-2xl font-black text-app-text uppercase italic">Intelligence Locked</h4>
+                  <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Log in to unlock full move analysis</p>
+                </div>
+                <button
+                  @click="authStore.openLoginModal(route.fullPath)"
+                  class="px-10 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-[0.98]"
+                >
+                  Authorize to Unlock
+                </button>
+              </div>
+            </div>
+
             <Transition
               enter-active-class="transition duration-1000 ease-out delay-500"
               enter-from-class="opacity-0 scale-95 translate-y-10"
@@ -484,7 +585,7 @@ const goBack = () => {
                   Conducting Tactical AI Analysis...
                 </p>
               </div>
-              <div v-else-if="showAnalytics" class="h-full">
+              <div v-else-if="showAnalytics || isGuest" class="h-full" :class="{ 'blur-md': isGuest }">
                                   <GameAnalyticsDashboard 
                                     :game-id="game.$id" 
                                     :winner="game.winner" 
@@ -501,10 +602,25 @@ const goBack = () => {
           enter-from-class="opacity-0 translate-y-20"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div v-if="game.status === GameStatus.FINISHED && game" class="lg:hidden mt-8 px-4 pb-12">
+          <div v-if="game.status === GameStatus.FINISHED && game" class="lg:hidden mt-8 px-4 pb-12 relative">
             <h3 class="text-xl font-black text-app-text uppercase italic mb-6">
               Tactical Analysis<span class="text-indigo-500">.</span>
             </h3>
+
+            <div 
+              v-if="isGuest"
+              class="absolute inset-0 z-50 flex items-center justify-center p-8 bg-void/20 backdrop-blur-sm"
+            >
+              <div class="glass p-8 rounded-[2rem] border-indigo-500/30 flex flex-col items-center text-center space-y-6 shadow-2xl">
+                <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Log in to unlock full move analysis</p>
+                <button
+                  @click="authStore.openLoginModal(route.fullPath)"
+                  class="px-8 py-3 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl"
+                >
+                  Authorize to Unlock
+                </button>
+              </div>
+            </div>
 
             <Transition
               enter-active-class="transition duration-1000 ease-out"
@@ -536,7 +652,7 @@ const goBack = () => {
                 Calculating Probabilities...
               </p>
             </div>
-            <div v-else-if="showAnalytics">
+            <div v-else-if="showAnalytics || isGuest" :class="{ 'blur-md pointer-events-none': isGuest }">
                                 <GameAnalyticsDashboard 
                                   :game-id="game.$id" 
                                   :winner="game.winner" 
@@ -567,7 +683,7 @@ const goBack = () => {
 
       <CreateGameDialog :visible="showCreateGameDialog" @close="showCreateGameDialog = false" />
     </DashboardLayout>
-  </AuthenticatedView>
+  </div>
 </template>
 
 <style scoped>

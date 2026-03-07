@@ -153,10 +153,12 @@ class AuthService {
   /**
    * Initiates Google OAuth2 login.
    */
-  async loginWithGoogle(): Promise<void> {
+  async loginWithGoogle(redirect?: string): Promise<void> {
+    const successUrl = redirect ? `${window.location.origin}/#${redirect}` : `${window.location.origin}/`
+    // Note: Project uses hash history, so we need to include # if redirecting to a path
     await account.createOAuth2Session(
       OAuthProvider.Google,
-      `${window.location.origin}/`,
+      successUrl,
       `${window.location.origin}/login`,
     )
   }

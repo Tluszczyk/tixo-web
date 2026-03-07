@@ -4,17 +4,16 @@ import GameListItem from '@/components/GameList/GameListItem.vue'
 import CreateGameDialog from '@/components/CreateGameDialog.vue'
 import GameFilterDialog, { type FilterState } from '@/components/GameList/GameFilterDialog.vue'
 import { games } from '@/api/games'
-import { auth } from '@/api/authentication'
+import { useAuthStore } from '@/stores/auth'
 import { users } from '@/api/users'
 import type { Game } from '@/api/dto/Game'
 import { GameStatus } from '@/api/dto/GameStatus'
-import type { Models } from 'appwrite'
 
+const authStore = useAuthStore()
 const allGames = ref<Game[]>([])
 const loading = ref(true)
 const showCreateDialog = ref(false)
 const showFilterDialog = ref(false)
-const currentUser = ref<Models.User<Models.Preferences> | null>(null)
 
 const filters = ref<FilterState>({
   playerId: '',
@@ -30,9 +29,11 @@ const filters = ref<FilterState>({
 const fetchGames = async () => {
   loading.value = true
   try {
-    const [gamesList, user] = await Promise.all([games.listGames(), auth.getCurrentUser()])
+    if (!authStore.user) {
+      await authStore.checkAuth()
+    }
+    const gamesList = await games.listGames()
     allGames.value = gamesList
-    currentUser.value = user
 
     // Pre-fetch all unique player details in one batch
     const playerIds = new Set<string>()
@@ -72,8 +73,8 @@ const filteredGames = computed(() => {
   }
 
   // My Games
-  if (filters.value.myGamesOnly && currentUser.value) {
-    const uid = currentUser.value.$id
+  if (filters.value.myGamesOnly && authStore.user) {
+    const uid = authStore.user.$id
     result = result.filter((g) => g.xPlayerId === uid || g.oPlayerId === uid || g.creatorId === uid)
   }
 
@@ -124,6 +125,14 @@ const recentMatches = computed(() => {
 const handleApplyFilters = (newFilters: FilterState) => {
   filters.value = newFilters
 }
+
+const handleInitiate = () => {
+  if (authStore.isLoggedIn) {
+    showCreateDialog.value = true
+  } else {
+    authStore.openLoginModal('/')
+  }
+}
 </script>
 
 <template>
@@ -161,7 +170,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
           <span>Parameters</span>
         </button>
         <button
-          @click="showCreateDialog = true"
+          @click="handleInitiate"
           class="flex-1 md:flex-none px-4 lg:px-8 py-3 rounded-xl bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 cursor-pointer"
         >
           <i class="pi pi-plus text-[10px]"></i>
@@ -191,7 +200,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
         No Active Operations Found
       </p>
       <button
-        @click="showCreateDialog = true"
+        @click="handleInitiate"
         class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-app-text transition-colors"
       >
         Initiate New Protocol
@@ -203,7 +212,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
         v-for="game in activeGames"
         :key="game.$id"
         :game="game"
-        :current-user="currentUser"
+        :current-user="authStore.user"
       />
     </div>
 
@@ -211,7 +220,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
     <GameFilterDialog
       :visible="showFilterDialog"
       :initial-filters="filters"
-      :current-user-id="currentUser?.$id"
+      :current-user-id="authStore.user?.$id"
       @close="showFilterDialog = false"
       @apply="handleApplyFilters"
     />
@@ -251,7 +260,7 @@ const handleApplyFilters = (newFilters: FilterState) => {
           v-for="game in recentMatches"
           :key="game.$id"
           :game="game"
-          :current-user="currentUser"
+          :current-user="authStore.user"
         />
       </div>
     </div>

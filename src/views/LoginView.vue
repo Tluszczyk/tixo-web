@@ -1,243 +1,54 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { auth, LoginStatus } from '@/api/authentication'
+import { onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import CenterLayout from '@/layouts/CenterLayout.vue'
 
+const authStore = useAuthStore()
 const router = useRouter()
-const email = ref('')
-const password = ref('')
-const name = ref('')
-const isRegister = ref(false)
-const loading = ref(false)
-const error = ref<string | null>(null)
+const route = useRoute()
 
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+onMounted(() => {
+  if (authStore.isLoggedIn) {
+    router.push('/')
+  } else {
+    // Check if there's a redirect query param
+    const redirect = route.query.redirect as string
+    authStore.openLoginModal(redirect)
+  }
+})
 
-const handleAuth = async () => {
-  loading.value = true
-  error.value = null
-  try {
-    const result = isRegister.value
-      ? await auth.register(email.value, password.value, name.value)
-      : await auth.login(email.value, password.value)
-
-    const { status, message } = result
-
-    if (status === LoginStatus.OK) {
+// If user is on this page and closes the modal without logging in, go to home
+watch(
+  () => authStore.isLoginModalOpen,
+  (isOpen) => {
+    if (!isOpen && !authStore.isLoggedIn && route.name === 'login') {
       router.push('/')
-    } else if (status === LoginStatus.INVALID_CREDENTIALS) {
-      error.value = `Invalid Protocol Credentials: ${message}`
-    } else if (status === LoginStatus.USER_ALREADY_EXISTS) {
-      error.value = isRegister.value
-        ? `Identity Conflict: ${message}`
-        : `Identity Conflict: ${message}`
-    } else if (status === LoginStatus.USER_BLOCKED) {
-      error.value = `Access Denied: ${message}`
-    } else if (status === LoginStatus.RATE_LIMIT_EXCEEDED) {
-      error.value = `Service Overload: ${message}`
-    } else if (status === LoginStatus.INVALID_FORMAT) {
-      error.value = `Data Format Violation: ${message}`
-    } else {
-      error.value = `System Error: ${message || 'Authentication Protocol Failure'}`
     }
-  } catch (e) {
-    console.error('Authentication error:', e)
-    error.value = 'Failed to connect to authentication service'
-  } finally {
-    loading.value = false
   }
-}
+)
 
-const handleGoogleLogin = async () => {
-  if (isLocalhost) return
-  loading.value = true
-  error.value = null
-  try {
-    await auth.loginWithGoogle()
-  } catch (e) {
-    console.error('Google login error:', e)
-    error.value = 'Failed to initiate Google login'
-    loading.value = false
-  }
-}
-
-const loginAnonymously = async () => {
-  loading.value = true
-  error.value = null
-  try {
-    const result = await auth.loginAnonymously()
-    if (result.status === LoginStatus.OK) {
-      router.push('/')
-    } else {
-      error.value = `Guest Protocol Failure: ${result.message}`
+// If user somehow logs in while on this page (e.g. modal success), go to home or redirect
+watch(
+  () => authStore.isLoggedIn,
+  (isLoggedIn) => {
+    if (isLoggedIn && route.name === 'login') {
+      const redirect = authStore.redirectAfterLogin || '/'
+      router.push(redirect)
     }
-  } catch (e) {
-    console.error('Anonymous login error:', e)
-    error.value = 'Connection failure'
-  } finally {
-    loading.value = false
   }
-}
+)
 </script>
 
 <template>
   <CenterLayout>
-    <div class="w-full max-w-md space-y-12 animate-in fade-in zoom-in duration-1000 noise">
-      <!-- Logo/Branding -->
-      <div class="text-center space-y-4">
-        <div
-          class="inline-flex items-center gap-3 px-4 py-1 rounded-full glass border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4"
-        >
-          Security Protocol Active
-        </div>
-        <h1 class="text-6xl font-black text-app-text tracking-tighter uppercase italic leading-none">
-          Tixo<span class="text-indigo-500">.</span>
-        </h1>
-        <p class="text-app-text-muted opacity-20 text-[10px] font-black uppercase tracking-[0.4em]">
-          Tactical Intelligence System
-        </p>
-      </div>
-
-      <!-- Login Card -->
-      <div
-        class="glass border-glass-border rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group"
-      >
-        <div
-          class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/10 blur-3xl rounded-full transition-all duration-1000 group-hover:bg-indigo-600/20"
-        ></div>
-
-        <form @submit.prevent="handleAuth" class="space-y-6 relative z-10">
-          <div v-if="isRegister" class="space-y-2">
-            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4"
-              >Name</label
-            >
-            <input
-              v-model="name"
-              type="text"
-              required
-              placeholder="Operator Name"
-              class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4"
-              >Identifier</label
-            >
-            <input
-              v-model="email"
-              type="email"
-              required
-              placeholder="operator@tixo.net"
-              class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4"
-              >Access Key</label
-            >
-            <input
-              v-model="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono"
-            />
-          </div>
-
-          <div
-            v-if="error"
-            class="p-4 rounded-xl bg-red-500/5 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest text-center animate-shake"
-          >
-            {{ error }}
-          </div>
-
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full py-5 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3"
-          >
-            <i v-if="loading" class="pi pi-spin pi-spinner"></i>
-            <span>{{
-              loading ? 'Authorizing...' : isRegister ? 'Commission Account' : 'Authorize'
-            }}</span>
-          </button>
-
-          <div class="text-center">
-            <button
-              type="button"
-              @click="isRegister = !isRegister"
-              class="text-[9px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 hover:opacity-40 transition-all"
-            >
-              {{ isRegister ? 'Already commissioned? Access Protocol' : 'New operator? Request Commission' }}
-            </button>
-          </div>
-        </form>
-
-        <div class="relative z-10 mt-8 space-y-6">
-          <div class="flex items-center gap-4">
-            <div class="h-[1px] flex-1 bg-glass-border"></div>
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-10"
-              >External Access</span
-            >
-            <div class="h-[1px] flex-1 bg-glass-border"></div>
-          </div>
-
-          <button
-            @click="handleGoogleLogin"
-            :disabled="loading || isLocalhost"
-            :class="[
-              'w-full py-4 rounded-2xl glass border-glass-border text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3',
-              isLocalhost
-                ? 'opacity-20 grayscale cursor-not-allowed pointer-events-none'
-                : 'text-app-text-muted opacity-40 hover:bg-glass-white hover:opacity-100 hover:text-app-text',
-            ]"
-          >
-            <i v-if="loading" class="pi pi-spin pi-spinner"></i>
-            <i v-else class="pi pi-google"></i>
-            <span>{{
-              isLocalhost
-                ? 'Google (Cloud Only)'
-                : loading
-                  ? 'Authorizing...'
-                  : 'Google Protocol'
-            }}</span>
-          </button>
-
-          <button
-            @click="loginAnonymously"
-            :disabled="loading"
-            class="w-full py-4 rounded-2xl glass border-glass-border text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-glass-white hover:opacity-100 hover:text-app-text transition-all flex items-center justify-center gap-3"
-          >
-            <i class="pi pi-user-plus"></i>
-            <span>Guest Protocol</span>
-          </button>
-        </div>
-      </div>
-
-      <p class="text-center text-[9px] font-bold text-app-text-muted opacity-10 uppercase tracking-[0.3em]">
-        &copy; 2026 Tixo Operations // All Rights Reserved
+    <div class="text-center space-y-8 animate-pulse">
+      <h1 class="text-4xl font-black text-app-text tracking-tighter uppercase italic opacity-20">
+        Authenticating<span class="text-indigo-500">...</span>
+      </h1>
+      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-app-text-muted opacity-10">
+        Establishing Secure Connection
       </p>
     </div>
   </CenterLayout>
 </template>
-
-<style scoped>
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
-}
-.animate-shake {
-  animation: shake 0.2s ease-in-out 0s 2;
-}
-</style>

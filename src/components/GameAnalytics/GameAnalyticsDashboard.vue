@@ -110,6 +110,21 @@ const fetchAnalytics = async () => {
 onMounted(fetchAnalytics)
 watch(() => props.gameId, fetchAnalytics)
 
+const tooltipConfig = computed(() => ({
+  trigger: 'axis',
+  backgroundColor: themeStore.theme === 'dark' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
+  borderColor: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+  textStyle: { color: themeStore.theme === 'dark' ? '#fff' : '#000', fontSize: 10, fontFamily: 'monospace' },
+  axisPointer: { type: 'line', lineStyle: { color: 'rgba(99, 102, 241, 0.3)', width: 2 } },
+}))
+
+const xAxisConfig = (length: number) => ({
+  type: 'category',
+  data: Array.from({ length }, (_, i) => (i + 1).toString()),
+  axisLine: { lineStyle: { color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
+  axisLabel: { color: themeStore.theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', fontSize: 8 },
+})
+
 // Chart 1: Evaluation Chart
 const evalOption = computed(() => {
   if (!analytics.value) return {}
@@ -131,7 +146,7 @@ const evalOption = computed(() => {
     backgroundColor: 'transparent',
     tooltip: tooltipConfig.value,
     grid: { left: '5%', right: '5%', top: '5%', bottom: '5%', containLabel: true },
-    xAxis: xAxisConfig(evaluationScores.value.length || rawProbs.length),
+    xAxis: xAxisConfig(probabilities.length || rawProbs.length),
     yAxis: {
       type: 'value',
       min: -100,
