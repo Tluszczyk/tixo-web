@@ -101,7 +101,7 @@ class GamesService {
     return null
   }
 
-  async abandonGame(gameId: string): Promise<boolean> {
+  async abandonGame(gameId: string): Promise<{ success: boolean; winner?: string } | null> {
     const body = { gameId }
     const execution = await functions.createExecution({
       functionId: 'app-handler',
@@ -113,14 +113,17 @@ class GamesService {
     })
     if (execution.status === 'completed') {
       try {
-        const response = JSON.parse(execution.responseBody)
-        return !!response.success
+        return JSON.parse(execution.responseBody)
       } catch (e) {
         console.error('Failed to parse abandonGame response', e)
-        return false
+        return null
       }
     }
-    return false
+    return null
+  }
+
+  async cancelGame(gameId: string): Promise<{ success: boolean; winner?: string } | null> {
+    return await this.abandonGame(gameId)
   }
 
   async analyzeGame(

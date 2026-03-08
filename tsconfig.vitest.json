@@ -1,11 +1,7 @@
 {
-  "extends": "./tsconfig.app.json",
-  "include": ["src/**/__tests__/*", "env.d.ts"],
-  "exclude": [],
+  "extends": "./.nuxt/tsconfig.json",
+  "include": ["env.d.ts", "tests/**/*.ts", "tests/**/*.vue", "**/*.spec.ts"],
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
-
-    "lib": [],
-    "types": ["node", "jsdom"]
+    "types": ["node", "happy-dom", "vitest"]
   }
 }

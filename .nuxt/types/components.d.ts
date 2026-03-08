@@ -21,6 +21,7 @@ interface _GlobalComponents {
   GameOverModal: typeof import("../../components/Game/GameOverModal.vue")['default']
   GameStatusHUD: typeof import("../../components/Game/GameStatusHUD.vue")['default']
   GameMatchTimeline: typeof import("../../components/Game/MatchTimeline.vue")['default']
+  GameTacticalDashboard: typeof import("../../components/Game/TacticalDashboard.vue")['default']
   GameAnalyticsBaseAnalyticsChart: typeof import("../../components/GameAnalytics/BaseAnalyticsChart.vue")['default']
   GameAnalyticsDashboard: typeof import("../../components/GameAnalytics/GameAnalyticsDashboard.vue")['default']
   GameListGameFilterDialog: typeof import("../../components/GameList/GameFilterDialog.vue")['default']
@@ -180,6 +181,7 @@ interface _GlobalComponents {
   LazyGameOverModal: LazyComponent<typeof import("../../components/Game/GameOverModal.vue")['default']>
   LazyGameStatusHUD: LazyComponent<typeof import("../../components/Game/GameStatusHUD.vue")['default']>
   LazyGameMatchTimeline: LazyComponent<typeof import("../../components/Game/MatchTimeline.vue")['default']>
+  LazyGameTacticalDashboard: LazyComponent<typeof import("../../components/Game/TacticalDashboard.vue")['default']>
   LazyGameAnalyticsBaseAnalyticsChart: LazyComponent<typeof import("../../components/GameAnalytics/BaseAnalyticsChart.vue")['default']>
   LazyGameAnalyticsDashboard: LazyComponent<typeof import("../../components/GameAnalytics/GameAnalyticsDashboard.vue")['default']>
   LazyGameListGameFilterDialog: LazyComponent<typeof import("../../components/GameList/GameFilterDialog.vue")['default']>

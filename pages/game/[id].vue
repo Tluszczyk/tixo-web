@@ -28,6 +28,7 @@ import GameStatusHUD from '~/components/Game/GameStatusHUD.vue'
 import GameOverModal from '~/components/Game/GameOverModal.vue'
 import AbandonMatchModal from '~/components/Game/AbandonMatchModal.vue'
 import GameHeader from '~/components/Game/GameHeader.vue'
+import TacticalDashboard from '~/components/Game/TacticalDashboard.vue'
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -113,8 +114,8 @@ const handleAbandon = async () => {
   if (!game.value || abandoning.value) return
   abandoning.value = true
   try {
-    const success = await games.abandonGame(game.value.$id)
-    if (success) {
+    const result = await games.abandonGame(game.value.$id)
+    if (result?.success) {
       showAbandonModal.value = false
       await fetchGame()
       showGameOverModal.value = true
@@ -396,6 +397,8 @@ const submitMove = () => {
         }
       })
     }
+  }).catch((error) => {
+    console.error('Failed to submit move:', error)
   })
 }
 
@@ -548,10 +551,13 @@ const goBack = () => {
               :selected-cell="selectedCell"
               :selected-history-index="selectedHistoryIndex"
               :joining="joining"
+              :abandoning="abandoning"
+              :move-history-count="(game?.moveHistory || []).length"
               @clear-history="selectedHistoryIndex = null"
               @clear-selection="selectedCell = null"
               @submit-move="submitMove"
               @join-match="joinMatch"
+              @abandon-match="showAbandonModal = true"
             />
 
             <!-- Footer -->
@@ -572,28 +578,30 @@ const goBack = () => {
             transform: 'translateX(0)' 
           }"
         >
-          <!-- Active Game Actions -->
-          <div v-if="game.status === GameStatus.IN_PROGRESS && isPlayerInGame" class="w-full flex flex-col items-center gap-8">
-            <div class="glass p-8 rounded-[2.5rem] border-glass-border w-full max-w-sm flex flex-col items-center text-center space-y-6">
-              <div class="w-16 h-16 rounded-2xl glass border-red-500/20 flex items-center justify-center text-red-500 shadow-xl">
-                <i class="pi pi-flag text-2xl"></i>
-              </div>
-              <div class="space-y-1">
-                <h4 class="text-lg font-black text-app-text uppercase italic">Tactical Resignation</h4>
-                <p class="text-[9px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Forfeit the current match</p>
-              </div>
-              <button
-                @click="showAbandonModal = true"
-                class="w-full py-4 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
-              >
-                <i class="pi pi-times-circle"></i>
-                Abandon Match
-              </button>
-            </div>
+          <!-- Active Game Actions (Tactical Dashboard) -->
+          <div v-if="game.status !== GameStatus.FINISHED && game.status !== GameStatus.CANCELLED" class="w-full h-full">
+            <TacticalDashboard
+              :game="game"
+              :x-player="xPlayer"
+              :o-player="oPlayer"
+              :is-player-in-game="isPlayerInGame"
+              :is-my-turn="isMyTurn"
+              :is-a-i-turn="isAITurn"
+              :current-player="currentPlayer"
+              :selected-cell="selectedCell"
+              :selected-history-index="selectedHistoryIndex"
+              :joining="joining"
+              :abandoning="abandoning"
+              @clear-history="selectedHistoryIndex = null"
+              @clear-selection="selectedCell = null"
+              @submit-move="submitMove"
+              @join-match="joinMatch"
+              @abandon-click="showAbandonModal = true"
+            />
           </div>
 
           <!-- Post-Game Analytics -->
-          <template v-else-if="game.status === GameStatus.FINISHED || game.status === GameStatus.CANCELLED">
+          <template v-else>
             <!-- Guest Lock Overlay -->
             <div 
               v-if="isGuest"

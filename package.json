@@ -8,11 +8,12 @@
   },
   "scripts": {
     "dev": "nuxt dev",
+    "dev:network": "nuxt dev --host --qr", 
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "test:unit": "vitest",
+    "test:unit": "vitest run --print-open-handles --logHeapUsage",
     "test:e2e": "playwright test",
     "lint": "eslint . --fix --cache",
     "type-check": "npx nuxi typecheck",
@@ -37,6 +38,7 @@
     "vue-echarts": "^8.0.1"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^4.0.0",
     "@nuxtjs/robots": "^5.7.1",
     "@nuxtjs/sitemap": "^7.6.0",
     "@playwright/test": "^1.57.0",
@@ -53,6 +55,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-playwright": "^2.4.0",
     "eslint-plugin-vue": "~10.6.2",
+    "happy-dom": "^20.8.3",
     "jiti": "^2.6.1",
     "jsdom": "^27.4.0",
     "npm-run-all2": "^8.0.4",

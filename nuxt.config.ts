@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  devServer: {
+    qrCode: true
+  },
   modules: [
     '@pinia/nuxt',
     '@primevue/nuxt-module',
@@ -39,6 +42,9 @@ export default defineNuxtConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    esbuild: {
+      target: 'es2020',
+    },
   },
   nitro: {
     preset: 'node-server'

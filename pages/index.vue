@@ -1,11 +1,7 @@
 <script setup lang="ts">
 // Simple redirect to /dashboard
 definePageMeta({
-  middleware: [
-    function () {
-      return navigateTo('/dashboard')
-    }
-  ]
+  middleware: 'dashboard-redirect'
 })
 
 useSeoMeta({

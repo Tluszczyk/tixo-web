@@ -113,8 +113,8 @@ const handleAbandon = async () => {
   if (!game.value || abandoning.value) return
   abandoning.value = true
   try {
-    const success = await games.abandonGame(game.value.$id)
-    if (success) {
+    const result = await games.abandonGame(game.value.$id)
+    if (result?.success) {
       showAbandonModal.value = false
       await fetchGame()
       showGameOverModal.value = true
