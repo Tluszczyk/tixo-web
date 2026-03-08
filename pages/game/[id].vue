@@ -517,6 +517,7 @@ const goBack = () => {
       >
         <!-- Match Timeline Sidebar -->
         <MatchTimeline 
+          class="order-2 lg:order-1"
           :move-history="game.moveHistory || []"
           :selected-history-index="selectedHistoryIndex"
           :is-on-device="game.isOnDevice"
@@ -525,7 +526,7 @@ const goBack = () => {
 
         <!-- Main Board Area -->
         <div 
-          class="flex flex-col items-center justify-center py-4 lg:py-0 min-h-[75vh] transition-all duration-1000 ease-in-out w-full"
+          class="order-1 lg:order-2 flex flex-col items-center justify-center py-4 lg:py-0 min-h-[75vh] transition-all duration-1000 ease-in-out w-full"
         >
           <div class="flex flex-col items-center justify-center space-y-8 lg:space-y-16 w-full">
             <Board
@@ -560,18 +561,85 @@ const goBack = () => {
               @abandon-match="showAbandonModal = true"
             />
 
-            <!-- Footer -->
-            <div class="flex flex-col items-center gap-1 opacity-20 hover:opacity-100 transition-opacity pt-12 border-t border-glass-border w-full">
+            <!-- Desktop Footer -->
+            <div class="hidden lg:flex flex-col items-center gap-1 opacity-20 hover:opacity-100 transition-opacity pt-12 border-t border-glass-border w-full">
                <span class="text-[8px] font-black uppercase tracking-[0.4em] text-app-text-muted opacity-20">Game Session Key</span>
                <span class="text-[9px] mono text-app-text-muted opacity-30">{{ game.$id }}</span>
             </div>
           </div>
         </div>
 
+        <!-- Mobile Game Info (visible below HUD and MatchTimeline on mobile) -->
+        <div v-if="game" class="lg:hidden order-3 space-y-6 pb-12">
+          <div class="h-[1px] w-full bg-glass-border"></div>
+          
+          <div class="glass p-6 rounded-[2rem] border-glass-border space-y-4">
+             <div class="flex items-center gap-3 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">
+               <i class="pi pi-info-circle"></i>
+               <span>Match Intelligence</span>
+             </div>
+
+             <div class="flex flex-col gap-4">
+                <!-- X Player -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg glass flex items-center justify-center marker-x font-black">X</div>
+                    <div>
+                      <p class="text-xs font-bold text-app-text">
+                        {{ game.requestedOpponentId?.startsWith('AI_X') ? 'Tixo AI' : xPlayer?.name || 'Pending' }}
+                      </p>
+                      <p v-if="xPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_X')" class="text-[9px] mono text-indigo-400 font-black">Rating: {{ xPlayer.rating }}</p>
+                    </div>
+                  </div>
+                  <span v-if="currentPlayer === 'X' && game.status === GameStatus.IN_PROGRESS" class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+                </div>
+
+                <div class="flex items-center justify-center">
+                  <span class="text-[9px] font-black text-app-text-muted opacity-20 uppercase tracking-[0.3em]">VS</span>
+                </div>
+
+                <!-- O Player -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg glass flex items-center justify-center marker-o font-black">O</div>
+                    <div>
+                      <p class="text-xs font-bold text-app-text">
+                        {{ game.requestedOpponentId?.startsWith('AI_O') ? 'Tixo AI' : (game.isOnDevice && !game.requestedOpponentId?.startsWith('AI_X') ? (oPlayer?.name || 'Local Player') : (oPlayer?.name || 'Waiting...')) }}
+                      </p>
+                      <p v-if="oPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_O')" class="text-[9px] mono text-indigo-400 font-black">Rating: {{ oPlayer.rating }}</p>
+                    </div>
+                  </div>
+                  <span v-if="currentPlayer === 'O' && game.status === GameStatus.IN_PROGRESS" class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                </div>
+             </div>
+
+             <div class="pt-4 border-t border-glass-border/30 flex items-center justify-between">
+                <span class="text-[9px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Status</span>
+                <span 
+                  :class="[
+                    'text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border',
+                    game.status === GameStatus.IN_PROGRESS ? 'text-green-500 border-green-500/20 bg-green-500/5' :
+                    game.status === GameStatus.FINISHED ? 'text-blue-500 border-blue-500/20 bg-blue-500/5' :
+                    game.status === GameStatus.CANCELLED ? 'text-red-500 border-red-500/20 bg-red-500/5' :
+                    'text-amber-500 border-amber-500/20 bg-amber-500/5'
+                  ]"
+                >
+                  {{ game.status.replace(/_/g, ' ') }}
+                </span>
+             </div>
+          </div>
+          
+          <!-- Footer moved here on mobile -->
+          <div class="flex flex-col items-center gap-1 opacity-20 pt-6">
+             <span class="text-[8px] font-black uppercase tracking-[0.4em] text-app-text-muted">Game Session Key</span>
+             <span class="text-[9px] mono text-app-text-muted">{{ game.$id }}</span>
+          </div>
+        </div>
+
         <!-- Right Side Panel (Actions/Analytics) -->
         <div 
           v-if="game.status === GameStatus.FINISHED || game.status === GameStatus.CANCELLED || isPlayerInGame"
-          class="hidden lg:flex flex-col shrink-0 transition-all duration-1000 ease-out p-4 relative items-center justify-center"
+          class="hidden lg:flex flex-col shrink-0 transition-all duration-1000 ease-out p-4 relative items-center justify-center lg:order-3"
           :style="{ 
             width: (showAnalytics || isGuest) ? '800px' : '400px', 
             opacity: 1, 

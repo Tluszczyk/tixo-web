@@ -42,7 +42,7 @@ const formatStatus = (status: GameStatus) => {
     >
       <i class="pi pi-arrow-left"></i>
     </button>
-    <div v-if="game" class="flex flex-col">
+    <div v-if="game" class="hidden lg:flex flex-col">
       <div class="flex items-center gap-2">
         <span class="text-sm font-bold text-app-text flex items-center gap-1.5">
           <span class="marker-x text-xs">X</span>
