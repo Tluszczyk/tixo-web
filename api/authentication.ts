@@ -1,5 +1,5 @@
-import { account, functions } from '~/api/appwriteClient'
-import { ExecutionMethod, type Models, OAuthProvider, AppwriteException } from 'appwrite'
+import { account, functions, tablesDB } from '~/api/appwriteClient'
+import { ExecutionMethod, type Models, OAuthProvider, AppwriteException, Query } from 'appwrite'
 
 export enum LoginStatus {
   OK,
@@ -15,6 +15,13 @@ export enum LoginStatus {
 export interface AuthResult {
   status: LoginStatus
   message?: string
+}
+
+export interface RatingRecord extends Models.Row {
+  userId: string;
+  rating: number;
+  ratingDeviation: number;
+  volatility: number;
 }
 
 class AuthService {
@@ -156,6 +163,27 @@ class AuthService {
       return true
     } catch {
       return false
+    }
+  }
+
+  /**
+   * Fetches the rating history for the current user.
+   */
+  async getRatingHistory(userId: string): Promise<RatingRecord[]> {
+    try {
+      const response = await tablesDB.listRows<RatingRecord>({
+        databaseId: 'tixo',
+        tableId: 'rating',
+        queries: [
+          Query.equal('userId', userId),
+          Query.orderAsc('$createdAt'),
+          Query.limit(100)
+        ]
+      })
+      return response.rows
+    } catch (e) {
+      console.error('Failed to fetch rating history', e)
+      return []
     }
   }
 

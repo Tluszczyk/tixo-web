@@ -95,8 +95,6 @@ const handleProfileClick = () => {
 }
 
 onMounted(async () => {
-  if (typeof window === 'undefined') return
-  
   try {
     if (!authStore.user) {
       await authStore.checkAuth()
@@ -135,6 +133,9 @@ onMounted(async () => {
       subscription = await realtime.subscribe(
         ['databases.tixo.collections.in-app-notifications.documents'],
         (response) => {
+          // Security: Only process notifications meant for this user
+          if (response.payload.receiverId !== authStore.user?.$id) return;
+
           if (response.events.some((e: string) => e.includes('.create'))) {
             notificationList.value.unshift(response.payload)
             if (notificationList.value.length > 10) notificationList.value.pop()
@@ -233,7 +234,7 @@ onUnmounted(async () => {
                 <div
                   v-if="showNotifications"
                   @click.stop
-                  class="absolute right-0 mt-4 w-96 bg-void/95 backdrop-blur-3xl border border-glass-border rounded-3xl shadow-2xl overflow-hidden z-[100]"
+                  class="fixed sm:absolute right-4 sm:right-0 mt-20 sm:mt-4 w-[calc(100vw-32px)] sm:w-96 bg-void/95 backdrop-blur-3xl border border-glass-border rounded-3xl shadow-2xl overflow-hidden z-[100]"
                 >
                   <div class="p-6 border-b border-glass-border flex items-center justify-between">
                     <span class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500"
@@ -335,10 +336,10 @@ onUnmounted(async () => {
           v-if="newNotification"
           @mouseenter="clearPopUpTimer"
           @mouseleave="startPopUpTimer"
-          class="fixed bottom-8 right-8 z-[200]"
+          class="fixed inset-x-4 bottom-8 sm:inset-auto sm:right-8 sm:bottom-8 z-[200]"
         >
           <div
-            class="bg-void/95 backdrop-blur-3xl border border-indigo-500/30 p-8 rounded-[2.5rem] shadow-2xl max-w-md flex items-center gap-8"
+            class="bg-void/95 backdrop-blur-3xl border border-indigo-500/30 p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md mx-auto sm:mx-0 flex items-center gap-8"
           >
             <div
               class="h-16 w-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20"

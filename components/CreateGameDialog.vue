@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 import { games } from '~/api/games'
 import { users, type User } from '~/api/users'
@@ -23,6 +23,19 @@ const error = ref<string | null>(null)
 const bots = ref<User[]>([])
 const selectedBotId = ref<string | null>(null)
 const loadingBots = ref(false)
+const isValidatingUser = ref(false)
+const isUserVerified = ref(false)
+
+const canCreate = computed(() => {
+  if (loading.value || isValidatingUser.value) return false
+  if (gameMode.value === 'AI') {
+    return !!selectedBotId.value && !loadingBots.value
+  }
+  if (gameMode.value === 'ONLINE') {
+    return requestedOpponentId.value.trim().length > 0 && isUserVerified.value
+  }
+  return true
+})
 
 const fetchBots = async () => {
   loadingBots.value = true
@@ -52,6 +65,35 @@ watch(gameMode, (newMode) => {
   if (newMode === 'AI' && props.visible && bots.value.length === 0) {
     fetchBots()
   }
+})
+
+let validationTimeout: ReturnType<typeof setTimeout> | null = null
+watch(requestedOpponentId, (newId) => {
+  if (gameMode.value !== 'ONLINE') return
+  
+  isUserVerified.value = false
+  error.value = null
+  
+  if (validationTimeout) clearTimeout(validationTimeout)
+  
+  const id = newId.trim()
+  if (!id) return
+
+  isValidatingUser.value = true
+  validationTimeout = setTimeout(async () => {
+    try {
+      const user = await users.getUser(id)
+      if (user) {
+        isUserVerified.value = true
+      } else {
+        error.value = 'Target user not found.'
+      }
+    } catch (e) {
+      error.value = 'Failed to verify user.'
+    } finally {
+      isValidatingUser.value = false
+    }
+  }, 500)
 })
 
 const handleCreate = async () => {
@@ -320,7 +362,7 @@ const handleCreate = async () => {
         <!-- Opponent Selection -->
         <div v-if="gameMode === 'ONLINE'" class="space-y-3">
           <label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-40 block"
-            >Invite Opponent (Optional)</label
+            >Invite Opponent</label
           >
           <div class="relative group">
             <i
@@ -330,11 +372,17 @@ const handleCreate = async () => {
               v-model="requestedOpponentId"
               type="text"
               placeholder="Enter User ID"
-              class="w-full bg-void border-2 border-glass-border rounded-2xl py-4 pl-12 pr-4 text-app-text text-sm font-bold placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:border-blue-500 outline-none transition-all"
+              class="w-full bg-void border-2 border-glass-border rounded-2xl py-4 pl-12 pr-12 text-app-text text-sm font-bold placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:border-blue-500 outline-none transition-all"
+              :class="{ 'border-green-500/50': isUserVerified, 'border-red-500/50': error && requestedOpponentId }"
             />
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+              <i v-if="isValidatingUser" class="pi pi-spin pi-spinner text-blue-500 text-xs"></i>
+              <i v-else-if="isUserVerified" class="pi pi-check-circle text-green-500 text-xs"></i>
+              <i v-else-if="error && requestedOpponentId" class="pi pi-times-circle text-red-500 text-xs"></i>
+            </div>
           </div>
           <p class="text-[9px] text-app-text-muted opacity-40 font-medium">
-            Only the specified user will be able to join this match.
+            Authorized personnel only. Enter a valid User ID to initiate connection.
           </p>
         </div>
 
@@ -348,11 +396,18 @@ const handleCreate = async () => {
         <div class="flex flex-col space-y-3">
           <button
             @click="handleCreate"
-            :disabled="loading"
-            class="w-full py-4 rounded-2xl bg-app-text text-void font-bold hover:opacity-90 transition-all shadow-xl disabled:opacity-50 flex items-center justify-center space-x-2"
+            :disabled="!canCreate"
+            class="w-full py-4 rounded-2xl bg-app-text text-void font-bold hover:opacity-90 transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
-            <i v-if="loading" class="pi pi-spin pi-spinner"></i>
-            <span>{{ loading ? 'Creating Match...' : 'Create Match' }}</span>
+            <i v-if="loading || isValidatingUser" class="pi pi-spin pi-spinner"></i>
+            <span>{{ 
+              loading ? 'Creating Match...' : 
+              isValidatingUser ? 'Verifying User...' :
+              (gameMode === 'AI' && !selectedBotId) ? 'Select AI Opponent' :
+              (gameMode === 'ONLINE' && !requestedOpponentId.trim()) ? 'Enter Opponent ID' :
+              (gameMode === 'ONLINE' && !isUserVerified) ? 'Invalid Opponent' :
+              'Create Match' 
+            }}</span>
           </button>
 
           <button
