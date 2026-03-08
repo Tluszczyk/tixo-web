@@ -1,1 +1,0 @@
-export { default } from "file:///home/tluszczyk/dev/Multilanguage/tixo/tixo-web/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs"

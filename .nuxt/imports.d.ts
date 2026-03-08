@@ -34,9 +34,16 @@ export { Player, Player, MacroState, MacroState, GameState, GameState, evaluateB
 export { coordToIndex, indexToCoord, getSmallBoard, check3x3Winner, rebuildGameState, isCellAvailable, getStatusColor, formatStatus } from '../utils/gameLogic';
 export { useAuthStore } from '../stores/auth';
 export { useThemeStore } from '../stores/theme';
+export { getNitroOrigin } from '../node_modules/nuxt-site-config/dist/runtime/app/composables/getNitroOrigin';
+export { updateSiteConfig } from '../node_modules/nuxt-site-config/dist/runtime/app/composables/updateSiteConfig';
+export { useNitroOrigin } from '../node_modules/nuxt-site-config/dist/runtime/app/composables/useNitroOrigin';
+export { useSiteConfig } from '../node_modules/nuxt-site-config/dist/runtime/app/composables/useSiteConfig';
+export { createSitePathResolver, withSiteTrailingSlash, withSiteUrl } from '../node_modules/nuxt-site-config/dist/runtime/app/composables/utils';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { usePrimeVue } from 'primevue/config';
 export { useStyle } from 'primevue/usestyle';
 export { useConfirm } from 'primevue/useconfirm';
 export { useToast } from 'primevue/usetoast';
 export { useDialog } from 'primevue/usedialog';
+export { useRobotsRule } from '../node_modules/@nuxtjs/robots/dist/runtime/app/composables/useRobotsRule';
+export { useBotDetection } from '../node_modules/@nuxtjs/robots/dist/runtime/app/composables/useBotDetection';

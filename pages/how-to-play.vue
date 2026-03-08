@@ -7,6 +7,13 @@ definePageMeta({
 
 import Board from '~/components/Board.vue'
 
+useSeoMeta({
+  title: 'How to Play',
+  description: 'Master the rules of Ultimate Tic-Tac-Toe. Learn about the fractal board grid, the movement rule, and winning strategies.',
+  ogTitle: 'How to Play | Tixo',
+  ogDescription: 'Master the rules of Ultimate Tic-Tac-Toe. Learn about the fractal board grid, the movement rule, and winning strategies.'
+})
+
 const router = useRouter()
 
 interface TutorialStep {
@@ -98,6 +105,7 @@ const prevStep = () => {
       <div class="flex items-center space-x-4">
         <button
           @click="router.push('/')"
+          aria-label="Go back to dashboard"
           class="p-2 hover:bg-glass-white rounded-lg text-app-text-muted hover:text-app-text transition-colors"
         >
           <i class="pi pi-arrow-left"></i>
@@ -151,9 +159,9 @@ const prevStep = () => {
             >
               Step {{ currentStep + 1 }} of {{ steps.length }}
             </div>
-            <h2 class="text-4xl font-extrabold text-app-text tracking-tight">
+            <h1 class="text-4xl font-extrabold text-app-text tracking-tight">
               {{ step.title }}
-            </h2>
+            </h1>
             <p class="text-xl text-app-text-muted opacity-60 leading-relaxed">
               {{ step.description }}
             </p>
@@ -172,6 +180,7 @@ const prevStep = () => {
             <button
               @click="prevStep"
               :disabled="currentStep === 0"
+              aria-label="Previous tutorial step"
               class="flex-1 px-6 py-4 rounded-2xl bg-glass-white border border-glass-border text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Back
@@ -179,6 +188,7 @@ const prevStep = () => {
             <button
               @click="nextStep"
               v-if="currentStep < steps.length - 1"
+              aria-label="Next tutorial step"
               class="flex-[2] px-6 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98]"
             >
               Next Step
@@ -186,6 +196,7 @@ const prevStep = () => {
             <button
               @click="router.push('/')"
               v-else
+              aria-label="Finish tutorial and go to dashboard"
               class="flex-[2] px-6 py-4 rounded-2xl bg-green-600 text-white font-bold hover:bg-green-500 transition-all shadow-xl shadow-green-900/20 active:scale-[0.98]"
             >
               Got it, let's play!

@@ -13,6 +13,13 @@ import CreateGameDialog from '~/components/CreateGameDialog.vue'
 import { games } from '~/api/games'
 import { GameStatus } from '~/api/dto/GameStatus'
 
+useSeoMeta({
+  title: 'Operational Dashboard',
+  description: 'Manage your active matches, analyze the field of battle, and initiate new tactical operations in Tixo.',
+  ogTitle: 'Operational Dashboard | Tixo',
+  ogDescription: 'Manage your active matches, analyze the field of battle, and initiate new tactical operations in Tixo.'
+})
+
 const authStore = useAuthStore()
 const router = useRouter()
 const showCreateDialog = ref(false)
@@ -130,12 +137,14 @@ const goToFeatured = () => {
           <div class="flex items-center gap-6 pt-4">
             <button
               @click="handleInitiateMatch"
+              aria-label="Initiate a new match"
               class="px-10 py-4 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
             >
               Initiate Match
             </button>
             <button
               @click="router.push('/how-to-play')"
+              aria-label="View how to play tutorial"
               class="px-10 py-4 glass border-glass-border text-app-text-muted text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-glass-white transition-all"
             >
               Intel
@@ -190,6 +199,7 @@ const goToFeatured = () => {
           </div>
           <button
             @click="authStore.openLoginModal('/')"
+            aria-label="Authorize Protocol to login"
             class="px-10 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-95"
           >
             Authorize Protocol

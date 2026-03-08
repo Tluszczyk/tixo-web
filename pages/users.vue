@@ -9,6 +9,13 @@ import { users, type User } from '~/api/users'
 import { games } from '~/api/games'
 import { useAuthStore } from '~/stores/auth'
 
+useSeoMeta({
+  title: 'Personnel Directory',
+  description: 'Connect with other players, view their tactical ratings, and challenge them to a match of Ultimate Tic-Tac-Toe.',
+  ogTitle: 'Personnel Directory | Tixo',
+  ogDescription: 'Connect with other players, view their tactical ratings, and challenge them to a match of Ultimate Tic-Tac-Toe.'
+})
+
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
@@ -88,14 +95,14 @@ const onSearch = () => {
               <i class="pi pi-spin pi-spinner text-indigo-500"></i>
             </div>
           </div>
-          <button
-            @click="onSearch"
-            class="px-8 py-3 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-            :disabled="isLoading"
-          >
-            Query
-          </button>
-        </div>
+                  <button
+                    @click="onSearch"
+                    aria-label="Query personnel database"
+                    class="px-8 py-3 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                    :disabled="isLoading"
+                  >
+                    Query
+                  </button>        </div>
       </section>
 
       <!-- Users Table -->
@@ -197,12 +204,12 @@ const onSearch = () => {
                   <div
                     class="flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <button
-                      @click="requestGame(user.$id)"
-                      :disabled="!!requestingGame"
-                      class="px-4 py-2 bg-indigo-500 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-indigo-400 transition-all flex items-center gap-2"
-                    >
-                      <i v-if="requestingGame === user.$id" class="pi pi-spin pi-spinner"></i>
+                                      <button
+                                        @click="requestGame(user.$id)"
+                                        :disabled="!!requestingGame"
+                                        :aria-label="'Request match from ' + (user.name || 'Anonymous')"
+                                        class="px-4 py-2 bg-indigo-500 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-indigo-400 transition-all flex items-center gap-2"
+                                      >                      <i v-if="requestingGame === user.$id" class="pi pi-spin pi-spinner"></i>
                       <i v-else class="pi pi-bolt"></i>
                       Request Match
                     </button>

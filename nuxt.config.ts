@@ -6,8 +6,21 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
-    '@primevue/nuxt-module'
+    '@primevue/nuxt-module',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots'
   ],
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://tixo-game.com',
+    name: 'Tixo - Ultimate Tic-Tac-Toe',
+  },
+  sitemap: {
+    enabled: true,
+  },
+  robots: {
+    enabled: true,
+    allow: ['/']
+  },
   primevue: {
     options: {
       theme: {
@@ -34,7 +47,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appwriteEndpoint: process.env.VITE_APPWRITE_API_URL,
-      appwriteProjectId: process.env.VITE_APPWRITE_PROJECT_ID
+      appwriteProjectId: process.env.VITE_APPWRITE_PROJECT_ID,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://tixo-game.com'
     }
   },
   alias: {

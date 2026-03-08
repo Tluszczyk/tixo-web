@@ -29,6 +29,17 @@ import GameOverModal from '~/components/Game/GameOverModal.vue'
 import AbandonMatchModal from '~/components/Game/AbandonMatchModal.vue'
 import GameHeader from '~/components/Game/GameHeader.vue'
 
+const authStore = useAuthStore()
+const route = useRoute()
+const router = useRouter()
+
+useSeoMeta({
+  title: () => `Active Match #${route.params.id}`,
+  description: () => `Live battle in progress for Match #${route.params.id} on Tixo. Precision tactics and fractal Tic-Tac-Toe strategies.`,
+  ogTitle: () => `Active Match #${route.params.id} | Tixo`,
+  ogDescription: () => `Live battle in progress for Match #${route.params.id} on Tixo. Precision tactics and fractal Tic-Tac-Toe strategies.`
+})
+
 type RealtimeSubscription = {
   close: () => Promise<void>
 }
@@ -47,9 +58,6 @@ interface GameAnalytics extends Models.Row {
 
 type GameWithAnalytics = Game & { analytics?: GameAnalytics }
 
-const authStore = useAuthStore()
-const route = useRoute()
-const router = useRouter()
 const game = ref<GameWithAnalytics | null>(null)
 const xPlayer = ref<User | null>(null)
 const oPlayer = ref<User | null>(null)

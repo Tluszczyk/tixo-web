@@ -12,6 +12,13 @@ import { games } from '~/api/games'
 import type { Game } from '~/api/dto/Game'
 import type { Models } from 'appwrite'
 
+useSeoMeta({
+  title: 'Commander Profile',
+  description: 'View your tactical records, victory statistics, and match chronicles in Tixo.',
+  ogTitle: 'Commander Profile | Tixo',
+  ogDescription: 'View your tactical records, victory statistics, and match chronicles in Tixo.'
+})
+
 const router = useRouter()
 const currentUser = ref<Models.User<Models.Preferences> | null>(null)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,6 +154,7 @@ onMounted(async () => {
 
           <button
             @click="handleLogout"
+            aria-label="Resign current session and logout"
             class="w-full py-4 rounded-xl glass border-red-500/20 text-[10px] font-bold uppercase tracking-[0.2em] text-red-400 hover:bg-red-500/10 transition-all flex items-center justify-center gap-3"
           >
             <i class="pi pi-sign-out"></i>
