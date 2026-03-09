@@ -50,21 +50,25 @@ const emit = defineEmits<{
             </p>
           </div>
           <div class="grid grid-cols-2 gap-3 w-full pt-2">
-            <button
+            <CommonBaseButton
               @click="emit('close')"
               :disabled="abandoning"
-              class="py-3 rounded-xl bg-glass-white text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all border border-glass-border"
+              variant="secondary"
+              size="md"
+              class="!rounded-xl"
             >
               No, stay
-            </button>
-            <button
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="emit('confirm')"
               :disabled="abandoning"
-              class="py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 transition-all flex items-center justify-center"
+              variant="danger"
+              size="md"
+              :loading="abandoning"
+              class="!rounded-xl"
             >
-              <i v-if="abandoning" class="pi pi-spin pi-spinner mr-2"></i>
               <span>{{ (game?.moveHistory || []).length < 2 ? 'Cancel' : 'Abandon' }}</span>
-            </button>
+            </CommonBaseButton>
           </div>
         </div>
       </div>

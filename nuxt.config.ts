@@ -58,7 +58,7 @@ export default defineNuxtConfig({
         }
       }
     },
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss() as any],
     esbuild: {
       target: 'es2020',
     },

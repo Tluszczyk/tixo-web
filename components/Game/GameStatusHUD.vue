@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { GameStatus } from '~/api/dto/GameStatus'
 
 defineProps<{
@@ -42,28 +43,34 @@ const emit = defineEmits<{
           <div class="flex items-center gap-6">
             <span class="text-2xl font-black text-app-text">Move {{ selectedHistoryIndex + 1 }}</span>
             <div class="h-8 w-[1px] bg-glass-border"></div>
-            <button
+            <BaseButton
               @click="emit('clear-history')"
-              class="lg:hidden text-xs font-bold uppercase tracking-widest text-app-text-muted opacity-40 hover:text-app-text transition-colors"
+              variant="ghost"
+              size="sm"
+              class="lg:hidden text-app-text-muted opacity-40 hover:opacity-100"
             >
               Return to Live
-            </button>
+            </BaseButton>
           </div>
         </div>
 
         <div v-else-if="selectedCell !== null" class="flex items-center gap-6">
-          <button
+          <BaseButton
             @click="emit('clear-selection')"
-            class="lg:hidden text-xs font-bold uppercase tracking-widest text-app-text-muted opacity-40 hover:text-app-text transition-colors"
+            variant="ghost"
+            size="sm"
+            class="lg:hidden text-app-text-muted opacity-40 hover:opacity-100"
           >
             Cancel
-          </button>
-          <button
+          </BaseButton>
+          <BaseButton
             @click="emit('submit-move')"
-            class="lg:hidden px-12 py-4 bg-app-text text-void text-xs font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
+            variant="primary"
+            size="lg"
+            class="lg:hidden px-12"
           >
             Submit Move
-          </button>
+          </BaseButton>
         </div>
 
         <div v-else-if="gameStatus === GameStatus.IN_PROGRESS" class="flex items-center gap-12">
@@ -88,15 +95,17 @@ const emit = defineEmits<{
           v-else-if="gameStatus === GameStatus.WAITING_FOR_OPPONENT"
           class="flex flex-col items-center"
         >
-          <button
+          <BaseButton
             v-if="!isPlayerInGame"
             @click="emit('join-match')"
             :disabled="joining"
-            class="px-12 py-4 bg-indigo-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            :loading="joining"
+            variant="primary"
+            size="lg"
+            class="px-12"
           >
-            <i v-if="joining" class="pi pi-spin pi-spinner mr-2"></i>
             Join Match
-          </button>
+          </BaseButton>
           <div v-else class="flex flex-col items-center">
             <span class="text-[10px] uppercase font-black tracking-[0.3em] text-app-text-muted opacity-20 mb-2"
               >Match Status</span
@@ -117,14 +126,16 @@ const emit = defineEmits<{
       v-if="isPlayerInGame && (gameStatus === GameStatus.IN_PROGRESS || gameStatus === GameStatus.WAITING_FOR_OPPONENT) && selectedHistoryIndex === null"
       class="lg:hidden flex justify-center w-full"
     >
-      <button
+      <BaseButton
         @click="emit('abandon-match')"
         :disabled="abandoning"
-        class="text-[9px] font-black uppercase tracking-[0.3em] text-red-500/40 hover:text-red-500 transition-colors flex items-center gap-2"
+        variant="ghost"
+        size="sm"
+        class="text-red-500/60 hover:text-red-500"
+        icon-left="pi pi-flag-fill"
       >
-        <i class="pi pi-flag-fill"></i>
         {{ moveHistoryCount < 2 ? 'Cancel Operation' : 'Request Resignation' }}
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>

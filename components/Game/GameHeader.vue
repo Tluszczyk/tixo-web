@@ -36,12 +36,14 @@ const formatStatus = (status: GameStatus) => {
 
 <template>
   <div class="flex items-center space-x-4">
-    <button
+    <CommonBaseButton
       @click="emit('back')"
-      class="p-2 rounded-lg hover:bg-glass-white text-app-text-muted hover:text-app-text transition-colors"
-    >
-      <i class="pi pi-arrow-left"></i>
-    </button>
+      variant="ghost"
+      size="sm"
+      aria-label="Go back"
+      icon-left="pi pi-arrow-left"
+      class="!p-2 !rounded-lg"
+    />
     <div v-if="game" class="hidden lg:flex flex-col">
       <div class="flex items-center gap-2">
         <span class="text-sm font-bold text-app-text flex items-center gap-1.5">

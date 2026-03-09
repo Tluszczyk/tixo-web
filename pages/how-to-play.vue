@@ -103,13 +103,15 @@ const prevStep = () => {
   <NuxtLayout name="default">
     <template #header-left>
       <div class="flex items-center space-x-4">
-        <button
+        <BaseButton
           @click="router.push('/')"
+          variant="ghost"
+          size="sm"
           aria-label="Go back to dashboard"
-          class="p-2 hover:bg-glass-white rounded-lg text-app-text-muted hover:text-app-text transition-colors"
+          class="!w-10 !h-10 !p-0 text-app-text-muted hover:text-app-text transition-colors"
         >
           <i class="pi pi-arrow-left"></i>
-        </button>
+        </BaseButton>
         <div class="flex items-center space-x-2">
           <i class="pi pi-book text-blue-500 text-xl"></i>
           <span class="text-xl font-bold text-app-text tracking-tight">How to Play</span>
@@ -177,30 +179,35 @@ const prevStep = () => {
           </div>
 
           <div class="flex items-center space-x-4">
-            <button
+            <CommonBaseButton
               @click="prevStep"
               :disabled="currentStep === 0"
               aria-label="Previous tutorial step"
-              class="flex-1 px-6 py-4 rounded-2xl bg-glass-white border border-glass-border text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="secondary"
+              class="flex-1"
             >
               Back
-            </button>
-            <button
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="nextStep"
               v-if="currentStep < steps.length - 1"
               aria-label="Next tutorial step"
-              class="flex-[2] px-6 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 active:scale-[0.98]"
+              variant="info"
+              class="flex-[2]"
+              animate
             >
               Next Step
-            </button>
-            <button
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="router.push('/')"
               v-else
               aria-label="Finish tutorial and go to dashboard"
-              class="flex-[2] px-6 py-4 rounded-2xl bg-green-600 text-white font-bold hover:bg-green-500 transition-all shadow-xl shadow-green-900/20 active:scale-[0.98]"
+              variant="success"
+              class="flex-[2]"
+              animate
             >
               Got it, let's play!
-            </button>
+            </CommonBaseButton>
           </div>
 
           <!-- Progress Dots -->

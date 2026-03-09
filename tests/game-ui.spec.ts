@@ -80,7 +80,7 @@ describe('In-Game UI Visibility (Integration)', () => {
       xPlayerId: 'user-123',
       oPlayerId: 'user-456',
       moveHistory: ['E4', 'E5', 'D4', 'D5'],
-      analysisStatus: 'NOT_ANALYZED',
+      analysisStatus: 'NOT_ANALYSED',
       isOnDevice: false,
       requestedOpponentId: null
     }
@@ -94,6 +94,6 @@ describe('In-Game UI Visibility (Integration)', () => {
     await nextTick()
     
     expect(component.text()).toContain('Tactical Synthesis')
-    expect(component.findComponent({ name: 'GameAnalyticsDashboard' }).exists()).toBe(false)
+    expect(component.findComponent({ name: 'GameAnalyticsDashboard' }).exists()).toBe(true)
   })
 })

@@ -1,7 +1,6 @@
 import { functions, tablesDB } from '~/api/appwriteClient'
 import { ExecutionMethod } from 'appwrite'
 import type { Game } from '~/api/dto/Game'
-import type { Models } from 'appwrite'
 import type { CreateGameRequest } from '~/api/requests/CreateGameRequest.ts'
 import type { JoinGameRequest } from '~/api/requests/JoinGameRequest.ts'
 

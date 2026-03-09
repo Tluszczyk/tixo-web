@@ -135,35 +135,34 @@ const handleInitiate = () => {
         </p>
       </div>
       <div class="flex items-center gap-3 w-full md:w-auto">
-        <button
+        <CommonBaseButton
           @click="fetchGames"
-          class="w-12 h-12 lg:w-10 lg:h-10 rounded-xl glass border-glass-border text-app-text-muted opacity-40 hover:text-app-text hover:opacity-100 hover:border-indigo-500/30 transition-all flex items-center justify-center cursor-pointer group shrink-0"
+          variant="secondary"
+          size="sm"
+          class="w-12 h-12 lg:w-10 lg:h-10 !rounded-xl"
+          :loading="loading"
           title="Synchronize"
         >
-          <i
-            class="pi pi-refresh text-sm lg:text-xs group-hover:scale-110 transition-transform"
-            :class="{ 'animate-spin': loading }"
-          ></i>
-        </button>
-        <button
+          <i class="pi pi-refresh text-sm lg:text-xs"></i>
+        </CommonBaseButton>
+        <CommonBaseButton
           @click="showFilterDialog = true"
-          :class="[
-            'flex-1 md:flex-none px-4 lg:px-6 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 cursor-pointer',
-            showFilterDialog
-              ? 'bg-indigo-500 border-indigo-400 text-white'
-              : 'glass border-glass-border text-app-text-muted opacity-40 hover:text-app-text hover:opacity-100 hover:border-indigo-500/30',
-          ]"
+          :variant="showFilterDialog ? 'primary' : 'secondary'"
+          size="md"
+          class="flex-1 md:flex-none px-4 lg:px-6 !tracking-widest"
+          icon-left="pi pi-filter"
         >
-          <i class="pi pi-filter text-[10px]"></i>
-          <span>Parameters</span>
-        </button>
-        <button
+          Parameters
+        </CommonBaseButton>
+        <CommonBaseButton
           @click="handleInitiate"
-          class="flex-1 md:flex-none px-4 lg:px-8 py-3 rounded-xl bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 cursor-pointer"
+          variant="primary"
+          size="md"
+          class="flex-1 md:flex-none px-4 lg:px-8"
+          icon-left="pi pi-plus"
         >
-          <i class="pi pi-plus text-[10px]"></i>
-          <span>Initialize</span>
-        </button>
+          Initialize
+        </CommonBaseButton>
       </div>
     </div>
 
@@ -187,12 +186,14 @@ const handleInitiate = () => {
       <p class="text-app-text-muted opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">
         No Active Operations Found
       </p>
-      <button
+      <CommonBaseButton
         @click="handleInitiate"
-        class="mt-6 text-indigo-500 text-[10px] font-black uppercase tracking-widest hover:text-app-text transition-colors"
+        variant="ghost"
+        size="sm"
+        class="mt-6 !text-indigo-500 hover:!text-app-text"
       >
         Initiate New Protocol
-      </button>
+      </CommonBaseButton>
     </div>
 
     <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -259,23 +260,25 @@ const handleInitiate = () => {
             Scanning archives {{ (archivesPage - 1) * itemsPerPage + 1 }} - {{ Math.min(archivesPage * itemsPerPage, totalArchives) }} of {{ totalArchives }}
           </div>
           <div class="flex items-center gap-2">
-            <button
+            <CommonBaseButton
               @click="prevArchivePage"
               :disabled="archivesPage === 1 || loading"
-              class="w-10 h-10 rounded-lg glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-indigo-400 disabled:opacity-20 transition-all"
-            >
-              <i class="pi pi-chevron-left text-xs"></i>
-            </button>
+              variant="secondary"
+              size="sm"
+              class="w-10 h-10 !p-0"
+              icon-left="pi pi-chevron-left"
+            />
             <div class="px-4 py-2 rounded-lg bg-void border border-glass-border text-[10px] font-black text-app-text mono">
               {{ archivesPage }} / {{ totalArchivePages }}
             </div>
-            <button
+            <CommonBaseButton
               @click="nextArchivePage"
               :disabled="archivesPage === totalArchivePages || loading"
-              class="w-10 h-10 rounded-lg glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-indigo-400 disabled:opacity-20 transition-all"
-            >
-              <i class="pi pi-chevron-right text-xs"></i>
-            </button>
+              variant="secondary"
+              size="sm"
+              class="w-10 h-10 !p-0"
+              icon-left="pi pi-chevron-right"
+            />
           </div>
         </div>
       </div>

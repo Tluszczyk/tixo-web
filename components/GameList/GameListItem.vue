@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { User } from '~/api/users'
 
 import GameThumbnail from '~/components/GameList/GameThumbnail.vue'
 import GameInfo from '~/components/GameList/GameInfo.vue'
@@ -9,7 +10,7 @@ import { GameStatus } from '~/api/dto/GameStatus'
 
 const props = defineProps<{
   game: Game
-  currentUser: Models.User<Models.Preferences> | null
+  currentUser: Models.User<Models.Preferences> | User | null
 }>()
 
 const router = useRouter()
@@ -19,10 +20,10 @@ const isMyTurn = computed(() => {
     return false
 
   // For on-device games, the creator is always the active player if it's in progress
-  if (props.game.isOnDevice) return props.game.creatorId === props.currentUser.$id
+  if (props.game.isOnDevice) return props.game.creatorId === props.currentUser?.$id
 
   // For regular games, check nextPlayerId
-  return props.game.nextPlayerId === props.currentUser.$id
+  return props.game.nextPlayerId === props.currentUser?.$id
 })
 
 const openGame = () => {

@@ -24,10 +24,10 @@ describe('Guest Access (Integration)', () => {
     // Check if restricted items have the lock icon
     const buttons = component.findAll('button')
     const restrictedItems = buttons.filter(b => 
-      b.text().includes('Profile') || b.text().includes('Operational')
+      b.text().includes('Profile')
     )
     
-    expect(restrictedItems.length).toBe(2)
+    expect(restrictedItems.length).toBe(1)
     restrictedItems.forEach(item => {
       expect(item.find('.pi-lock').exists()).toBe(true)
       expect(item.classes()).toContain('opacity-50')

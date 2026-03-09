@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { ref, watch } from 'vue'
 import { GameStatus } from '~/api/dto/GameStatus'
 
@@ -79,12 +80,14 @@ const resetFilters = () => {
               Refine Operational Data
             </p>
           </div>
-          <button
+          <BaseButton
+            size="sm"
+            variant="ghost"
             @click="resetFilters"
-            class="text-xs font-black uppercase tracking-widest text-indigo-500 hover:text-app-text transition-colors"
+            class="text-indigo-500 hover:text-app-text"
           >
             Reset All
-          </button>
+          </BaseButton>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -120,19 +123,16 @@ const resetFilters = () => {
               >Operational Statuses</label
             >
             <div class="flex flex-wrap gap-2">
-              <button
+              <BaseButton
                 v-for="status in Object.values(GameStatus)"
                 :key="status"
                 @click="toggleStatus(status)"
-                :class="[
-                  'px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border',
-                  filters.statuses.includes(status)
-                    ? 'bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20'
-                    : 'glass border-glass-border text-app-text-muted opacity-30 hover:border-app-text/20',
-                ]"
+                :variant="filters.statuses.includes(status) ? 'primary' : 'secondary'"
+                size="sm"
+                class="!px-4 !py-2 !rounded-xl !text-[10px] !tracking-widest transition-all"
               >
                 {{ status.replace(/_/g, ' ') }}
-              </button>
+              </BaseButton>
             </div>
           </div>
 
@@ -165,28 +165,22 @@ const resetFilters = () => {
               >Local Protocol</label
             >
             <div class="flex p-1.5 rounded-2xl glass border-glass-border h-[60px]">
-              <button
+              <BaseButton
                 @click="filters.isOnDevice = filters.isOnDevice === true ? null : true"
-                :class="[
-                  'flex-1 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.isOnDevice === true
-                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.isOnDevice === true ? 'primary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Local
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 @click="filters.isOnDevice = filters.isOnDevice === false ? null : false"
-                :class="[
-                  'flex-1 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.isOnDevice === false
-                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.isOnDevice === false ? 'primary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Remote
-              </button>
+              </BaseButton>
             </div>
           </div>
 
@@ -222,69 +216,61 @@ const resetFilters = () => {
           >
           <div class="grid grid-cols-2 gap-6">
             <div class="flex p-1.5 rounded-2xl glass border-glass-border">
-              <button
+              <BaseButton
                 @click="filters.sortBy = 'createdAt'"
-                :class="[
-                  'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.sortBy === 'createdAt'
-                    ? 'bg-app-text/10 text-app-text'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.sortBy === 'createdAt' ? 'secondary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Created
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 @click="filters.sortBy = 'updatedAt'"
-                :class="[
-                  'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.sortBy === 'updatedAt'
-                    ? 'bg-app-text/10 text-app-text'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.sortBy === 'updatedAt' ? 'secondary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Updated
-              </button>
+              </BaseButton>
             </div>
             <div class="flex p-1.5 rounded-2xl glass border-glass-border">
-              <button
+              <BaseButton
                 @click="filters.sortOrder = 'desc'"
-                :class="[
-                  'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.sortOrder === 'desc'
-                    ? 'bg-app-text/10 text-app-text'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.sortOrder === 'desc' ? 'secondary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Desc
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 @click="filters.sortOrder = 'asc'"
-                :class="[
-                  'flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all',
-                  filters.sortOrder === 'asc'
-                    ? 'bg-app-text/10 text-app-text'
-                    : 'text-app-text-muted opacity-20 hover:opacity-40',
-                ]"
+                :variant="filters.sortOrder === 'asc' ? 'secondary' : 'ghost'"
+                size="sm"
+                class="flex-1 !h-full !rounded-xl !text-[10px] !font-black !uppercase"
               >
                 Asc
-              </button>
+              </BaseButton>
             </div>
           </div>
         </div>
 
         <div class="flex gap-6 pt-6">
-          <button
+          <BaseButton
             @click="emit('close')"
-            class="flex-1 py-5 rounded-2xl glass border-glass-border text-xs font-black uppercase tracking-widest text-app-text-muted opacity-40 hover:bg-glass-white transition-all"
+            variant="secondary"
+            size="lg"
+            class="flex-1"
           >
             Cancel
-          </button>
-          <button
+          </BaseButton>
+          <BaseButton
             @click="applyFilters"
-            class="flex-[2] py-5 rounded-2xl bg-app-text text-void text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:opacity-90 transition-all"
+            variant="primary"
+            size="lg"
+            class="flex-[2]"
           >
             Apply Parameters
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>

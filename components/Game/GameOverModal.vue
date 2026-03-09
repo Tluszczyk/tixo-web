@@ -39,12 +39,14 @@ const router = useRouter()
         ></div>
 
         <!-- Close Button -->
-        <button
+        <CommonBaseButton
           @click="emit('close')"
-          class="absolute top-4 right-4 p-1.5 text-app-text-muted hover:text-app-text hover:bg-glass-white rounded-lg transition-all z-10"
+          variant="ghost"
+          size="sm"
+          class="absolute top-4 right-4 !w-10 !h-10 !p-0 text-app-text-muted hover:text-app-text hover:bg-glass-white rounded-lg transition-all z-10"
         >
           <i class="pi pi-times text-sm"></i>
-        </button>
+        </CommonBaseButton>
 
         <div class="relative z-10 flex flex-col items-center text-center">
           <!-- Icon Container -->
@@ -99,26 +101,33 @@ const router = useRouter()
 
           <!-- Actions -->
           <div class="w-full space-y-3">
-            <button
+            <CommonBaseButton
               @click="emit('create-new')"
-              class="w-full py-4 bg-app-text text-void font-black rounded-2xl hover:opacity-90 transition-all flex items-center justify-center space-x-3 shadow-xl active:scale-95"
+              variant="primary"
+              size="lg"
+              block
+              icon-left="pi pi-plus-circle"
+              animate
             >
-              <i class="pi pi-plus-circle font-bold"></i>
-              <span>Create New Game</span>
-            </button>
-            <button
+              Create New Game
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="emit('close')"
-              class="w-full py-4 bg-glass-white text-app-text font-bold rounded-2xl hover:bg-indigo-500/20 transition-all flex items-center justify-center space-x-3 active:scale-95 border border-glass-border"
+              variant="secondary"
+              size="lg"
+              block
+              icon-left="pi pi-eye"
             >
-              <i class="pi pi-eye"></i>
-              <span>View Board</span>
-            </button>
-            <button
+              View Board
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="router.push('/')"
-              class="w-full py-4 bg-glass-white text-app-text-muted font-bold rounded-2xl hover:bg-glass-white hover:text-app-text transition-all active:scale-95 border border-glass-border"
+              variant="secondary"
+              size="lg"
+              block
             >
               Back to Main Page
-            </button>
+            </CommonBaseButton>
           </div>
         </div>
       </div>

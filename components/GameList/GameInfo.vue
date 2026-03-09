@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { ref, onMounted, watch } from 'vue'
 import type { Game } from '~/api/dto/Game'
 import { GameStatus } from '~/api/dto/GameStatus'
@@ -42,7 +43,7 @@ const formatStatus = (status: GameStatus) => {
         >
           {{
             game.status === GameStatus.FINISHED
-              ? 'Concluded'
+              ? (game.winner === 'TIE' || game.winner === 'D' ? 'Draw' : `Player ${game.winner} Won`)
               : game.status === GameStatus.CANCELLED
                 ? 'Void'
                 : game.status === GameStatus.WAITING_FOR_OPPONENT
@@ -162,14 +163,14 @@ const formatStatus = (status: GameStatus) => {
         </span>
       </div>
 
-      <button
-        class="shrink-0 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-glass-white border border-glass-border text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-app-text-muted opacity-60 group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-400 group-hover:opacity-100 transition-all flex items-center gap-1.5 sm:gap-2"
+      <BaseButton
+        class="shrink-0"
+        size="sm"
+        variant="secondary"
+        icon-right="pi pi-arrow-right"
       >
         <span>{{ game.status === GameStatus.IN_PROGRESS ? 'Engage' : 'Inspect' }}</span>
-        <i
-          class="pi pi-arrow-right text-[8px] sm:text-[10px] transition-transform group-hover:translate-x-1"
-        ></i>
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>

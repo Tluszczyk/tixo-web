@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { ref } from 'vue'
 
 import { auth, LoginStatus } from '~/api/authentication'
@@ -112,12 +113,14 @@ const closeModal = () => {
       >
         <div class="w-full max-w-md relative animate-in zoom-in duration-300">
           <!-- Close Button -->
-          <button
+          <BaseButton
+            size="sm"
+            variant="ghost"
+            class="absolute -top-12 right-0 w-10 h-10 rounded-full z-10"
             @click="closeModal"
-            class="absolute -top-12 right-0 w-10 h-10 rounded-full glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text transition-all group z-10"
           >
-            <i class="pi pi-times group-hover:rotate-90 transition-transform"></i>
-          </button>
+            <i class="pi pi-times hover:rotate-90 transition-transform"></i>
+          </BaseButton>
 
           <div class="space-y-8">
             <!-- Logo/Branding -->
@@ -187,25 +190,27 @@ const closeModal = () => {
                   {{ error }}
                 </div>
 
-                <button
+                <BaseButton
                   type="submit"
                   :disabled="loading"
-                  class="w-full py-5 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3"
+                  size="lg"
+                  variant="primary"
+                  block
+                  :loading="loading"
                 >
-                  <i v-if="loading" class="pi pi-spin pi-spinner"></i>
-                  <span>{{
-                    loading ? 'Authorizing...' : isRegister ? 'Commission Account' : 'Authorize'
-                  }}</span>
-                </button>
+                  {{ isRegister ? 'Commission Account' : 'Authorize' }}
+                </BaseButton>
 
                 <div class="text-center">
-                  <button
+                  <BaseButton
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     @click="isRegister = !isRegister"
-                    class="text-[9px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 hover:opacity-40 transition-all"
+                    class="text-app-text-muted opacity-20 hover:opacity-40 transition-all font-black uppercase tracking-[0.2em] !bg-transparent"
                   >
                     {{ isRegister ? 'Already commissioned? Access Protocol' : 'New operator? Request Commission' }}
-                  </button>
+                  </BaseButton>
                 </div>
               </form>
 
@@ -218,35 +223,36 @@ const closeModal = () => {
                   <div class="h-[1px] flex-1 bg-glass-border"></div>
                 </div>
 
-                <button
-                  @click="handleGoogleLogin"
+                <BaseButton
+                  variant="secondary"
+                  size="md"
+                  block
                   :disabled="loading || isLocalhost"
+                  :loading="loading"
+                  icon-left="pi pi-google"
+                  @click="handleGoogleLogin"
                   :class="[
-                    'w-full py-4 rounded-2xl glass border-glass-border text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3',
+                    'transition-all',
                     isLocalhost
                       ? 'opacity-20 grayscale cursor-not-allowed pointer-events-none'
-                      : 'text-app-text-muted opacity-40 hover:bg-glass-white hover:opacity-100 hover:text-app-text',
+                      : 'text-app-text-muted opacity-40 hover:opacity-100 hover:text-app-text',
                   ]"
                 >
-                  <i v-if="loading" class="pi pi-spin pi-spinner"></i>
-                  <i v-else class="pi pi-google"></i>
-                  <span>{{
-                    isLocalhost
-                      ? 'Google (Cloud Only)'
-                      : loading
-                        ? 'Authorizing...'
-                        : 'Google Protocol'
-                  }}</span>
-                </button>
+                  <span>{{ isLocalhost ? 'Google (Cloud Only)' : 'Google Protocol' }}</span>
+                </BaseButton>
 
-                <button
-                  @click="loginAnonymously"
+                <BaseButton
+                  variant="secondary"
+                  size="md"
+                  block
                   :disabled="loading"
-                  class="w-full py-4 rounded-2xl glass border-glass-border text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-glass-white hover:opacity-100 hover:text-app-text transition-all flex items-center justify-center gap-3"
+                  :loading="loading"
+                  icon-left="pi pi-user-plus"
+                  @click="loginAnonymously"
+                  class="text-app-text-muted opacity-40 hover:opacity-100 hover:text-app-text"
                 >
-                  <i class="pi pi-user-plus"></i>
                   <span>Guest Protocol</span>
-                </button>
+                </BaseButton>
               </div>
             </div>
           </div>

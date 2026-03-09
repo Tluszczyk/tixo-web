@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import BaseButton from '~/components/Common/BaseButton.vue'
 
 definePageMeta({
   layout: false
@@ -204,18 +205,20 @@ const fetchGame = async () => {
       const isFinished = gameData.status === GameStatus.FINISHED || gameData.status === GameStatus.CANCELLED
       const isAnalyzing = gameData.analysisStatus === 'ANALYSIS_COMPLETE' || gameData.analysisStatus === 'ANALYSIS_IN_PROCESS'
       
-      if (isFinished && isAnalyzing) {
+      if (isFinished) {
         showAnalytics.value = true
-        // Fetch analytics to have recommendations available for the board
-        const { tablesDB } = await import('~/api/appwriteClient')
-        const { Query } = await import('appwrite')
-        const response = await tablesDB.listRows<GameAnalytics>({
-          databaseId: 'tixo',
-          tableId: 'game-analytics',
-          queries: [Query.equal('gameId', gameData.$id)],
-        })
-        if (response.total > 0 && game.value) {
-          game.value.analytics = response.rows[0]
+        if (isAnalyzing) {
+          // Fetch analytics to have recommendations available for the board
+          const { tablesDB } = await import('~/api/appwriteClient')
+          const { Query } = await import('appwrite')
+          const response = await tablesDB.listRows<GameAnalytics>({
+            databaseId: 'tixo',
+            tableId: 'game-analytics',
+            queries: [Query.equal('gameId', gameData.$id)],
+          })
+          if (response.total > 0 && game.value) {
+            game.value.analytics = response.rows[0]
+          }
         }
       }
     } else {
@@ -465,7 +468,7 @@ const matchResult = computed(() => {
   if (!game.value || !authStore.user) return ''
   if (game.value.status === GameStatus.CANCELLED) return 'CANCELLED'
   if (game.value.winner === 'None') return ''
-  if (game.value.winner === 'D') return 'DRAW'
+  if (game.value.winner === 'D' || game.value.winner === 'TIE') return 'DRAW'
   const userSymbol = game.value.xPlayerId === authStore.user.$id ? 'X' : 'O'
   return game.value.winner === userSymbol ? 'WIN' : 'LOSS'
 })
@@ -530,12 +533,13 @@ const goBack = () => {
       <p class="text-app-text-muted opacity-40 mb-6">
         The game you're looking for doesn't exist or has been removed.
       </p>
-      <button
+      <BaseButton
         @click="goBack"
-        class="px-6 py-2 rounded-xl bg-glass-white text-app-text font-bold hover:bg-indigo-500/20 transition-all border border-glass-border"
+        variant="secondary"
+        size="md"
       >
         Go Back
-      </button>
+      </BaseButton>
     </div>
 
     <div v-else class="flex flex-col pb-12 h-full min-h-[calc(100vh-120px)] overflow-x-hidden px-4">
@@ -714,29 +718,15 @@ const goBack = () => {
                   <h4 class="text-2xl font-black text-app-text uppercase italic">Intelligence Locked</h4>
                   <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Log in to unlock full move analysis</p>
                 </div>
-                <button
+                <BaseButton
                   @click="authStore.openLoginModal(route.fullPath)"
-                  class="px-10 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-[0.98]"
+                  variant="primary"
+                  size="md"
+                  block
                 >
                   Authorize to Unlock
-                </button>
+                </BaseButton>
               </div>
-            </div>
-
-            <!-- Request Analysis Button -->
-            <div v-if="!showAnalytics && !isGuest" class="w-full flex justify-center">
-               <button
-                @click="triggerAnalysis"
-                class="group relative flex flex-col items-center gap-6 p-8 rounded-[2.5rem] glass border-glass-border hover:border-indigo-500/30 transition-all duration-700 hover:scale-105 w-full max-w-sm"
-              >
-                <div class="w-20 h-20 rounded-2xl glass flex items-center justify-center border-indigo-500/20 text-indigo-500 shadow-2xl shadow-indigo-500/10 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
-                  <i class="pi pi-bolt text-4xl"></i>
-                </div>
-                <div class="space-y-2 text-center">
-                  <h4 class="text-lg font-black text-app-text uppercase italic tracking-tight">Tactical Synthesis</h4>
-                  <p class="text-[9px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 group-hover:opacity-40 transition-opacity">Unlock deep move evaluations</p>
-                </div>
-              </button>
             </div>
 
             <!-- The Dashboard -->
@@ -779,28 +769,18 @@ const goBack = () => {
           >
             <div class="glass p-8 rounded-[2rem] border-indigo-500/30 flex flex-col items-center text-center space-y-6 shadow-2xl">
               <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Log in to unlock full move analysis</p>
-              <button
+              <BaseButton
                 @click="authStore.openLoginModal(route.fullPath)"
-                class="px-8 py-3 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl"
+                variant="primary"
+                size="md"
+                block
               >
                 Authorize to Unlock
-              </button>
+              </BaseButton>
             </div>
           </div>
 
-          <div v-if="!showAnalytics && !isGuest" class="py-12 flex flex-col items-center justify-center glass rounded-3xl border border-glass-border space-y-6 shadow-2xl">
-            <p class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-20">
-              Tactical data is available for review
-            </p>
-            <button
-              @click="triggerAnalysis"
-              class="px-10 py-4 bg-indigo-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-indigo-500 transition-all shadow-2xl"
-            >
-              Request Analysis
-            </button>
-          </div>
-
-          <div v-else :class="{ 'blur-md pointer-events-none': isGuest }">
+          <div :class="{ 'blur-md pointer-events-none': isGuest }">
                               <GameAnalyticsDashboard 
                                 :game-id="game.$id" 
                                 :winner="game.winner" 

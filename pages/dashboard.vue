@@ -35,7 +35,8 @@ onMounted(async () => {
       await authStore.checkAuth()
     }
 
-    const allGames = await games.listGames()
+    const response = await games.listGames()
+    const allGames = response.games
 
     if (allGames.length > 0) {
       let featured = allGames.find(
@@ -134,20 +135,22 @@ const goToFeatured = () => {
           </p>
 
           <div class="flex items-center gap-6 pt-4">
-            <button
+            <CommonBaseButton
               @click="handleInitiateMatch"
               aria-label="Initiate a new match"
-              class="px-10 py-4 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-2xl active:scale-95"
+              variant="primary"
+              size="lg"
             >
               Initiate Match
-            </button>
-            <button
+            </CommonBaseButton>
+            <CommonBaseButton
               @click="router.push('/how-to-play')"
               aria-label="View how to play tutorial"
-              class="px-10 py-4 glass border-glass-border text-app-text-muted text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-glass-white transition-all"
+              variant="secondary"
+              size="lg"
             >
               Intel
-            </button>
+            </CommonBaseButton>
           </div>
         </div>
 
@@ -196,13 +199,15 @@ const goToFeatured = () => {
             <h3 class="text-lg font-black text-app-text uppercase italic">Elevate Your Command</h3>
             <p class="text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-widest">Authorize to track your personal progress and engage in new operations</p>
           </div>
-          <button
+          <CommonBaseButton
             @click="authStore.openLoginModal('/')"
             aria-label="Authorize Protocol to login"
-            class="px-10 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-95"
+            variant="primary"
+            size="lg"
+            class="bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500/30"
           >
             Authorize Protocol
-          </button>
+          </CommonBaseButton>
         </div>
       </section>
     </div>

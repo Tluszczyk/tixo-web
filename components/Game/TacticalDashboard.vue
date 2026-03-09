@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { GameStatus } from '~/api/dto/GameStatus'
 import type { User } from '~/api/users'
 import type { Game } from '~/api/dto/Game'
@@ -80,19 +81,23 @@ const emit = defineEmits<{
           </div>
           
           <div class="flex flex-col gap-2">
-            <button
+            <BaseButton
               @click="emit('submit-move')"
-              class="w-full py-3.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-500/20 active:scale-[0.98] flex items-center justify-center gap-2"
+              variant="primary"
+              size="md"
+              block
+              icon-left="pi pi-check-circle"
             >
-              <i class="pi pi-check-circle"></i>
               Confirm Move
-            </button>
-            <button
+            </BaseButton>
+            <BaseButton
               @click="emit('clear-selection')"
-              class="w-full py-3 glass border-glass-border text-app-text-muted text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-glass-white transition-all active:scale-[0.98]"
+              variant="secondary"
+              size="sm"
+              block
             >
               Abort
-            </button>
+            </BaseButton>
           </div>
         </div>
 
@@ -104,12 +109,14 @@ const emit = defineEmits<{
             <p class="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">History Mode</p>
             <p class="text-lg font-black text-app-text italic">Move {{ selectedHistoryIndex + 1 }}</p>
           </div>
-          <button
+          <BaseButton
             @click="emit('clear-history')"
-            class="w-full py-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-amber-500/20 transition-all"
+            variant="secondary"
+            size="sm"
+            block
           >
             Return to Active
-          </button>
+          </BaseButton>
         </div>
 
         <div v-else-if="game?.status === GameStatus.WAITING_FOR_OPPONENT && !isPlayerInGame" class="glass p-6 rounded-[1.5rem] border-indigo-500/20 flex flex-col gap-4 text-center">
@@ -120,14 +127,16 @@ const emit = defineEmits<{
             <h4 class="text-base font-black text-app-text uppercase italic">Join Operation</h4>
             <p class="text-[8px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Authorize to engage</p>
           </div>
-          <button
+          <BaseButton
             @click="emit('join-match')"
             :disabled="joining"
-            class="w-full py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-2xl active:scale-95 disabled:opacity-50"
+            :loading="joining"
+            variant="primary"
+            size="md"
+            block
           >
-            <i v-if="joining" class="pi pi-spin pi-spinner mr-2"></i>
             Authorize
-          </button>
+          </BaseButton>
         </div>
       </Transition>
 
@@ -143,13 +152,15 @@ const emit = defineEmits<{
               <p class="text-[9px] font-bold text-app-text group-hover:text-red-400 transition-colors leading-none">Resignation</p>
             </div>
           </div>
-          <button
+          <BaseButton
             @click="emit('abandon-click')"
             :disabled="abandoning"
-            class="px-3 py-1.5 text-[8px] font-black uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-all"
+            variant="ghost"
+            size="sm"
+            class="text-red-400 hover:text-red-500"
           >
             {{ (game?.moveHistory || []).length < 2 ? 'Cancel' : 'Abandon' }}
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>

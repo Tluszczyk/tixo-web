@@ -53,7 +53,7 @@ describe('Extra Test Cases (Elite QA)', () => {
       board: '.'.repeat(81),
       tileWinners: '.'.repeat(9),
       nextPlayerId: 'user-123', // It's our turn
-      analysisStatus: 'NOT_ANALYZED',
+      analysisStatus: 'NOT_ANALYSED',
       isOnDevice: false,
       requestedOpponentId: null
     }

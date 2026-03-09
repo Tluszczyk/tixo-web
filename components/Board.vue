@@ -85,6 +85,10 @@ const isTileActive = (tileIndex: number) => {
 const isCellAvailable = (tileIndex: number, cellIndex: number) => {
   if (props.readonly) return false
   if (!props.availableMoves) return true
+  
+  // NEVER allow moves in won/tied tiles
+  if (deserializedTileWinners.value[tileIndex] !== '.') return false
+
   const index = getAbsoluteIndex(tileIndex, cellIndex)
   if (props.board && props.board[index] !== '.') return false
 
@@ -95,7 +99,18 @@ const isCellAvailable = (tileIndex: number, cellIndex: number) => {
   const coord = `${col}${row}`
   const moves = props.availableMoves || ''
 
-  if (moves.startsWith('ALL_AVAILABLE_EXCEPT:')) {
+  if (moves.startsWith('ALL_AVAILABLE_EXCEPT_TILES:')) {
+    const parts = moves.split(':')
+    const exceptTiles = parts[1] ? parts[1].split(',').filter(Boolean) : []
+    const exceptCells = parts[3] ? parts[3].split(',').filter(Boolean) : []
+    
+    const tx = Math.floor(x / 3) * 3
+    const ty = Math.floor(y / 3) * 3
+    const tileCoord = `${String.fromCharCode(65 + tx)}${ty + 1}`
+    
+    if (exceptTiles.includes(tileCoord)) return false
+    return !exceptCells.includes(coord)
+  } else if (moves.startsWith('ALL_AVAILABLE_EXCEPT:')) {
     const parts = moves.split(':')
     const except = parts[1] ? parts[1].split(',').filter(Boolean) : []
     return !except.includes(coord)
@@ -221,7 +236,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
           v-for="(tileArr, i) in deserializedBoard"
           :key="i"
           class="small-board transition-all duration-200 relative overflow-hidden aspect-square grid grid-cols-3 grid-rows-3 gap-0.5 lg:gap-1 p-0.5 lg:p-1.5"
-          :class="[
+            :class="[
             isTargetHighlight(i)
               ? 'target-highlight ring-4 ring-yellow-400/80 z-30'
               : isTileActive(i)
@@ -231,7 +246,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
               ? 'won-x'
               : deserializedTileWinners[i] === 'O'
                 ? 'won-o'
-                : deserializedTileWinners[i] === 'D'
+                : (deserializedTileWinners[i] === 'D' || deserializedTileWinners[i] === 'TIE')
                   ? 'won-draw'
                   : 'glass',
           ]"
@@ -275,9 +290,6 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 </template>
 
 <style scoped>
-.board-container {
-  /* Perspective removed to fix hit-test misalignment */
-}
 .small-board {
   background: var(--tile-bg);
   border: 1px solid var(--tile-border);

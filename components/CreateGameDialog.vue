@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import BaseButton from '~/components/Common/BaseButton.vue'
 
 import { games } from '~/api/games'
 import { users, type User } from '~/api/users'
@@ -149,14 +150,11 @@ const handleCreate = async () => {
 
         <!-- Symbol Selection -->
         <div class="grid grid-cols-2 gap-4">
-          <button
+          <BaseButton
             @click="selectedSymbol = 'X'"
-            :class="[
-              'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
-              selectedSymbol === 'X'
-                ? 'border-red-500 bg-red-500/10'
-                : 'border-glass-border bg-glass-white hover:border-app-text/20',
-            ]"
+            :variant="selectedSymbol === 'X' ? 'primary' : 'secondary'"
+            class="group relative aspect-square !rounded-2xl !border-2 flex flex-col items-center justify-center transition-all duration-300"
+            :class="selectedSymbol === 'X' ? '!border-red-500 !bg-red-500/10' : ''"
           >
             <span
               class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
@@ -164,7 +162,7 @@ const handleCreate = async () => {
               >X</span
             >
             <span
-              class="text-xs font-bold uppercase tracking-widest"
+              class="text-[10px] font-black uppercase tracking-[0.2em]"
               :class="selectedSymbol === 'X' ? 'text-red-400' : 'text-app-text-muted opacity-40'"
               >Player 1</span
             >
@@ -175,16 +173,13 @@ const handleCreate = async () => {
             >
               <i class="pi pi-check text-[10px] text-white font-bold"></i>
             </div>
-          </button>
+          </BaseButton>
 
-          <button
+          <BaseButton
             @click="selectedSymbol = 'O'"
-            :class="[
-              'group relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300',
-              selectedSymbol === 'O'
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-glass-border bg-glass-white hover:border-app-text/20',
-            ]"
+            :variant="selectedSymbol === 'O' ? 'primary' : 'secondary'"
+            class="group relative aspect-square !rounded-2xl !border-2 flex flex-col items-center justify-center transition-all duration-300"
+            :class="selectedSymbol === 'O' ? '!border-blue-500 !bg-blue-500/10' : ''"
           >
             <span
               class="text-6xl font-black mb-2 transition-transform group-hover:scale-110"
@@ -192,7 +187,7 @@ const handleCreate = async () => {
               >O</span
             >
             <span
-              class="text-xs font-bold uppercase tracking-widest"
+              class="text-[10px] font-black uppercase tracking-[0.2em]"
               :class="selectedSymbol === 'O' ? 'text-blue-400' : 'text-app-text-muted opacity-40'"
               >Player 2</span
             >
@@ -203,7 +198,7 @@ const handleCreate = async () => {
             >
               <i class="pi pi-check text-[10px] text-white font-bold"></i>
             </div>
-          </button>
+          </BaseButton>
         </div>
 
         <!-- Game Mode Selection -->
@@ -212,14 +207,11 @@ const handleCreate = async () => {
             >Game Mode</label
           >
           <div class="grid grid-cols-1 gap-3">
-            <button
+            <BaseButton
               @click="gameMode = 'ONLINE'"
-              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="
-                gameMode === 'ONLINE'
-                  ? 'border-blue-500/50 bg-blue-500/10'
-                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
-              "
+              variant="secondary"
+              class="!flex !items-center !space-x-4 !p-4 !rounded-2xl !border-2 !transition-all !duration-300 !text-left !h-auto"
+              :class="gameMode === 'ONLINE' ? '!border-blue-500/50 !bg-blue-500/10' : ''"
             >
               <div
                 class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
@@ -231,25 +223,22 @@ const handleCreate = async () => {
               >
                 <i class="pi pi-globe text-xl"></i>
               </div>
-              <div>
+              <div class="flex-1">
                 <p
-                  class="font-bold text-sm"
+                  class="font-black text-[10px] uppercase tracking-[0.2em]"
                   :class="gameMode === 'ONLINE' ? 'text-blue-500' : 'text-app-text'"
                 >
                   Online Multiplayer
                 </p>
-                <p class="text-xs text-app-text-muted opacity-40">Play against someone else</p>
+                <p class="text-[9px] uppercase font-black tracking-widest text-app-text-muted opacity-40">Play against someone else</p>
               </div>
-            </button>
+            </BaseButton>
 
-            <button
+            <BaseButton
               @click="gameMode = 'AI'"
-              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="
-                gameMode === 'AI'
-                  ? 'border-purple-500/50 bg-purple-500/10'
-                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
-              "
+              variant="secondary"
+              class="!flex !items-center !space-x-4 !p-4 !rounded-2xl !border-2 !transition-all !duration-300 !text-left !h-auto"
+              :class="gameMode === 'AI' ? '!border-purple-500/50 !bg-purple-500/10' : ''"
             >
               <div
                 class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
@@ -261,25 +250,22 @@ const handleCreate = async () => {
               >
                 <i class="pi pi-android text-xl"></i>
               </div>
-              <div>
+              <div class="flex-1">
                 <p
-                  class="font-bold text-sm"
+                  class="font-black text-[10px] uppercase tracking-[0.2em]"
                   :class="gameMode === 'AI' ? 'text-purple-500' : 'text-app-text'"
                 >
                   Play vs AI
                 </p>
-                <p class="text-xs text-app-text-muted opacity-40">Challenge the model</p>
+                <p class="text-[9px] uppercase font-black tracking-widest text-app-text-muted opacity-40">Challenge the model</p>
               </div>
-            </button>
+            </BaseButton>
 
-            <button
+            <BaseButton
               @click="gameMode = 'LOCAL'"
-              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 text-left"
-              :class="
-                gameMode === 'LOCAL'
-                  ? 'border-amber-500/50 bg-amber-500/10'
-                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
-              "
+              variant="secondary"
+              class="!flex !items-center !space-x-4 !p-4 !rounded-2xl !border-2 !transition-all !duration-300 !text-left !h-auto"
+              :class="gameMode === 'LOCAL' ? '!border-amber-500/50 !bg-amber-500/10' : ''"
             >
               <div
                 class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
@@ -291,16 +277,16 @@ const handleCreate = async () => {
               >
                 <i class="pi pi-mobile text-xl"></i>
               </div>
-              <div>
+              <div class="flex-1">
                 <p
-                  class="font-bold text-sm"
+                  class="font-black text-[10px] uppercase tracking-[0.2em]"
                   :class="gameMode === 'LOCAL' ? 'text-amber-500' : 'text-app-text'"
                 >
                   Pass & Play
                 </p>
-                <p class="text-xs text-app-text-muted opacity-40">Two players, one device</p>
+                <p class="text-[9px] uppercase font-black tracking-widest text-app-text-muted opacity-40">Two players, one device</p>
               </div>
-            </button>
+            </BaseButton>
           </div>
         </div>
 
@@ -316,16 +302,13 @@ const handleCreate = async () => {
             v-else-if="bots.length > 0"
             class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar"
           >
-            <button
+            <BaseButton
               v-for="bot in bots"
               :key="bot.$id"
               @click="selectedBotId = bot.$id"
-              class="w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-300 text-left"
-              :class="
-                selectedBotId === bot.$id
-                  ? 'border-purple-500/50 bg-purple-500/10'
-                  : 'border-glass-border bg-glass-white hover:border-app-text/20'
-              "
+              variant="secondary"
+              class="!w-full !flex !items-center !justify-between !p-3 !rounded-xl !border-2 !transition-all !duration-300 !text-left !h-auto"
+              :class="selectedBotId === bot.$id ? '!border-purple-500/50 !bg-purple-500/10' : ''"
             >
               <div class="flex items-center space-x-3">
                 <div
@@ -340,12 +323,12 @@ const handleCreate = async () => {
                 </div>
                 <div>
                   <p
-                    class="font-bold text-xs"
+                    class="font-black text-[10px] uppercase tracking-widest"
                     :class="selectedBotId === bot.$id ? 'text-purple-400' : 'text-app-text'"
                   >
                     {{ bot.name }}
                   </p>
-                  <p class="text-[10px] text-app-text-muted opacity-40 capitalize">
+                  <p class="text-[8px] uppercase font-black text-app-text-muted opacity-40">
                     {{ bot.prefs?.modelName?.toLowerCase() || 'Heuristic' }} AI
                   </p>
                 </div>
@@ -354,7 +337,7 @@ const handleCreate = async () => {
                 <p class="text-[10px] font-black text-purple-500">{{ bot.rating || 1500 }}</p>
                 <p class="text-[8px] text-app-text-muted opacity-40 uppercase tracking-tighter">Rating</p>
               </div>
-            </button>
+            </BaseButton>
           </div>
           <div v-else class="text-center py-4 text-app-text-muted opacity-40 text-xs">No AI bots available.</div>
         </div>
@@ -394,12 +377,14 @@ const handleCreate = async () => {
         </div>
 
         <div class="flex flex-col space-y-3">
-          <button
+          <BaseButton
             @click="handleCreate"
             :disabled="!canCreate"
-            class="w-full py-4 rounded-2xl bg-app-text text-void font-bold hover:opacity-90 transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            variant="primary"
+            size="lg"
+            block
+            :loading="loading || isValidatingUser"
           >
-            <i v-if="loading || isValidatingUser" class="pi pi-spin pi-spinner"></i>
             <span>{{ 
               loading ? 'Creating Match...' : 
               isValidatingUser ? 'Verifying User...' :
@@ -408,15 +393,17 @@ const handleCreate = async () => {
               (gameMode === 'ONLINE' && !isUserVerified) ? 'Invalid Opponent' :
               'Create Match' 
             }}</span>
-          </button>
+          </BaseButton>
 
-          <button
+          <BaseButton
             @click="emit('close')"
             :disabled="loading"
-            class="w-full py-4 rounded-2xl bg-glass-white border border-glass-border text-app-text-muted font-bold hover:bg-glass-white hover:text-app-text transition-all active:scale-[0.98]"
+            variant="secondary"
+            size="lg"
+            block
           >
             Cancel
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>

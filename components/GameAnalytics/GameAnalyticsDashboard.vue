@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
+import BaseButton from '~/components/Common/BaseButton.vue'
 import { Query } from 'appwrite'
 import { tablesDB } from '~/api/appwriteClient'
 import { use } from 'echarts/core'
@@ -389,7 +390,7 @@ const summary = computed(() => {
 <template>
   <div class="flex flex-col h-full">
     <div
-      v-if="error && !analytics"
+      v-if="error && !analytics && analysisStatus !== 'NOT_ANALYSED'"
       class="h-full flex flex-col items-center justify-center glass rounded-[2.5rem] border-red-500/10 py-20"
     >
       <i class="pi pi-exclamation-triangle text-5xl text-red-500/40 mb-6"></i>
@@ -422,7 +423,7 @@ const summary = computed(() => {
               >Victor</span
             >
             <span class="text-xl sm:text-2xl font-black text-app-text uppercase">{{
-              winner === 'D' ? 'Draw' : winner === 'None' ? 'Ongoing' : `Player ${winner}`
+              (winner === 'D' || winner === 'TIE') ? 'Draw' : winner === 'None' ? 'Ongoing' : `Player ${winner}`
             }}</span>
           </div>
           <div
@@ -444,6 +445,26 @@ const summary = computed(() => {
         <div
           class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 blur-[80px] rounded-full"
         ></div>
+      </div>
+
+      <!-- Request Analysis Replacement Button -->
+      <div v-if="analysisStatus === 'NOT_ANALYSED'" class="w-full flex justify-center py-10">
+         <BaseButton
+          @click="emit('trigger-analysis')"
+          variant="secondary"
+          class="group relative !flex !flex-col !items-center !gap-6 !p-8 sm:!p-12 !rounded-[2.5rem] sm:!rounded-[3.5rem] !glass !border-glass-border hover:border-indigo-500/30 !transition-all duration-700 hover:scale-[1.02] !w-full !max-w-2xl !h-auto shadow-2xl"
+        >
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl glass flex items-center justify-center border-indigo-500/20 text-indigo-500 shadow-2xl shadow-indigo-500/10 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
+            <i class="pi pi-bolt text-4xl sm:text-5xl"></i>
+          </div>
+          <div class="space-y-3 text-center">
+            <h4 class="text-xl sm:text-2xl font-black text-app-text uppercase italic tracking-tight">Tactical Synthesis</h4>
+            <p class="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-20 group-hover:opacity-60 transition-opacity">Request deep evaluation of the fractal engagement</p>
+          </div>
+          <div class="mt-4 px-6 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black text-indigo-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">
+            Ready for Processing
+          </div>
+        </BaseButton>
       </div>
 
       <!-- Main Evaluation Chart -->
