@@ -91,10 +91,20 @@ const formatStatus = (status: GameStatus) => {
               >{{ xPlayer.rating }}</span
             >
           </div>
-          <span
-            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
-            >{{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}</span
+          <NuxtLink
+            v-if="!game.requestedOpponentId?.startsWith('AI_X') && xPlayer?.$id"
+            :to="`/users/${xPlayer.$id}`"
+            @click.stop
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px] hover:text-indigo-400 transition-colors"
           >
+            {{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 12) : '...') }}
+          </NuxtLink>
+          <span
+            v-else
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
+          >
+            {{ game.requestedOpponentId?.startsWith('AI_X') ? 'Tixo AI' : '...' }}
+          </span>
         </div>
       </div>
 
@@ -118,10 +128,26 @@ const formatStatus = (status: GameStatus) => {
               >{{ oPlayer.rating }}</span
             >
           </div>
-          <span
-            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
-            >{{ oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 12) : '...') }}</span
+          <NuxtLink
+            v-if="!game.requestedOpponentId?.startsWith('AI_O') && !game.isOnDevice && oPlayer?.$id"
+            :to="`/users/${oPlayer.$id}`"
+            @click.stop
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px] hover:text-indigo-400 transition-colors"
           >
+            {{ oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 12) : '...') }}
+          </NuxtLink>
+          <span
+            v-else
+            class="text-[10px] sm:text-xs mono text-app-text-muted opacity-70 font-bold truncate max-w-[80px] sm:max-w-[100px]"
+          >
+            {{
+              game.requestedOpponentId?.startsWith('AI_O')
+                ? 'Tixo AI'
+                : game.isOnDevice && !game.requestedOpponentId?.startsWith('AI_X')
+                  ? oPlayer?.name || 'Local Player'
+                  : '...'
+            }}
+          </span>
         </div>
       </div>
     </div>

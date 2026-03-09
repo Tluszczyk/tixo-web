@@ -1,4 +1,5 @@
 import { functions, tablesDB } from '~/api/appwriteClient'
+import { ExecutionMethod } from 'appwrite'
 import type { Game } from '~/api/dto/Game'
 import type { Models } from 'appwrite'
 import type { CreateGameRequest } from '~/api/requests/CreateGameRequest.ts'
@@ -59,13 +60,38 @@ class GamesService {
     return false
   }
 
-  async listGames(): Promise<Game[]> {
-    const rowList: Models.RowList<Game> = await tablesDB.listRows({
-      databaseId: 'tixo',
-      tableId: 'games',
+  async listGames(
+    limit: number = 25,
+    offset: number = 0,
+    filters: { status?: string; playerId?: string; creatorId?: string; isOnDevice?: boolean } = {},
+  ): Promise<{ games: Game[]; total: number }> {
+    const params = new URLSearchParams()
+    params.append('limit', limit.toString())
+    params.append('offset', offset.toString())
+    if (filters.status) params.append('status', filters.status)
+    if (filters.playerId) params.append('playerId', filters.playerId)
+    if (filters.creatorId) params.append('creatorId', filters.creatorId)
+    if (filters.isOnDevice !== undefined) params.append('isOnDevice', filters.isOnDevice.toString())
+
+    const execution = await functions.createExecution({
+      functionId: 'app-handler',
+      xpath: `/games/list?${params.toString()}`,
+      method: ExecutionMethod.GET,
     })
 
-    return rowList.rows
+    if (execution.status === 'completed') {
+      try {
+        const response = JSON.parse(execution.responseBody)
+        return {
+          games: response.games || [],
+          total: response.total || (response.games || []).length,
+        }
+      } catch (e) {
+        console.error('Failed to parse listGames response', e)
+        return { games: [], total: 0 }
+      }
+    }
+    return { games: [], total: 0 }
   }
 
   async getGame(gameId: string): Promise<Game | null> {

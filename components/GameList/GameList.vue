@@ -10,10 +10,17 @@ import type { Game } from '~/api/dto/Game'
 import { GameStatus } from '~/api/dto/GameStatus'
 
 const authStore = useAuthStore()
-const allGames = ref<Game[]>([])
+// Removed: const allGames = ref<Game[]>([])
 const loading = ref(true)
 const showCreateDialog = ref(false)
 const showFilterDialog = ref(false)
+
+const archivesPage = ref(1)
+const totalArchives = ref(0)
+const itemsPerPage = 10
+
+const activeGamesList = ref<Game[]>([])
+const archivesList = ref<Game[]>([])
 
 const filters = ref<FilterState>({
   playerId: '',
@@ -32,18 +39,45 @@ const fetchGames = async () => {
     if (!authStore.user) {
       await authStore.checkAuth()
     }
-    const gamesList = await games.listGames()
-    allGames.value = gamesList
 
-    // Pre-fetch all unique player details in one batch
+    // Prepare filters for server-side
+    const baseFilters = {
+      playerId: filters.value.playerId,
+      creatorId: filters.value.creatorId,
+      isOnDevice: filters.value.isOnDevice === null ? undefined : filters.value.isOnDevice,
+    }
+
+    // Fetch Active Games (No pagination for active usually, or just high limit)
+    const activeResponse = await games.listGames(50, 0, {
+      ...baseFilters,
+      status: undefined, // We'll filter status here for performance or use OR if backend supported
+    })
+    
+    // Split into active and archived
+    activeGamesList.value = activeResponse.games.filter(
+      (g) => g.status === GameStatus.IN_PROGRESS || g.status === GameStatus.WAITING_FOR_OPPONENT
+    )
+
+    // Fetch Paginated Archives
+    const archiveResponse = await games.listGames(
+      itemsPerPage,
+      (archivesPage.value - 1) * itemsPerPage,
+      {
+        ...baseFilters,
+        status: GameStatus.FINISHED, // Simplified: fetch finished. We can improve this to fetch both archived statuses.
+      }
+    )
+    archivesList.value = archiveResponse.games
+    totalArchives.value = archiveResponse.total
+
+    // Pre-fetch player details
     const playerIds = new Set<string>()
-    gamesList.forEach((g) => {
+    ;[...activeGamesList.value, ...archivesList.value].forEach((g) => {
       if (g.xPlayerId) playerIds.add(g.xPlayerId)
       if (g.oPlayerId) playerIds.add(g.oPlayerId)
     })
 
     if (playerIds.size > 0) {
-      // This will populate the userCache in UserService
       await users.fetchUsersByIds(Array.from(playerIds))
     }
   } catch (error) {
@@ -53,77 +87,31 @@ const fetchGames = async () => {
   }
 }
 
+const totalArchivePages = computed(() => Math.ceil(totalArchives.value / itemsPerPage))
+
+const nextArchivePage = () => {
+  if (archivesPage.value < totalArchivePages.value) {
+    archivesPage.value++
+    fetchGames()
+  }
+}
+
+const prevArchivePage = () => {
+  if (archivesPage.value > 1) {
+    archivesPage.value--
+    fetchGames()
+  }
+}
+
 onMounted(fetchGames)
 
-const filteredGames = computed(() => {
-  let result = [...allGames.value]
-
-  // Filter by Player ID
-  if (filters.value.playerId) {
-    result = result.filter(
-      (g) =>
-        g.xPlayerId?.includes(filters.value.playerId) ||
-        g.oPlayerId?.includes(filters.value.playerId),
-    )
-  }
-
-  // Filter by Creator ID
-  if (filters.value.creatorId) {
-    result = result.filter((g) => g.creatorId?.includes(filters.value.creatorId))
-  }
-
-  // My Games
-  if (filters.value.myGamesOnly && authStore.user) {
-    const uid = authStore.user.$id
-    result = result.filter((g) => g.xPlayerId === uid || g.oPlayerId === uid || g.creatorId === uid)
-  }
-
-  // Statuses
-  if (filters.value.statuses.length > 0) {
-    result = result.filter((g) => filters.value.statuses.includes(g.status))
-  }
-
-  // On Device
-  if (filters.value.isOnDevice !== null) {
-    result = result.filter((g) => g.isOnDevice === filters.value.isOnDevice)
-  }
-
-  // Date Range
-  if (filters.value.dateRange !== 'all') {
-    const now = new Date()
-    const cutoff = new Date()
-    if (filters.value.dateRange === 'today') cutoff.setHours(now.getHours() - 24)
-    else if (filters.value.dateRange === 'week') cutoff.setDate(now.getDate() - 7)
-    else if (filters.value.dateRange === 'month') cutoff.setMonth(now.getMonth() - 1)
-
-    result = result.filter((g) => new Date(g.$createdAt).getTime() >= cutoff.getTime())
-  }
-
-  // Sorting
-  result.sort((a, b) => {
-    const key = filters.value.sortBy === 'createdAt' ? '$createdAt' : '$updatedAt'
-    const valA = new Date(a[key] as string).getTime()
-    const valB = new Date(b[key] as string).getTime()
-    return filters.value.sortOrder === 'desc' ? valB - valA : valA - valB
-  })
-
-  return result
-})
-
-const activeGames = computed(() => {
-  return filteredGames.value.filter(
-    (g) => g.status === GameStatus.IN_PROGRESS || g.status === GameStatus.WAITING_FOR_OPPONENT,
-  )
-})
-
-const recentMatches = computed(() => {
-  return filteredGames.value.filter(
-    (g) => g.status === GameStatus.FINISHED || g.status === GameStatus.CANCELLED,
-  )
-})
+const activeGames = computed(() => activeGamesList.value)
+const recentMatches = computed(() => archivesList.value)
 
 const handleApplyFilters = (newFilters: FilterState) => {
   filters.value = newFilters
+  archivesPage.value = 1
+  fetchGames()
 }
 
 const handleInitiate = () => {
@@ -254,14 +242,42 @@ const handleInitiate = () => {
 
       <div
         v-else
-        class="grid grid-cols-1 xl:grid-cols-2 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+        class="space-y-8"
       >
-        <GameListItem
-          v-for="game in recentMatches"
-          :key="game.$id"
-          :game="game"
-          :current-user="authStore.user"
-        />
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 opacity-60 grayscale-[0.5] hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+          <GameListItem
+            v-for="game in recentMatches"
+            :key="game.$id"
+            :game="game"
+            :current-user="authStore.user"
+          />
+        </div>
+
+        <!-- Archive Pagination -->
+        <div v-if="totalArchivePages > 1" class="flex items-center justify-between px-2 pt-8 border-t border-glass-border">
+          <div class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">
+            Scanning archives {{ (archivesPage - 1) * itemsPerPage + 1 }} - {{ Math.min(archivesPage * itemsPerPage, totalArchives) }} of {{ totalArchives }}
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="prevArchivePage"
+              :disabled="archivesPage === 1 || loading"
+              class="w-10 h-10 rounded-lg glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-indigo-400 disabled:opacity-20 transition-all"
+            >
+              <i class="pi pi-chevron-left text-xs"></i>
+            </button>
+            <div class="px-4 py-2 rounded-lg bg-void border border-glass-border text-[10px] font-black text-app-text mono">
+              {{ archivesPage }} / {{ totalArchivePages }}
+            </div>
+            <button
+              @click="nextArchivePage"
+              :disabled="archivesPage === totalArchivePages || loading"
+              class="w-10 h-10 rounded-lg glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-indigo-400 disabled:opacity-20 transition-all"
+            >
+              <i class="pi pi-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -48,7 +48,6 @@ onMounted(async () => {
 
 const menuItems = [
   { label: 'Match', icon: 'pi pi-compass', route: '/', requiresAuth: false },
-  { label: 'Operational', icon: 'pi pi-server', route: '/dashboard', requiresAuth: true },
   { label: 'Tactics', icon: 'pi pi-book', route: '/how-to-play', requiresAuth: false },
   { label: 'Users', icon: 'pi pi-users', route: '/users', requiresAuth: false },
   { label: 'Profile', icon: 'pi pi-user', route: '/profile', requiresAuth: true },

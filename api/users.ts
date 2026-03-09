@@ -22,8 +22,10 @@ const userCache = ref<Record<string, User>>({})
 const pendingRequests = new Map<string, Promise<User | null>>()
 
 class UserService {
-  async listUsers(search?: string): Promise<User[]> {
-    const xpath = search ? `/users/list?id=${encodeURIComponent(search)}` : '/users/list'
+  async listUsers(search?: string, limit: number = 25, offset: number = 0): Promise<{ users: User[]; total: number }> {
+    let xpath = search ? `/users/list?id=${encodeURIComponent(search)}` : '/users/list'
+    xpath += xpath.includes('?') ? `&limit=${limit}&offset=${offset}` : `?limit=${limit}&offset=${offset}`
+
     const execution = await functions.createExecution({
       functionId: 'app-handler',
       xpath: xpath,
@@ -38,13 +40,13 @@ class UserService {
         userList.forEach((u: User) => {
           userCache.value[u.$id] = u
         })
-        return userList
+        return { users: userList, total: response.total || userList.length }
       } catch (e) {
         console.error('Failed to parse listUsers response', e)
-        return []
+        return { users: [], total: 0 }
       }
     }
-    return []
+    return { users: [], total: 0 }
   }
 
   async fetchUsersByIds(ids: string[]): Promise<User[]> {

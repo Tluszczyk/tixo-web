@@ -470,7 +470,38 @@ const matchResult = computed(() => {
   return game.value.winner === userSymbol ? 'WIN' : 'LOSS'
 })
 
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (!game.value || !game.value.moveHistory || game.value.moveHistory.length === 0) return
+
+  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return
+
+  const historyLen = game.value.moveHistory.length
+
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (selectedHistoryIndex.value === null) {
+      selectedHistoryIndex.value = historyLen - 1
+    } else if (selectedHistoryIndex.value > -1) {
+      selectedHistoryIndex.value--
+    }
+  } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault()
+    if (selectedHistoryIndex.value !== null) {
+      if (selectedHistoryIndex.value < historyLen - 1) {
+        selectedHistoryIndex.value++
+      } else {
+        selectedHistoryIndex.value = null
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
 onUnmounted(async () => {
+  window.removeEventListener('keydown', handleKeyDown)
   if (subscription) await subscription.close()
 })
 

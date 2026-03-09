@@ -46,11 +46,17 @@ const formatStatus = (status: GameStatus) => {
       <div class="flex items-center gap-2">
         <span class="text-sm font-bold text-app-text flex items-center gap-1.5">
           <span class="marker-x text-xs">X</span>
-          {{
-            game.requestedOpponentId?.startsWith('AI_X')
-              ? 'Tixo AI'
-              : xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 10) : 'Pending')
-          }}
+          <NuxtLink
+            v-if="!game.requestedOpponentId?.startsWith('AI_X') && xPlayer?.$id"
+            :to="`/users/${xPlayer.$id}`"
+            class="hover:text-indigo-400 transition-colors"
+          >
+            {{ xPlayer?.name || (game.xPlayerId ? game.xPlayerId.substring(0, 10) : 'Pending') }}
+          </NuxtLink>
+          <span v-else>
+            {{ game.requestedOpponentId?.startsWith('AI_X') ? 'Tixo AI' : 'Pending' }}
+          </span>
+
           <span
             v-if="xPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_X')"
             class="text-[10px] mono text-indigo-400 font-black"
@@ -58,13 +64,24 @@ const formatStatus = (status: GameStatus) => {
           >
           <span class="mx-1 text-app-text-muted opacity-20 font-black text-[10px] uppercase">vs</span>
           <span class="marker-o text-xs">O</span>
-          {{
-            game.requestedOpponentId?.startsWith('AI_O')
-              ? 'Tixo AI'
-              : game.isOnDevice && !game.requestedOpponentId?.startsWith('AI_X')
-                ? oPlayer?.name || 'Local Player'
-                : oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 10) : 'Waiting...')
-          }}
+
+          <NuxtLink
+            v-if="!game.requestedOpponentId?.startsWith('AI_O') && !game.isOnDevice && oPlayer?.$id"
+            :to="`/users/${oPlayer.$id}`"
+            class="hover:text-indigo-400 transition-colors"
+          >
+            {{ oPlayer?.name || (game.oPlayerId ? game.oPlayerId.substring(0, 10) : 'Waiting...') }}
+          </NuxtLink>
+          <span v-else>
+            {{
+              game.requestedOpponentId?.startsWith('AI_O')
+                ? 'Tixo AI'
+                : game.isOnDevice && !game.requestedOpponentId?.startsWith('AI_X')
+                  ? oPlayer?.name || 'Local Player'
+                  : 'Waiting...'
+            }}
+          </span>
+
           <span
             v-if="oPlayer?.rating && !game.requestedOpponentId?.startsWith('AI_O')"
             class="text-[10px] mono text-indigo-400 font-black"
