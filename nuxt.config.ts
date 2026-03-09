@@ -18,6 +18,7 @@ export default defineNuxtConfig({
   },
   sitemap: {
     enabled: true,
+    zeroRuntime: true
   },
   robots: {
     enabled: true,
@@ -43,6 +44,19 @@ export default defineNuxtConfig({
   vite: {
     build: {
       sourcemap: false,
+      chunkSizeWarningLimit: 2000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('echarts') || id.includes('zrender')) return 'echarts';
+              if (id.includes('appwrite')) return 'appwrite';
+              if (id.includes('primevue')) return 'primevue';
+              return 'vendor';
+            }
+          }
+        }
+      }
     },
     plugins: [tailwindcss()],
     esbuild: {
