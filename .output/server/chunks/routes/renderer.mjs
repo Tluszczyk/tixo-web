@@ -3,9 +3,9 @@ import { b as buildAssetsURL, u as useRuntimeConfig, g as getResponseStatusText,
 import { renderToString } from 'vue/server-renderer';
 import { createHead as createHead$1, propsToString, renderSSRHead } from 'unhead/server';
 import { stringify, uneval } from 'devalue';
+import { FlatMetaPlugin, DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'unhead/plugins';
 import { walkResolver } from 'unhead/utils';
 import { toValue, isRef, hasInjectionContext, inject, ref, watchEffect, getCurrentInstance, onBeforeUnmount, onDeactivated, onActivated } from 'vue';
-import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'unhead/plugins';
 
 const VueResolver = (_, value) => {
   return isRef(value) ? toValue(value) : value;
@@ -62,6 +62,16 @@ function clientUseHead(head, input, options = {}) {
     });
   }
   return entry;
+}
+function useSeoMeta(input = {}, options = {}) {
+  const head = options.head || /* @__PURE__ */ injectHead();
+  head.use(FlatMetaPlugin);
+  const { title, titleTemplate, ...meta } = input;
+  return useHead({
+    title,
+    titleTemplate,
+    _flatMeta: meta
+  }, options);
 }
 
 // @__NO_SIDE_EFFECTS__
@@ -278,10 +288,10 @@ const renderer = defineRenderHandler(async (event) => {
 	const headEntryOptions = { mode: "server" };
 	ssrContext.head.push(appHead, headEntryOptions);
 	if (ssrError) {
-		 
+		// eslint-disable-next-line @typescript-eslint/no-deprecated
 		const status = ssrError.status || ssrError.statusCode;
 		if (status) {
-			 
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			ssrError.status = ssrError.statusCode = Number.parseInt(status);
 		}
 		setSSRError(ssrContext, ssrError);
@@ -468,5 +478,4 @@ const renderer$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty
   default: renderer
 }, Symbol.toStringTag, { value: 'Module' }));
 
-export { headSymbol as h, renderer$1 as r, useHead as u };
-//# sourceMappingURL=renderer.mjs.map
+export { useSeoMeta as a, headSymbol as h, renderer$1 as r, useHead as u };

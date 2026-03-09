@@ -5,4 +5,3 @@ const MatchTimelineStyles_Dpm8kgK9 = [
 ];
 
 export { MatchTimelineStyles_Dpm8kgK9 as default };
-//# sourceMappingURL=MatchTimeline-styles.Dpm8kgK9.mjs.map

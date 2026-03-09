@@ -42,4 +42,3 @@ var script = {
 };
 
 export { script as s };
-//# sourceMappingURL=index-xRlVhXwl.mjs.map

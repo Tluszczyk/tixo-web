@@ -5,4 +5,3 @@ const BoardStyles_CizVSGNV = [
 ];
 
 export { BoardStyles_CizVSGNV as default };
-//# sourceMappingURL=Board-styles.CizVSGNV.mjs.map

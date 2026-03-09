@@ -216,4 +216,3 @@ function getVNodeProp(vnode, prop) {
 }
 
 export { ConnectedOverlayScrollHandler as C, _default as _, getVNodeProp as g };
-//# sourceMappingURL=index-1v7fOn3J.mjs.map

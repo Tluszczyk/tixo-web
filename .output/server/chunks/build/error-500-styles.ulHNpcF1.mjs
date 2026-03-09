@@ -5,4 +5,3 @@ const error500Styles_ulHNpcF1 = [
 ];
 
 export { error500Styles_ulHNpcF1 as default };
-//# sourceMappingURL=error-500-styles.ulHNpcF1.mjs.map

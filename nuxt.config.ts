@@ -39,7 +39,11 @@ export default defineNuxtConfig({
     'primeicons/primeicons.css',
     '~/assets/index.css'
   ],
+  sourcemap: { server: false, client: false },
   vite: {
+    build: {
+      sourcemap: false,
+    },
     plugins: [tailwindcss()],
     esbuild: {
       target: 'es2020',

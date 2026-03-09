@@ -1,7 +1,7 @@
-import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { defineComponent, ref, computed, watch, hasInjectionContext, inject, shallowRef, getCurrentInstance, provide, cloneVNode, h, createElementBlock, readonly, nextTick, defineAsyncComponent, Suspense, Fragment, useSSRContext, createApp, shallowReactive, unref, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, isReadonly, isRef, isShallow, isReactive, toRaw, mergeProps, getCurrentScope, markRaw } from 'vue';
-import { i as parseURL, k as encodePath, l as decodePath, m as hasProtocol, n as isScriptProtocol, j as joinURL, w as withQuery, s as sanitizeStatusCode, o as getContext, $ as $fetch, q as baseURL, r as createHooks, t as executeAsync, e as createError$1, v as defu } from '../nitro/nitro.mjs';
+import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { defineComponent, ref, computed, hasInjectionContext, inject, unref, defineAsyncComponent, shallowRef, watch, getCurrentInstance, provide, cloneVNode, h, createElementBlock, readonly, nextTick, Suspense, mergeProps, shallowReactive, Fragment, useSSRContext, createApp, withCtx, createVNode, toRef, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, reactive, effectScope, isReadonly, isRef, isShallow, isReactive, toRaw, getCurrentScope, markRaw } from 'vue';
+import { i as parseURL, k as encodePath, l as decodePath, m as defu, n as hasProtocol, o as isScriptProtocol, j as joinURL, w as withQuery, s as sanitizeStatusCode, q as getContext, $ as $fetch, r as baseURL, t as createHooks, v as executeAsync, e as createError$1 } from '../nitro/nitro.mjs';
 import { defineStore, createPinia, setActivePinia, shouldHydrate } from 'pinia';
-import { RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
+import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { EventBus } from '@primeuix/utils/eventbus';
 import { Theme, css as css$1, dt, ThemeService } from '@primeuix/styled';
 import { mergeKeys } from '@primeuix/utils';
@@ -9,7 +9,8 @@ import { resolve, minifyCSS, isNotEmpty, equals, removeAccents, resolveFieldData
 import { style } from '@primeuix/styles/base';
 import { isClient, setAttributes, setAttribute, isExist } from '@primeuix/utils/dom';
 import { ssrRenderTeleport, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr, ssrRenderClass, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
-import { TablesDB, Functions, AppwriteException, Account, ExecutionMethod, Client } from 'appwrite';
+import { Functions, TablesDB, AppwriteException, Account, ExecutionMethod, Query, Client } from 'appwrite';
+import { u as useHead$1, a as useSeoMeta$1, h as headSymbol } from '../routes/renderer.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -17,6 +18,7 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'consola';
 import '@primevue/core/base/style';
 import '@primevue/core/basecomponent/style';
 import '@primeuix/styles/autocomplete';
@@ -113,41 +115,13 @@ import '@primevue/forms/formfield/style';
 import '@primeuix/styles/tooltip';
 import '@primeuix/styles/ripple';
 import 'node:url';
+import 'fast-xml-parser';
+import 'vue-bundle-renderer/runtime';
+import 'unhead/server';
+import 'devalue';
+import 'unhead/plugins';
+import 'unhead/utils';
 
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __knownSymbol = (name, symbol) => (symbol = Symbol[name]) ? symbol : /* @__PURE__ */ Symbol.for("Symbol." + name);
-var __typeError = (msg) => {
-  throw TypeError(msg);
-};
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __decoratorStart = (base) => [, , , __create(null)];
-var __decoratorStrings = ["class", "method", "getter", "setter", "accessor", "field", "value", "get", "set"];
-var __expectFn = (fn) => fn !== void 0 && typeof fn !== "function" ? __typeError("Function expected") : fn;
-var __decoratorContext = (kind, name, done, metadata, fns) => ({ kind: __decoratorStrings[kind], name, metadata, addInitializer: (fn) => done._ ? __typeError("Already initialized") : fns.push(__expectFn(fn || null)) });
-var __decoratorMetadata = (array, target) => __defNormalProp(target, __knownSymbol("metadata"), array[3]);
-var __runInitializers = (array, flags, self, value) => {
-  for (var i = 0, fns = array[flags >> 1], n = fns && fns.length; i < n; i++) fns[i].call(self) ;
-  return value;
-};
-var __decorateElement = (array, flags, name, decorators, target, extra) => {
-  var it, done, ctx, access, k = flags & 7, s = false, p = false;
-  var j = 2 , key = __decoratorStrings[k + 5];
-  var extraInitializers = array[j] || (array[j] = []);
-  var desc = ((target = target.prototype), __getOwnPropDesc(target , name));
-  for (var i = decorators.length - 1; i >= 0; i--) {
-    ctx = __decoratorContext(k, name, done = {}, array[3], extraInitializers);
-    {
-      ctx.static = s, ctx.private = p, access = ctx.access = { has: (x) => name in x };
-      access.get = (x) => x[name];
-    }
-    it = (0, decorators[i])(desc[key]  , ctx), done._ = 1;
-    __expectFn(it) && (desc[key] = it );
-  }
-  return desc && __defProp(target, name, desc), target;
-};
-var _logout_dec, _getUserDetails_dec, _getCurrentUser_dec, _authenticate_dec, _init;
 if (!globalThis.$fetch) {
   globalThis.$fetch = $fetch.create({
     baseURL: baseURL()
@@ -156,6 +130,7 @@ if (!globalThis.$fetch) {
 if (!("global" in globalThis)) {
   globalThis.global = globalThis;
 }
+const appLayoutTransition = false;
 const nuxtLinkDefaults = { "componentName": "NuxtLink" };
 const appId = "nuxt-app";
 function getNuxtAppCtx(id = appId) {
@@ -500,26 +475,60 @@ const createError = (error) => {
     writable: false
   });
   Object.defineProperty(nuxtError, "status", {
-     
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     get: () => nuxtError.statusCode,
     configurable: true
   });
   Object.defineProperty(nuxtError, "statusText", {
-     
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     get: () => nuxtError.statusMessage,
     configurable: true
   });
   return nuxtError;
 };
-const matcher = (m, p) => {
-  return [];
-};
-const _routeRulesMatcher = (path) => defu({}, ...matcher().map((r) => r.data).reverse());
-const routeRulesMatcher = _routeRulesMatcher;
+function injectHead(nuxtApp) {
+  const nuxt = nuxtApp || tryUseNuxtApp();
+  return nuxt?.ssrContext?.head || nuxt?.runWithContext(() => {
+    if (hasInjectionContext()) {
+      return inject(headSymbol);
+    }
+  });
+}
+function useHead(input, options = {}) {
+  const head = injectHead(options.nuxt);
+  if (head) {
+    return useHead$1(input, { head, ...options });
+  }
+}
+function useSeoMeta(input, options = {}) {
+  const head = injectHead(options.nuxt);
+  if (head) {
+    return useSeoMeta$1(input, { head, ...options });
+  }
+}
+const matcher = /* @__PURE__ */ (() => {
+  const $0 = {};
+  return (m, p) => {
+    let r = [];
+    if (p.charCodeAt(p.length - 1) === 47) p = p.slice(0, -1) || "/";
+    if (p === "/__sitemap__/style.xsl") {
+      r.unshift({ data: $0 });
+    }
+    if (p === "/sitemap.xml") {
+      r.unshift({ data: $0 });
+    }
+    if (p === "/_nuxt") {
+      r.unshift({ data: $0 });
+    }
+    return r;
+  };
+})();
+const _routeRulesMatcher = (path) => defu({}, ...matcher("", path).map((r) => r.data).reverse());
+const routeRulesMatcher$1 = _routeRulesMatcher;
 function getRouteRules(arg) {
   const path = typeof arg === "string" ? arg : arg.path;
   try {
-    return routeRulesMatcher(path);
+    return routeRulesMatcher$1(path);
   } catch (e) {
     console.error("[nuxt] Error matching route rules.", e);
     return {};
@@ -548,51 +557,80 @@ const unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU = /* @__PURE__ */ defin
 function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
+const __nuxt_page_meta$6 = {
+  layout: "center"
+};
+const __nuxt_page_meta$5 = {
+  layout: false
+};
+const __nuxt_page_meta$4 = {
+  layout: false
+};
+const __nuxt_page_meta$3 = {
+  layout: false
+};
+const __nuxt_page_meta$2 = {
+  layout: false
+};
+const __nuxt_page_meta$1 = {
+  layout: false
+};
+const __nuxt_page_meta = {
+  layout: false
+};
 const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Brt9dQEX.mjs')
+    meta: { "middleware": "dashboard-redirect" },
+    component: () => import('./index-BVFGZpIN.mjs')
   },
   {
     name: "login",
     path: "/login",
-    component: () => import('./login-CLKKCPaV.mjs')
+    meta: __nuxt_page_meta$6 || {},
+    component: () => import('./login-DAxg831D.mjs')
   },
   {
     name: "users",
     path: "/users",
-    component: () => import('./users-0G7Q9l04.mjs')
+    meta: __nuxt_page_meta$5 || {},
+    component: () => import('./users-B7kbIESG.mjs')
   },
   {
     name: "profile",
     path: "/profile",
-    meta: { "middleware": "auth" },
-    component: () => import('./profile-rd7wjbGZ.mjs')
+    meta: { ...__nuxt_page_meta$4 || {}, ...{ "middleware": "auth" } },
+    component: () => import('./profile-D4BAHUaq.mjs')
   },
   {
     name: "dashboard",
     path: "/dashboard",
-    meta: { "middleware": "auth" },
-    component: () => import('./dashboard-O7qOa3Ql.mjs')
+    meta: __nuxt_page_meta$3 || {},
+    component: () => import('./dashboard-CGh9sSCw.mjs')
   },
   {
     name: "game-id",
     path: "/game/:id()",
-    component: () => import('./_id_-BeOArL6v.mjs')
+    meta: __nuxt_page_meta$2 || {},
+    component: () => import('./_id_-Bb13POff.mjs')
   },
   {
     name: "how-to-play",
     path: "/how-to-play",
-    component: () => import('./how-to-play-NmXC-CCn.mjs')
+    meta: __nuxt_page_meta$1 || {},
+    component: () => import('./how-to-play-pUO_hJuD.mjs')
   },
   {
     name: "analysis-id",
     path: "/analysis/:id()",
-    meta: { "middleware": "auth" },
-    component: () => import('./_id_-JgthtJKB.mjs')
+    meta: __nuxt_page_meta || {},
+    component: () => import('./_id_-zDcf8YyO.mjs')
   }
 ];
+const _wrapInTransition = (props, children) => {
+  return { default: () => children.default?.() };
+};
 const ROUTE_KEY_PARENTHESES_RE = /(:\w+)\([^)]+\)/g;
 const ROUTE_KEY_SYMBOLS_RE = /(:\w+)[?+*]/g;
 const ROUTE_KEY_NORMAL_RE = /:\w+/g;
@@ -690,9 +728,9 @@ const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to, from) => {
   }
   const error = createError({
     fatal: false,
-     
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     status: result && (result.status || result.statusCode) || 404,
-     
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     statusText: result && (result.statusText || result.statusMessage) || `Page Not Found: ${to.fullPath}`,
     data: {
       path: to.fullPath
@@ -710,7 +748,8 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  auth: () => import('./auth-BOL5pniB.mjs')
+  auth: () => import('./auth-I8vAWqko.mjs'),
+  "dashboard-redirect": () => import('./dashboard-redirect-DuaDkUMf.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
@@ -906,23 +945,6 @@ const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
     return { provide: { router } };
   }
 });
-const reducers = [
-  ["NuxtError", (data) => isNuxtError(data) && data.toJSON()],
-  ["EmptyShallowRef", (data) => isRef(data) && isShallow(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
-  ["EmptyRef", (data) => isRef(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
-  ["ShallowRef", (data) => isRef(data) && isShallow(data) && data.value],
-  ["ShallowReactive", (data) => isReactive(data) && isShallow(data) && toRaw(data)],
-  ["Ref", (data) => isRef(data) && data.value],
-  ["Reactive", (data) => isReactive(data) && toRaw(data)]
-];
-const revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms = /* @__PURE__ */ defineNuxtPlugin({
-  name: "nuxt:revive-payload:server",
-  setup() {
-    for (const [reducer, fn] of reducers) {
-      definePayloadReducer(reducer, fn);
-    }
-  }
-});
 defineComponent({
   name: "ServerPlaceholder",
   render() {
@@ -960,6 +982,74 @@ const __nuxt_component_0$1 = defineComponent({
     };
   }
 });
+const useStateKeyPrefix = "$s";
+function useState(...args) {
+  const autoKey = typeof args[args.length - 1] === "string" ? args.pop() : void 0;
+  if (typeof args[0] !== "string") {
+    args.unshift(autoKey);
+  }
+  const [_key, init] = args;
+  if (!_key || typeof _key !== "string") {
+    throw new TypeError("[nuxt] [useState] key must be a string: " + _key);
+  }
+  if (init !== void 0 && typeof init !== "function") {
+    throw new Error("[nuxt] [useState] init must be a function: " + init);
+  }
+  const key = useStateKeyPrefix + _key;
+  const nuxtApp = useNuxtApp();
+  const state = toRef(nuxtApp.payload.state, key);
+  if (state.value === void 0 && init) {
+    const initialValue = init();
+    if (isRef(initialValue)) {
+      nuxtApp.payload.state[key] = initialValue;
+      return initialValue;
+    }
+    state.value = initialValue;
+  }
+  return state;
+}
+function useRequestEvent(nuxtApp) {
+  nuxtApp ||= useNuxtApp();
+  return nuxtApp.ssrContext?.event;
+}
+const _0_siteConfig_tU0SxKrPeVRXWcGu2sOnIfhNDbYiKNfDCvYZhRueG0Q = /* @__PURE__ */ defineNuxtPlugin({
+  name: "nuxt-site-config:init",
+  enforce: "pre",
+  async setup(nuxtApp) {
+    const stack = useRequestEvent()?.context?.siteConfig;
+    const state = useState("site-config");
+    {
+      nuxtApp.hooks.hook("app:rendered", () => {
+        state.value = stack?.get({
+          debug: (/* @__PURE__ */ useRuntimeConfig())["nuxt-site-config"].debug,
+          resolveRefs: true
+        });
+      });
+    }
+    return {
+      provide: {
+        nuxtSiteConfig: stack
+      }
+    };
+  }
+});
+const reducers = [
+  ["NuxtError", (data) => isNuxtError(data) && data.toJSON()],
+  ["EmptyShallowRef", (data) => isRef(data) && isShallow(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
+  ["EmptyRef", (data) => isRef(data) && !data.value && (typeof data.value === "bigint" ? "0n" : JSON.stringify(data.value) || "_")],
+  ["ShallowRef", (data) => isRef(data) && isShallow(data) && data.value],
+  ["ShallowReactive", (data) => isReactive(data) && isShallow(data) && toRaw(data)],
+  ["Ref", (data) => isRef(data) && data.value],
+  ["Reactive", (data) => isReactive(data) && toRaw(data)]
+];
+const revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms = /* @__PURE__ */ defineNuxtPlugin({
+  name: "nuxt:revive-payload:server",
+  setup() {
+    for (const [reducer, fn] of reducers) {
+      definePayloadReducer(reducer, fn);
+    }
+  }
+});
 const plugin = /* @__PURE__ */ defineNuxtPlugin({
   name: "pinia",
   setup(nuxtApp) {
@@ -976,126 +1066,126 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
     };
   }
 });
-const LazyAutoComplete = defineAsyncComponent(() => import('./index-CP7afscq.mjs').then((r) => r["default"] || r.default || r));
-const LazyCalendar = defineAsyncComponent(() => import('./index-ClEnae8K.mjs').then((r) => r["default"] || r.default || r));
-const LazyCascadeSelect = defineAsyncComponent(() => import('./index-DLOyd9rq.mjs').then((r) => r["default"] || r.default || r));
-const LazyCheckbox = defineAsyncComponent(() => import('./index-BO0KwXRg.mjs').then((r) => r["default"] || r.default || r));
-const LazyCheckboxGroup = defineAsyncComponent(() => import('./index-D-eFlk7i.mjs').then((r) => r["default"] || r.default || r));
-const LazyChips = defineAsyncComponent(() => import('./index-xycIvPOn.mjs').then((r) => r["default"] || r.default || r));
-const LazyColorPicker = defineAsyncComponent(() => import('./index-DSGvLDfQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyDatePicker = defineAsyncComponent(() => import('./index-TNQduSjf.mjs').then((r) => r["default"] || r.default || r));
-const LazyDropdown = defineAsyncComponent(() => import('./index-dLoCSbNh.mjs').then((r) => r["default"] || r.default || r));
-const LazyFloatLabel = defineAsyncComponent(() => import('./index-n7Q2wO2g.mjs').then((r) => r["default"] || r.default || r));
-const LazyFluid = defineAsyncComponent(() => import('./index-Dl4kkHel.mjs').then((r) => r["default"] || r.default || r));
-const LazyIconField = defineAsyncComponent(() => import('./index-BObJHnVH.mjs').then((r) => r["default"] || r.default || r));
-const LazyIftaLabel = defineAsyncComponent(() => import('./index-CVfsWAZW.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputChips = defineAsyncComponent(() => import('./index-DbqBM9UK.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputGroup = defineAsyncComponent(() => import('./index-BSBmF9Ib.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputGroupAddon = defineAsyncComponent(() => import('./index-Bfe_DNGg.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputIcon = defineAsyncComponent(() => import('./index-BbSNhXBY.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputMask = defineAsyncComponent(() => import('./index-CSI5433p.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputNumber = defineAsyncComponent(() => import('./index-BVIyFRNe.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputOtp = defineAsyncComponent(() => import('./index-DaRaw6fz.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputSwitch = defineAsyncComponent(() => import('./index--s5f6F9x.mjs').then((r) => r["default"] || r.default || r));
-const LazyInputText = defineAsyncComponent(() => import('./index-BN1-_OcB.mjs').then((r) => r["default"] || r.default || r));
-const LazyKnob = defineAsyncComponent(() => import('./index-C721A0wn.mjs').then((r) => r["default"] || r.default || r));
-const LazyListbox = defineAsyncComponent(() => import('./index-C-oDbxv6.mjs').then((r) => r["default"] || r.default || r));
-const LazyMultiSelect = defineAsyncComponent(() => import('./index-CwPXhQo-.mjs').then((r) => r["default"] || r.default || r));
-const LazyPassword = defineAsyncComponent(() => import('./index-DZziKiGi.mjs').then((r) => r["default"] || r.default || r));
-const LazyRadioButton = defineAsyncComponent(() => import('./index-Is48Jw8f.mjs').then((r) => r["default"] || r.default || r));
-const LazyRadioButtonGroup = defineAsyncComponent(() => import('./index-MG-iXdxw.mjs').then((r) => r["default"] || r.default || r));
-const LazyRating = defineAsyncComponent(() => import('./index-BMqaK5pT.mjs').then((r) => r["default"] || r.default || r));
-const LazySelect = defineAsyncComponent(() => import('./index-z0aRzHEr.mjs').then((r) => r["default"] || r.default || r));
-const LazySelectButton = defineAsyncComponent(() => import('./index-XsSZERT9.mjs').then((r) => r["default"] || r.default || r));
-const LazySlider = defineAsyncComponent(() => import('./index-CIvFmfLd.mjs').then((r) => r["default"] || r.default || r));
-const LazyTextarea = defineAsyncComponent(() => import('./index-BgAZjOUa.mjs').then((r) => r["default"] || r.default || r));
-const LazyToggleButton = defineAsyncComponent(() => import('./index-B7eGyRI3.mjs').then((r) => r["default"] || r.default || r));
-const LazyToggleSwitch = defineAsyncComponent(() => import('./index-DwYZXcYL.mjs').then((r) => r["default"] || r.default || r));
-const LazyTreeSelect = defineAsyncComponent(() => import('./index-CzoZRnep.mjs').then((r) => r["default"] || r.default || r));
-const LazyButton = defineAsyncComponent(() => import('./index-v_u7MLXx.mjs').then((r) => r["default"] || r.default || r));
-const LazyButtonGroup = defineAsyncComponent(() => import('./index-BtQa0TgZ.mjs').then((r) => r["default"] || r.default || r));
-const LazySpeedDial = defineAsyncComponent(() => import('./index-Cd6yeuqX.mjs').then((r) => r["default"] || r.default || r));
-const LazySplitButton = defineAsyncComponent(() => import('./index-CPZCp8FX.mjs').then((r) => r["default"] || r.default || r));
-const LazyColumn = defineAsyncComponent(() => import('./index-DZrqAHxv.mjs').then((r) => r["default"] || r.default || r));
-const LazyRow = defineAsyncComponent(() => import('./index-Co_C6OnT.mjs').then((r) => r["default"] || r.default || r));
-const LazyColumnGroup = defineAsyncComponent(() => import('./index-Y2LCzxHl.mjs').then((r) => r["default"] || r.default || r));
-const LazyDataTable = defineAsyncComponent(() => import('./index-Dx6o3S_l.mjs').then((r) => r["default"] || r.default || r));
-const LazyDataView = defineAsyncComponent(() => import('./index-C7rwSb4L.mjs').then((r) => r["default"] || r.default || r));
-const LazyOrderList = defineAsyncComponent(() => import('./index-C6bUVrgo.mjs').then((r) => r["default"] || r.default || r));
-const LazyOrganizationChart = defineAsyncComponent(() => import('./index-DOOVo9sl.mjs').then((r) => r["default"] || r.default || r));
-const LazyPaginator = defineAsyncComponent(() => import('./index-B0fL-Rl2.mjs').then((r) => r["default"] || r.default || r));
-const LazyPickList = defineAsyncComponent(() => import('./index-BByXF7NM.mjs').then((r) => r["default"] || r.default || r));
-const LazyTree = defineAsyncComponent(() => import('./index-BfHmWCtG.mjs').then((r) => r["default"] || r.default || r));
-const LazyTreeTable = defineAsyncComponent(() => import('./index-Bcns-4xK.mjs').then((r) => r["default"] || r.default || r));
-const LazyTimeline = defineAsyncComponent(() => import('./index-DzYbolqu.mjs').then((r) => r["default"] || r.default || r));
-const LazyVirtualScroller = defineAsyncComponent(() => import('./index-pY7o_ysH.mjs').then((r) => r["default"] || r.default || r));
-const LazyAccordion = defineAsyncComponent(() => import('./index-6rx4-ahG.mjs').then((r) => r["default"] || r.default || r));
-const LazyAccordionPanel = defineAsyncComponent(() => import('./index-CQkP86gW.mjs').then((r) => r["default"] || r.default || r));
-const LazyAccordionHeader = defineAsyncComponent(() => import('./index-CKw9IlMm.mjs').then((r) => r["default"] || r.default || r));
-const LazyAccordionContent = defineAsyncComponent(() => import('./index-Dxb_zEQy.mjs').then((r) => r["default"] || r.default || r));
-const LazyAccordionTab = defineAsyncComponent(() => import('./index-DqVvJlqE.mjs').then((r) => r["default"] || r.default || r));
-const LazyCard = defineAsyncComponent(() => import('./index-DyIRf7EQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyDeferredContent = defineAsyncComponent(() => import('./index-BjmGSWQL.mjs').then((r) => r["default"] || r.default || r));
-const LazyDivider = defineAsyncComponent(() => import('./index-Qp6aO5MM.mjs').then((r) => r["default"] || r.default || r));
-const LazyFieldset = defineAsyncComponent(() => import('./index-BPjgGTjZ.mjs').then((r) => r["default"] || r.default || r));
-const LazyPanel = defineAsyncComponent(() => import('./index-DelBdASz.mjs').then((r) => r["default"] || r.default || r));
-const LazyScrollPanel = defineAsyncComponent(() => import('./index-9LUF51ZV.mjs').then((r) => r["default"] || r.default || r));
-const LazySplitter = defineAsyncComponent(() => import('./index-BJpXa1EK.mjs').then((r) => r["default"] || r.default || r));
-const LazySplitterPanel = defineAsyncComponent(() => import('./index-C7tGy57u.mjs').then((r) => r["default"] || r.default || r));
-const LazyStepper = defineAsyncComponent(() => import('./index-BG1LPVQI.mjs').then((r) => r["default"] || r.default || r));
-const LazyStepList = defineAsyncComponent(() => import('./index-Di4dKDia.mjs').then((r) => r["default"] || r.default || r));
-const LazyStep = defineAsyncComponent(() => import('./index-Cxd5D5cW.mjs').then((r) => r["default"] || r.default || r));
-const LazyStepItem = defineAsyncComponent(() => import('./index-w3WTqAbU.mjs').then((r) => r["default"] || r.default || r));
-const LazyStepPanels = defineAsyncComponent(() => import('./index-B_hxJNrk.mjs').then((r) => r["default"] || r.default || r));
-const LazyStepPanel = defineAsyncComponent(() => import('./index-D4ypJ4aw.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabView = defineAsyncComponent(() => import('./index-C3IF7fEB.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabs = defineAsyncComponent(() => import('./index-DqgtU6sv.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabList = defineAsyncComponent(() => import('./index-CeNF1U74.mjs').then((r) => r["default"] || r.default || r));
-const LazyTab = defineAsyncComponent(() => import('./index-DDeQBT5x.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabPanels = defineAsyncComponent(() => import('./index-tC7PFkdo.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabPanel = defineAsyncComponent(() => import('./index-BjXeELuu.mjs').then((r) => r["default"] || r.default || r));
-const LazyToolbar = defineAsyncComponent(() => import('./index-BJBmMNYB.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmDialog = defineAsyncComponent(() => import('./index-a38TX3ID.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmPopup = defineAsyncComponent(() => import('./index-DRsMEo4R.mjs').then((r) => r["default"] || r.default || r));
-const LazyDialog = defineAsyncComponent(() => import('./index-CfzIlNm4.mjs').then((r) => r["default"] || r.default || r));
-const LazyDrawer = defineAsyncComponent(() => import('./index-2JwlmV7S.mjs').then((r) => r["default"] || r.default || r));
-const LazyDynamicDialog = defineAsyncComponent(() => import('./index-r2yILuMA.mjs').then((r) => r["default"] || r.default || r));
-const LazyOverlayPanel = defineAsyncComponent(() => import('./index-DmDBhOYe.mjs').then((r) => r["default"] || r.default || r));
-const LazyPopover = defineAsyncComponent(() => import('./index-b3uZs0tx.mjs').then((r) => r["default"] || r.default || r));
-const LazyFileUpload = defineAsyncComponent(() => import('./index-CnBw-Zjn.mjs').then((r) => r["default"] || r.default || r));
-const LazyBreadcrumb = defineAsyncComponent(() => import('./index-Bskls8Zm.mjs').then((r) => r["default"] || r.default || r));
-const LazyContextMenu = defineAsyncComponent(() => import('./index-DwboyjVC.mjs').then((r) => r["default"] || r.default || r));
-const LazyDock = defineAsyncComponent(() => import('./index-BduL3VP2.mjs').then((r) => r["default"] || r.default || r));
-const LazyMenu = defineAsyncComponent(() => import('./index-kUqO3Mrd.mjs').then((r) => r["default"] || r.default || r));
-const LazyMenubar = defineAsyncComponent(() => import('./index-COZH7gox.mjs').then((r) => r["default"] || r.default || r));
-const LazyMegaMenu = defineAsyncComponent(() => import('./index-DIyhvrjq.mjs').then((r) => r["default"] || r.default || r));
-const LazyPanelMenu = defineAsyncComponent(() => import('./index-DXPKYrQm.mjs').then((r) => r["default"] || r.default || r));
-const LazySteps = defineAsyncComponent(() => import('./index-CFkwqwLn.mjs').then((r) => r["default"] || r.default || r));
-const LazyTabMenu = defineAsyncComponent(() => import('./index-T2L1Y6x-.mjs').then((r) => r["default"] || r.default || r));
-const LazyTieredMenu = defineAsyncComponent(() => import('./index-iKTNiDKk.mjs').then((r) => r["default"] || r.default || r));
-const LazyMessage = defineAsyncComponent(() => import('./index-DtWFvm_P.mjs').then((r) => r["default"] || r.default || r));
-const LazyInlineMessage = defineAsyncComponent(() => import('./index-W41egB25.mjs').then((r) => r["default"] || r.default || r));
-const LazyToast = defineAsyncComponent(() => import('./index-B550Ywc0.mjs').then((r) => r["default"] || r.default || r));
-const LazyCarousel = defineAsyncComponent(() => import('./index-D_HeAc2z.mjs').then((r) => r["default"] || r.default || r));
-const LazyGalleria = defineAsyncComponent(() => import('./index-JXWAUNHv.mjs').then((r) => r["default"] || r.default || r));
-const LazyImage = defineAsyncComponent(() => import('./index-ToXO6ClX.mjs').then((r) => r["default"] || r.default || r));
-const LazyImageCompare = defineAsyncComponent(() => import('./index-DIaDAw4v.mjs').then((r) => r["default"] || r.default || r));
-const LazyAvatar = defineAsyncComponent(() => import('./index-CFIQ6tnN.mjs').then((r) => r["default"] || r.default || r));
-const LazyAvatarGroup = defineAsyncComponent(() => import('./index-BBUk4sfK.mjs').then((r) => r["default"] || r.default || r));
-const LazyBadge = defineAsyncComponent(() => import('./index-9h0p4E0p.mjs').then((r) => r["default"] || r.default || r));
-const LazyBlockUI = defineAsyncComponent(() => import('./index-mHT7Iy-G.mjs').then((r) => r["default"] || r.default || r));
-const LazyChip = defineAsyncComponent(() => import('./index-B7OqMc2X.mjs').then((r) => r["default"] || r.default || r));
-const LazyInplace = defineAsyncComponent(() => import('./index-Bv2ieZvM.mjs').then((r) => r["default"] || r.default || r));
-const LazyMeterGroup = defineAsyncComponent(() => import('./index-L3cNtPkQ.mjs').then((r) => r["default"] || r.default || r));
-const LazyOverlayBadge = defineAsyncComponent(() => import('./index-ACMspPXB.mjs').then((r) => r["default"] || r.default || r));
-const LazyScrollTop = defineAsyncComponent(() => import('./index-DY_v5jS7.mjs').then((r) => r["default"] || r.default || r));
-const LazySkeleton = defineAsyncComponent(() => import('./index-Q15koXsT.mjs').then((r) => r["default"] || r.default || r));
-const LazyProgressBar = defineAsyncComponent(() => import('./index-DgYng4aG.mjs').then((r) => r["default"] || r.default || r));
-const LazyProgressSpinner = defineAsyncComponent(() => import('./index-DpEZfT_L.mjs').then((r) => r["default"] || r.default || r));
-const LazyTag = defineAsyncComponent(() => import('./index-C4qAcN8c.mjs').then((r) => r["default"] || r.default || r));
-const LazyTerminal = defineAsyncComponent(() => import('./index-DT24p4qm.mjs').then((r) => r["default"] || r.default || r));
-const LazyForm = defineAsyncComponent(() => import('./index-DipVqLvs.mjs').then((r) => r["default"] || r.default || r));
-const LazyFormField = defineAsyncComponent(() => import('./index-BibK6wD3.mjs').then((r) => r["default"] || r.default || r));
+const LazyAutoComplete = defineAsyncComponent(() => import('./index-ZH-axcya.mjs').then((r) => r["default"] || r.default || r));
+const LazyCalendar = defineAsyncComponent(() => import('./index-DvGFjcK1.mjs').then((r) => r["default"] || r.default || r));
+const LazyCascadeSelect = defineAsyncComponent(() => import('./index-In28GINb.mjs').then((r) => r["default"] || r.default || r));
+const LazyCheckbox = defineAsyncComponent(() => import('./index-C73KTgwG.mjs').then((r) => r["default"] || r.default || r));
+const LazyCheckboxGroup = defineAsyncComponent(() => import('./index-CQKVsXmi.mjs').then((r) => r["default"] || r.default || r));
+const LazyChips = defineAsyncComponent(() => import('./index-gJsUfpSh.mjs').then((r) => r["default"] || r.default || r));
+const LazyColorPicker = defineAsyncComponent(() => import('./index-CbM1-Plr.mjs').then((r) => r["default"] || r.default || r));
+const LazyDatePicker = defineAsyncComponent(() => import('./index-jbiUtL-s.mjs').then((r) => r["default"] || r.default || r));
+const LazyDropdown = defineAsyncComponent(() => import('./index-C4w4IQPM.mjs').then((r) => r["default"] || r.default || r));
+const LazyFloatLabel = defineAsyncComponent(() => import('./index-57FAD3xU.mjs').then((r) => r["default"] || r.default || r));
+const LazyFluid = defineAsyncComponent(() => import('./index-SJ2uaitM.mjs').then((r) => r["default"] || r.default || r));
+const LazyIconField = defineAsyncComponent(() => import('./index-Bpas9BVM.mjs').then((r) => r["default"] || r.default || r));
+const LazyIftaLabel = defineAsyncComponent(() => import('./index-q1hFdYN7.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputChips = defineAsyncComponent(() => import('./index-CwnoNj7q.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputGroup = defineAsyncComponent(() => import('./index-VCkJJYXD.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputGroupAddon = defineAsyncComponent(() => import('./index-CMIFGKKf.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputIcon = defineAsyncComponent(() => import('./index-Bf2IrflI.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputMask = defineAsyncComponent(() => import('./index-BqTbIvME.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputNumber = defineAsyncComponent(() => import('./index-DFsUalVC.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputOtp = defineAsyncComponent(() => import('./index-jcLCB6Gp.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputSwitch = defineAsyncComponent(() => import('./index-BhKaiWy6.mjs').then((r) => r["default"] || r.default || r));
+const LazyInputText = defineAsyncComponent(() => import('./index-DpA-Wfc2.mjs').then((r) => r["default"] || r.default || r));
+const LazyKnob = defineAsyncComponent(() => import('./index-BFpDF8VU.mjs').then((r) => r["default"] || r.default || r));
+const LazyListbox = defineAsyncComponent(() => import('./index-D726upm9.mjs').then((r) => r["default"] || r.default || r));
+const LazyMultiSelect = defineAsyncComponent(() => import('./index-COIoAQRe.mjs').then((r) => r["default"] || r.default || r));
+const LazyPassword = defineAsyncComponent(() => import('./index-BMSgrSBj.mjs').then((r) => r["default"] || r.default || r));
+const LazyRadioButton = defineAsyncComponent(() => import('./index-zXdTB0aH.mjs').then((r) => r["default"] || r.default || r));
+const LazyRadioButtonGroup = defineAsyncComponent(() => import('./index-CWmXcqSB.mjs').then((r) => r["default"] || r.default || r));
+const LazyRating = defineAsyncComponent(() => import('./index-DCjbwIv1.mjs').then((r) => r["default"] || r.default || r));
+const LazySelect = defineAsyncComponent(() => import('./index-XM6GreCt.mjs').then((r) => r["default"] || r.default || r));
+const LazySelectButton = defineAsyncComponent(() => import('./index-JeSp0FVz.mjs').then((r) => r["default"] || r.default || r));
+const LazySlider = defineAsyncComponent(() => import('./index-Nmuvprfl.mjs').then((r) => r["default"] || r.default || r));
+const LazyTextarea = defineAsyncComponent(() => import('./index-Bpg9eEL7.mjs').then((r) => r["default"] || r.default || r));
+const LazyToggleButton = defineAsyncComponent(() => import('./index-Csj8DHoC.mjs').then((r) => r["default"] || r.default || r));
+const LazyToggleSwitch = defineAsyncComponent(() => import('./index-CttgT9iJ.mjs').then((r) => r["default"] || r.default || r));
+const LazyTreeSelect = defineAsyncComponent(() => import('./index-BXHEwCZn.mjs').then((r) => r["default"] || r.default || r));
+const LazyButton = defineAsyncComponent(() => import('./index-B4-frvJ5.mjs').then((r) => r["default"] || r.default || r));
+const LazyButtonGroup = defineAsyncComponent(() => import('./index-Ch5w0MXw.mjs').then((r) => r["default"] || r.default || r));
+const LazySpeedDial = defineAsyncComponent(() => import('./index-Bi2ik-QR.mjs').then((r) => r["default"] || r.default || r));
+const LazySplitButton = defineAsyncComponent(() => import('./index-x3IvEzPD.mjs').then((r) => r["default"] || r.default || r));
+const LazyColumn = defineAsyncComponent(() => import('./index-BbuP4IHs.mjs').then((r) => r["default"] || r.default || r));
+const LazyRow = defineAsyncComponent(() => import('./index-DSOu9_gL.mjs').then((r) => r["default"] || r.default || r));
+const LazyColumnGroup = defineAsyncComponent(() => import('./index-BcYyZHOS.mjs').then((r) => r["default"] || r.default || r));
+const LazyDataTable = defineAsyncComponent(() => import('./index-C8eh-f8W.mjs').then((r) => r["default"] || r.default || r));
+const LazyDataView = defineAsyncComponent(() => import('./index-ytU1dwjF.mjs').then((r) => r["default"] || r.default || r));
+const LazyOrderList = defineAsyncComponent(() => import('./index-C7Q91rEw.mjs').then((r) => r["default"] || r.default || r));
+const LazyOrganizationChart = defineAsyncComponent(() => import('./index-CN98VMwB.mjs').then((r) => r["default"] || r.default || r));
+const LazyPaginator = defineAsyncComponent(() => import('./index-B6Quh_E4.mjs').then((r) => r["default"] || r.default || r));
+const LazyPickList = defineAsyncComponent(() => import('./index-D-DL78qb.mjs').then((r) => r["default"] || r.default || r));
+const LazyTree = defineAsyncComponent(() => import('./index-C0ZGZ3GF.mjs').then((r) => r["default"] || r.default || r));
+const LazyTreeTable = defineAsyncComponent(() => import('./index-tgdPSMBK.mjs').then((r) => r["default"] || r.default || r));
+const LazyTimeline = defineAsyncComponent(() => import('./index-CYnsHLEM.mjs').then((r) => r["default"] || r.default || r));
+const LazyVirtualScroller = defineAsyncComponent(() => import('./index-BSJgKSdj.mjs').then((r) => r["default"] || r.default || r));
+const LazyAccordion = defineAsyncComponent(() => import('./index-BGyX5TpC.mjs').then((r) => r["default"] || r.default || r));
+const LazyAccordionPanel = defineAsyncComponent(() => import('./index-ChIpHQfZ.mjs').then((r) => r["default"] || r.default || r));
+const LazyAccordionHeader = defineAsyncComponent(() => import('./index-DKlsuZDA.mjs').then((r) => r["default"] || r.default || r));
+const LazyAccordionContent = defineAsyncComponent(() => import('./index-CHmmVRBL.mjs').then((r) => r["default"] || r.default || r));
+const LazyAccordionTab = defineAsyncComponent(() => import('./index-DZJVZynR.mjs').then((r) => r["default"] || r.default || r));
+const LazyCard = defineAsyncComponent(() => import('./index-7WLxQBDe.mjs').then((r) => r["default"] || r.default || r));
+const LazyDeferredContent = defineAsyncComponent(() => import('./index-BUux2TFu.mjs').then((r) => r["default"] || r.default || r));
+const LazyDivider = defineAsyncComponent(() => import('./index-CR_rQzxl.mjs').then((r) => r["default"] || r.default || r));
+const LazyFieldset = defineAsyncComponent(() => import('./index-Degy8r9-.mjs').then((r) => r["default"] || r.default || r));
+const LazyPanel = defineAsyncComponent(() => import('./index-gamQ7kWx.mjs').then((r) => r["default"] || r.default || r));
+const LazyScrollPanel = defineAsyncComponent(() => import('./index-BPHDNw2y.mjs').then((r) => r["default"] || r.default || r));
+const LazySplitter = defineAsyncComponent(() => import('./index-CHDn_h4P.mjs').then((r) => r["default"] || r.default || r));
+const LazySplitterPanel = defineAsyncComponent(() => import('./index-Ck-mDc9R.mjs').then((r) => r["default"] || r.default || r));
+const LazyStepper = defineAsyncComponent(() => import('./index-DUUWP1C8.mjs').then((r) => r["default"] || r.default || r));
+const LazyStepList = defineAsyncComponent(() => import('./index-B4wov4W6.mjs').then((r) => r["default"] || r.default || r));
+const LazyStep = defineAsyncComponent(() => import('./index-C4QRdJe-.mjs').then((r) => r["default"] || r.default || r));
+const LazyStepItem = defineAsyncComponent(() => import('./index-DA63X8rB.mjs').then((r) => r["default"] || r.default || r));
+const LazyStepPanels = defineAsyncComponent(() => import('./index-B_6ByNet.mjs').then((r) => r["default"] || r.default || r));
+const LazyStepPanel = defineAsyncComponent(() => import('./index-CqgUCjlu.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabView = defineAsyncComponent(() => import('./index-D1JCk031.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabs = defineAsyncComponent(() => import('./index-C0WzHkwM.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabList = defineAsyncComponent(() => import('./index-BleInfUi.mjs').then((r) => r["default"] || r.default || r));
+const LazyTab = defineAsyncComponent(() => import('./index-DukYmd3H.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabPanels = defineAsyncComponent(() => import('./index-BoEYpePI.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabPanel = defineAsyncComponent(() => import('./index-BVxvwWcN.mjs').then((r) => r["default"] || r.default || r));
+const LazyToolbar = defineAsyncComponent(() => import('./index-0jJ2H3GE.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmDialog = defineAsyncComponent(() => import('./index-B2qeW2rU.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmPopup = defineAsyncComponent(() => import('./index-D8fAytL3.mjs').then((r) => r["default"] || r.default || r));
+const LazyDialog = defineAsyncComponent(() => import('./index-D_7vtSvx.mjs').then((r) => r["default"] || r.default || r));
+const LazyDrawer = defineAsyncComponent(() => import('./index--9iySMjH.mjs').then((r) => r["default"] || r.default || r));
+const LazyDynamicDialog = defineAsyncComponent(() => import('./index-reQK9ZI8.mjs').then((r) => r["default"] || r.default || r));
+const LazyOverlayPanel = defineAsyncComponent(() => import('./index-BCrIm9-3.mjs').then((r) => r["default"] || r.default || r));
+const LazyPopover = defineAsyncComponent(() => import('./index-CloEGlYu.mjs').then((r) => r["default"] || r.default || r));
+const LazyFileUpload = defineAsyncComponent(() => import('./index-D1-VQhX-.mjs').then((r) => r["default"] || r.default || r));
+const LazyBreadcrumb = defineAsyncComponent(() => import('./index-B8Ab9RQ0.mjs').then((r) => r["default"] || r.default || r));
+const LazyContextMenu = defineAsyncComponent(() => import('./index-NKgWP0KO.mjs').then((r) => r["default"] || r.default || r));
+const LazyDock = defineAsyncComponent(() => import('./index-Ctdfdi7z.mjs').then((r) => r["default"] || r.default || r));
+const LazyMenu = defineAsyncComponent(() => import('./index-BYy21lZk.mjs').then((r) => r["default"] || r.default || r));
+const LazyMenubar = defineAsyncComponent(() => import('./index-Df3kS6gN.mjs').then((r) => r["default"] || r.default || r));
+const LazyMegaMenu = defineAsyncComponent(() => import('./index-CHt88Xsh.mjs').then((r) => r["default"] || r.default || r));
+const LazyPanelMenu = defineAsyncComponent(() => import('./index-DVFMkiGz.mjs').then((r) => r["default"] || r.default || r));
+const LazySteps = defineAsyncComponent(() => import('./index-E4ES8BND.mjs').then((r) => r["default"] || r.default || r));
+const LazyTabMenu = defineAsyncComponent(() => import('./index--39iKKP5.mjs').then((r) => r["default"] || r.default || r));
+const LazyTieredMenu = defineAsyncComponent(() => import('./index-MZ-cImRa.mjs').then((r) => r["default"] || r.default || r));
+const LazyMessage = defineAsyncComponent(() => import('./index-TrDzAUuj.mjs').then((r) => r["default"] || r.default || r));
+const LazyInlineMessage = defineAsyncComponent(() => import('./index-B_w1Glrd.mjs').then((r) => r["default"] || r.default || r));
+const LazyToast = defineAsyncComponent(() => import('./index-uWDf1Kwn.mjs').then((r) => r["default"] || r.default || r));
+const LazyCarousel = defineAsyncComponent(() => import('./index-CmleLIUs.mjs').then((r) => r["default"] || r.default || r));
+const LazyGalleria = defineAsyncComponent(() => import('./index-gVzvd-uu.mjs').then((r) => r["default"] || r.default || r));
+const LazyImage = defineAsyncComponent(() => import('./index-Cy9ZqKZ8.mjs').then((r) => r["default"] || r.default || r));
+const LazyImageCompare = defineAsyncComponent(() => import('./index-DbBvaf0e.mjs').then((r) => r["default"] || r.default || r));
+const LazyAvatar = defineAsyncComponent(() => import('./index-CT0vkNeU.mjs').then((r) => r["default"] || r.default || r));
+const LazyAvatarGroup = defineAsyncComponent(() => import('./index-Cko2PVuC.mjs').then((r) => r["default"] || r.default || r));
+const LazyBadge = defineAsyncComponent(() => import('./index-DbMJ_aPl.mjs').then((r) => r["default"] || r.default || r));
+const LazyBlockUI = defineAsyncComponent(() => import('./index-CRAE891s.mjs').then((r) => r["default"] || r.default || r));
+const LazyChip = defineAsyncComponent(() => import('./index-XMxvkilb.mjs').then((r) => r["default"] || r.default || r));
+const LazyInplace = defineAsyncComponent(() => import('./index-XzxX7P-1.mjs').then((r) => r["default"] || r.default || r));
+const LazyMeterGroup = defineAsyncComponent(() => import('./index-CimhaUQk.mjs').then((r) => r["default"] || r.default || r));
+const LazyOverlayBadge = defineAsyncComponent(() => import('./index-Ee1-jr7u.mjs').then((r) => r["default"] || r.default || r));
+const LazyScrollTop = defineAsyncComponent(() => import('./index-Cjwesabz.mjs').then((r) => r["default"] || r.default || r));
+const LazySkeleton = defineAsyncComponent(() => import('./index-B47IRpvj.mjs').then((r) => r["default"] || r.default || r));
+const LazyProgressBar = defineAsyncComponent(() => import('./index-CS2xjo2T.mjs').then((r) => r["default"] || r.default || r));
+const LazyProgressSpinner = defineAsyncComponent(() => import('./index-Cqp0kO1G.mjs').then((r) => r["default"] || r.default || r));
+const LazyTag = defineAsyncComponent(() => import('./index-ChNvRVdq.mjs').then((r) => r["default"] || r.default || r));
+const LazyTerminal = defineAsyncComponent(() => import('./index-DITHsrVD.mjs').then((r) => r["default"] || r.default || r));
+const LazyForm = defineAsyncComponent(() => import('./index-DWgC5dbk.mjs').then((r) => r["default"] || r.default || r));
+const LazyFormField = defineAsyncComponent(() => import('./index-D0NYGxgE.mjs').then((r) => r["default"] || r.default || r));
 const lazyGlobalComponents = [
   ["AutoComplete", LazyAutoComplete],
   ["Calendar", LazyCalendar],
@@ -1225,6 +1315,25 @@ const components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4 = /* @__PURE
       nuxtApp.vueApp.component(name, component);
       nuxtApp.vueApp.component("Lazy" + name, component);
     }
+  }
+});
+const robot_meta_server_bRHpso_4KN_Ec3RJzqCvbuvfZsNOeE_4TgpL8dCNuwk = /* @__PURE__ */ defineNuxtPlugin({
+  setup() {
+    const event = useRequestEvent();
+    const ctx = event?.context?.robots;
+    event?.context?.robotsProduction;
+    if (!ctx)
+      return;
+    useHead({
+      meta: [
+        {
+          "name": "robots",
+          "content": () => ctx.rule || "",
+          "data-hint": () => void 0,
+          "data-production-content": () => void 0
+        }
+      ]
+    });
   }
 });
 var FilterMatchMode = {
@@ -2182,11 +2291,147 @@ const plugins = [
   payloadPlugin,
   unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
   plugin$1,
+  _0_siteConfig_tU0SxKrPeVRXWcGu2sOnIfhNDbYiKNfDCvYZhRueG0Q,
   revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms,
   plugin,
   components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4,
+  robot_meta_server_bRHpso_4KN_Ec3RJzqCvbuvfZsNOeE_4TgpL8dCNuwk,
   primevue_plugin_0tbz5Y3Ab_H50qf9PQhqyN3k7XWjmG9dWGLJNwEfVI0
 ];
+const layouts = {
+  center: defineAsyncComponent(() => import('./center-C51tK6aO.mjs').then((m) => m.default || m)),
+  default: defineAsyncComponent(() => import('./default-Dr1fFL4f.mjs').then((m) => m.default || m)),
+  hmf: defineAsyncComponent(() => import('./hmf-CjUX7mXG.mjs').then((m) => m.default || m))
+};
+const routeRulesMatcher = _routeRulesMatcher;
+const LayoutLoader = defineComponent({
+  name: "LayoutLoader",
+  inheritAttrs: false,
+  props: {
+    name: String,
+    layoutProps: Object
+  },
+  setup(props, context) {
+    return () => h(layouts[props.name], props.layoutProps, context.slots);
+  }
+});
+const nuxtLayoutProps = {
+  name: {
+    type: [String, Boolean, Object],
+    default: null
+  },
+  fallback: {
+    type: [String, Object],
+    default: null
+  }
+};
+const __nuxt_component_0 = defineComponent({
+  name: "NuxtLayout",
+  inheritAttrs: false,
+  props: nuxtLayoutProps,
+  setup(props, context) {
+    const nuxtApp = useNuxtApp();
+    const injectedRoute = inject(PageRouteSymbol);
+    const shouldUseEagerRoute = !injectedRoute || injectedRoute === useRoute();
+    const route = shouldUseEagerRoute ? useRoute$1() : injectedRoute;
+    const layout = computed(() => {
+      let layout2 = unref(props.name) ?? route?.meta.layout ?? routeRulesMatcher(route?.path).appLayout ?? "default";
+      if (layout2 && !(layout2 in layouts)) {
+        if (props.fallback) {
+          layout2 = unref(props.fallback);
+        }
+      }
+      return layout2;
+    });
+    const layoutRef = shallowRef();
+    context.expose({ layoutRef });
+    const done = nuxtApp.deferHydration();
+    let lastLayout;
+    return () => {
+      const hasLayout = layout.value && layout.value in layouts;
+      const transitionProps = route?.meta.layoutTransition ?? appLayoutTransition;
+      const previouslyRenderedLayout = lastLayout;
+      lastLayout = layout.value;
+      return _wrapInTransition(hasLayout && transitionProps, {
+        default: () => h(Suspense, { suspensible: true, onResolve: () => {
+          nextTick(done);
+        } }, {
+          default: () => h(
+            LayoutProvider,
+            {
+              layoutProps: mergeProps(context.attrs, route.meta.layoutProps ?? {}, { ref: layoutRef }),
+              key: layout.value || void 0,
+              name: layout.value,
+              shouldProvide: !props.name,
+              isRenderingNewLayout: (name) => {
+                return name !== previouslyRenderedLayout && name === layout.value;
+              },
+              hasTransition: !!transitionProps
+            },
+            context.slots
+          )
+        })
+      }).default();
+    };
+  }
+});
+const LayoutProvider = defineComponent({
+  name: "NuxtLayoutProvider",
+  inheritAttrs: false,
+  props: {
+    name: {
+      type: [String, Boolean]
+    },
+    layoutProps: {
+      type: Object
+    },
+    hasTransition: {
+      type: Boolean
+    },
+    shouldProvide: {
+      type: Boolean
+    },
+    isRenderingNewLayout: {
+      type: Function,
+      required: true
+    }
+  },
+  setup(props, context) {
+    const name = props.name;
+    if (props.shouldProvide) {
+      provide(LayoutMetaSymbol, {
+        // When name=false, always return true so NuxtPage doesn't skip rendering
+        isCurrent: (route) => name === false || name === (route.meta.layout ?? routeRulesMatcher(route.path).appLayout ?? "default")
+      });
+    }
+    const injectedRoute = inject(PageRouteSymbol);
+    const isNotWithinNuxtPage = injectedRoute && injectedRoute === useRoute();
+    if (isNotWithinNuxtPage) {
+      const vueRouterRoute = useRoute$1();
+      const reactiveChildRoute = {};
+      for (const _key in vueRouterRoute) {
+        const key = _key;
+        Object.defineProperty(reactiveChildRoute, key, {
+          enumerable: true,
+          get: () => {
+            return props.isRenderingNewLayout(props.name) ? vueRouterRoute[key] : injectedRoute[key];
+          }
+        });
+      }
+      provide(PageRouteSymbol, shallowReactive(reactiveChildRoute));
+    }
+    return () => {
+      if (!name || typeof name === "string" && !(name in layouts)) {
+        return context.slots.default?.();
+      }
+      return h(
+        LayoutLoader,
+        { key: name, layoutProps: props.layoutProps, name },
+        context.slots
+      );
+    };
+  }
+});
 const defineRouteProvider = (name = "RouteProvider") => defineComponent({
   name,
   props: {
@@ -2219,7 +2464,7 @@ const defineRouteProvider = (name = "RouteProvider") => defineComponent({
   }
 });
 const RouteProvider = defineRouteProvider();
-const __nuxt_component_0 = defineComponent({
+const __nuxt_component_1 = defineComponent({
   name: "NuxtPage",
   inheritAttrs: false,
   props: {
@@ -2287,9 +2532,9 @@ const useThemeStore = defineStore("theme", () => {
   return { theme, toggleTheme };
 });
 const client = new Client();
-if (process.env.VITE_APPWRITE_API_URL) {
-  client.setEndpoint(process.env.VITE_APPWRITE_API_URL || "").setProject(process.env.VITE_APPWRITE_PROJECT_ID || "");
-}
+const endpoint = "http://192.168.88.212/v1";
+const projectId = "tixo";
+client.setEndpoint(endpoint).setProject(projectId);
 const account = new Account(client);
 const tablesDB = new TablesDB(client);
 const functions = new Functions(client);
@@ -2302,32 +2547,7 @@ const appwriteClient = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   realtime,
   tablesDB
 }, Symbol.toStringTag, { value: "Module" }));
-function HandleAppwriteErrors(errorMap, defaultErrorValue) {
-  return function(target, context) {
-    return async function(...args) {
-      try {
-        return await target.apply(this, args);
-      } catch (exception) {
-        if (exception instanceof AppwriteException) {
-          return errorMap[exception.type] ?? defaultErrorValue;
-        } else {
-          console.error(`Error in method ${String(context.name)}:`, exception);
-          return defaultErrorValue;
-        }
-      }
-    };
-  };
-}
-_authenticate_dec = [HandleAppwriteErrors(
-  {
-    general_rate_limit_exceeded: false
-  },
-  false
-)], _getCurrentUser_dec = [HandleAppwriteErrors({}, null)], _getUserDetails_dec = [HandleAppwriteErrors({}, null)], _logout_dec = [HandleAppwriteErrors({}, false)];
 class AuthService {
-  constructor() {
-    __runInitializers(_init, 5, this);
-  }
   handleAuthError(e, mapping) {
     if (e instanceof AppwriteException) {
       return {
@@ -2389,29 +2609,56 @@ class AuthService {
       });
     }
   }
+  /**
+   * Authenticates the current session cookie with the backend.
+   *
+   * @returns A Promise that resolves to true if the session is valid, false otherwise.
+   */
   async authenticate() {
-    await account.get();
-    return true;
-  }
-  async getCurrentUser() {
-    return await account.get();
-  }
-  async getUserDetails() {
-    const execution = await functions.createExecution({
-      functionId: "app-handler",
-      xpath: "/users/me",
-      method: ExecutionMethod.GET
-    });
-    if (execution.status === "completed") {
-      try {
-        const response = JSON.parse(execution.responseBody);
-        return response.user || null;
-      } catch (e) {
-        console.error("Failed to parse getUserDetails response", e);
-        return null;
+    try {
+      await account.get();
+      return true;
+    } catch (e) {
+      if (e instanceof AppwriteException && e.type === "general_rate_limit_exceeded") {
+        return false;
       }
+      return false;
     }
-    return null;
+  }
+  /**
+   * Returns the current authenticated user.
+   */
+  async getCurrentUser() {
+    try {
+      return await account.get();
+    } catch {
+      return null;
+    }
+  }
+  /**
+   * Fetches full user details via backend function and ensures registration.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getUserDetails() {
+    try {
+      const execution = await functions.createExecution({
+        functionId: "app-handler",
+        xpath: "/users/me",
+        method: ExecutionMethod.GET
+      });
+      if (execution.status === "completed") {
+        try {
+          const response = JSON.parse(execution.responseBody);
+          return response.user || null;
+        } catch (e) {
+          console.error("Failed to parse getUserDetails response", e);
+          return null;
+        }
+      }
+      return null;
+    } catch {
+      return null;
+    }
   }
   /**
    * Authenticates a user anonymously.
@@ -2432,9 +2679,36 @@ class AuthService {
       });
     }
   }
+  /**
+   * Logs out the current user by deleting the current session.
+   */
   async logout() {
-    await account.deleteSession("current");
-    return true;
+    try {
+      await account.deleteSession("current");
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  /**
+   * Fetches the rating history for the current user.
+   */
+  async getRatingHistory(userId) {
+    try {
+      const response = await tablesDB.listRows({
+        databaseId: "tixo",
+        tableId: "rating",
+        queries: [
+          Query.equal("userId", userId),
+          Query.orderAsc("$createdAt"),
+          Query.limit(100)
+        ]
+      });
+      return response.rows;
+    } catch (e) {
+      console.error("Failed to fetch rating history", e);
+      return [];
+    }
   }
   /**
    * Initiates Google OAuth2 login.
@@ -2443,12 +2717,6 @@ class AuthService {
     return;
   }
 }
-_init = __decoratorStart();
-__decorateElement(_init, 1, "authenticate", _authenticate_dec, AuthService);
-__decorateElement(_init, 1, "getCurrentUser", _getCurrentUser_dec, AuthService);
-__decorateElement(_init, 1, "getUserDetails", _getUserDetails_dec, AuthService);
-__decorateElement(_init, 1, "logout", _logout_dec, AuthService);
-__decoratorMetadata(_init, AuthService);
 const auth = new AuthService();
 const useAuthStore = defineStore("auth", () => {
   const user = ref(null);
@@ -2507,34 +2775,34 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     return (_ctx, _push, _parent, _attrs) => {
       ssrRenderTeleport(_push, (_push2) => {
         if (unref(authStore).isLoginModalOpen) {
-          _push2(`<div class="fixed inset-0 z-[100] flex items-center justify-center bg-void/80 backdrop-blur-md px-4" data-v-15f42493><div class="w-full max-w-md relative animate-in zoom-in duration-300" data-v-15f42493><button class="absolute -top-12 right-0 w-10 h-10 rounded-full glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text transition-all group z-10" data-v-15f42493><i class="pi pi-times group-hover:rotate-90 transition-transform" data-v-15f42493></i></button><div class="space-y-8" data-v-15f42493><div class="text-center space-y-4" data-v-15f42493><div class="inline-flex items-center gap-3 px-4 py-1 rounded-full glass border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4" data-v-15f42493> Security Protocol Active </div><h1 class="text-5xl font-black text-app-text tracking-tighter uppercase italic leading-none" data-v-15f42493> Tixo<span class="text-indigo-500" data-v-15f42493>.</span></h1></div><div class="glass border-glass-border rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group" data-v-15f42493><div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/10 blur-3xl rounded-full transition-all duration-1000 group-hover:bg-indigo-600/20" data-v-15f42493></div><form class="space-y-6 relative z-10" data-v-15f42493>`);
+          _push2(`<div class="fixed inset-0 z-[100] flex items-center justify-center bg-void/80 backdrop-blur-md px-4" data-v-cf3d770e><div class="w-full max-w-md relative animate-in zoom-in duration-300" data-v-cf3d770e><button class="absolute -top-12 right-0 w-10 h-10 rounded-full glass border-glass-border flex items-center justify-center text-app-text-muted hover:text-app-text transition-all group z-10" data-v-cf3d770e><i class="pi pi-times group-hover:rotate-90 transition-transform" data-v-cf3d770e></i></button><div class="space-y-8" data-v-cf3d770e><div class="text-center space-y-4" data-v-cf3d770e><div class="inline-flex items-center gap-3 px-4 py-1 rounded-full glass border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4" data-v-cf3d770e> Security Protocol Active </div><h1 class="text-5xl font-black text-app-text tracking-tighter uppercase italic leading-none" data-v-cf3d770e> Tixo<span class="text-indigo-500" data-v-cf3d770e>.</span></h1></div><div class="glass border-glass-border rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group" data-v-cf3d770e><div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/10 blur-3xl rounded-full transition-all duration-1000 group-hover:bg-indigo-600/20" data-v-cf3d770e></div><form class="space-y-6 relative z-10" data-v-cf3d770e>`);
           if (isRegister.value) {
-            _push2(`<div class="space-y-2" data-v-15f42493><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-15f42493>Name</label><input${ssrRenderAttr("value", name.value)} type="text" required placeholder="Operator Name" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-15f42493></div>`);
+            _push2(`<div class="space-y-2" data-v-cf3d770e><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-cf3d770e>Name</label><input${ssrRenderAttr("value", name.value)} type="text" required placeholder="Operator Name" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-cf3d770e></div>`);
           } else {
             _push2(`<!---->`);
           }
-          _push2(`<div class="space-y-2" data-v-15f42493><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-15f42493>Identifier</label><input${ssrRenderAttr("value", email.value)} type="email" required placeholder="operator@tixo.net" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-15f42493></div><div class="space-y-2" data-v-15f42493><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-15f42493>Access Key</label><input${ssrRenderAttr("value", password.value)} type="password" required placeholder="••••••••" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-15f42493></div>`);
+          _push2(`<div class="space-y-2" data-v-cf3d770e><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-cf3d770e>Identifier</label><input${ssrRenderAttr("value", email.value)} type="email" required placeholder="operator@tixo.net" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-cf3d770e></div><div class="space-y-2" data-v-cf3d770e><label class="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-30 ml-4" data-v-cf3d770e>Access Key</label><input${ssrRenderAttr("value", password.value)} type="password" required placeholder="••••••••" class="w-full px-6 py-4 rounded-2xl glass border-glass-border text-app-text placeholder:text-app-text-muted opacity-10 focus:opacity-100 focus:outline-none focus:border-indigo-500/50 transition-all text-sm mono" data-v-cf3d770e></div>`);
           if (error.value) {
-            _push2(`<div class="p-4 rounded-xl bg-red-500/5 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest text-center animate-shake" data-v-15f42493>${ssrInterpolate(error.value)}</div>`);
+            _push2(`<div class="p-4 rounded-xl bg-red-500/5 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest text-center animate-shake" data-v-cf3d770e>${ssrInterpolate(error.value)}</div>`);
           } else {
             _push2(`<!---->`);
           }
-          _push2(`<button type="submit"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} class="w-full py-5 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3" data-v-15f42493>`);
+          _push2(`<button type="submit"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} class="w-full py-5 bg-app-text text-void text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3" data-v-cf3d770e>`);
           if (loading.value) {
-            _push2(`<i class="pi pi-spin pi-spinner" data-v-15f42493></i>`);
+            _push2(`<i class="pi pi-spin pi-spinner" data-v-cf3d770e></i>`);
           } else {
             _push2(`<!---->`);
           }
-          _push2(`<span data-v-15f42493>${ssrInterpolate(loading.value ? "Authorizing..." : isRegister.value ? "Commission Account" : "Authorize")}</span></button><div class="text-center" data-v-15f42493><button type="button" class="text-[9px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 hover:opacity-40 transition-all" data-v-15f42493>${ssrInterpolate(isRegister.value ? "Already commissioned? Access Protocol" : "New operator? Request Commission")}</button></div></form><div class="relative z-10 mt-8 space-y-6" data-v-15f42493><div class="flex items-center gap-4" data-v-15f42493><div class="h-[1px] flex-1 bg-glass-border" data-v-15f42493></div><span class="text-[9px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-10" data-v-15f42493>External Access</span><div class="h-[1px] flex-1 bg-glass-border" data-v-15f42493></div></div><button${ssrIncludeBooleanAttr(loading.value || isLocalhost.value) ? " disabled" : ""} class="${ssrRenderClass([
+          _push2(`<span data-v-cf3d770e>${ssrInterpolate(loading.value ? "Authorizing..." : isRegister.value ? "Commission Account" : "Authorize")}</span></button><div class="text-center" data-v-cf3d770e><button type="button" class="text-[9px] font-black uppercase tracking-[0.2em] text-app-text-muted opacity-20 hover:opacity-40 transition-all" data-v-cf3d770e>${ssrInterpolate(isRegister.value ? "Already commissioned? Access Protocol" : "New operator? Request Commission")}</button></div></form><div class="relative z-10 mt-8 space-y-6" data-v-cf3d770e><div class="flex items-center gap-4" data-v-cf3d770e><div class="h-[1px] flex-1 bg-glass-border" data-v-cf3d770e></div><span class="text-[9px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-10" data-v-cf3d770e>External Access</span><div class="h-[1px] flex-1 bg-glass-border" data-v-cf3d770e></div></div><button${ssrIncludeBooleanAttr(loading.value || isLocalhost.value) ? " disabled" : ""} class="${ssrRenderClass([
             "w-full py-4 rounded-2xl glass border-glass-border text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3",
             isLocalhost.value ? "opacity-20 grayscale cursor-not-allowed pointer-events-none" : "text-app-text-muted opacity-40 hover:bg-glass-white hover:opacity-100 hover:text-app-text"
-          ])}" data-v-15f42493>`);
+          ])}" data-v-cf3d770e>`);
           if (loading.value) {
-            _push2(`<i class="pi pi-spin pi-spinner" data-v-15f42493></i>`);
+            _push2(`<i class="pi pi-spin pi-spinner" data-v-cf3d770e></i>`);
           } else {
-            _push2(`<i class="pi pi-google" data-v-15f42493></i>`);
+            _push2(`<i class="pi pi-google" data-v-cf3d770e></i>`);
           }
-          _push2(`<span data-v-15f42493>${ssrInterpolate(isLocalhost.value ? "Google (Cloud Only)" : loading.value ? "Authorizing..." : "Google Protocol")}</span></button><button${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} class="w-full py-4 rounded-2xl glass border-glass-border text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-glass-white hover:opacity-100 hover:text-app-text transition-all flex items-center justify-center gap-3" data-v-15f42493><i class="pi pi-user-plus" data-v-15f42493></i><span data-v-15f42493>Guest Protocol</span></button></div></div></div></div></div>`);
+          _push2(`<span data-v-cf3d770e>${ssrInterpolate(isLocalhost.value ? "Google (Cloud Only)" : loading.value ? "Authorizing..." : "Google Protocol")}</span></button><button${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} class="w-full py-4 rounded-2xl glass border-glass-border text-app-text-muted opacity-40 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-glass-white hover:opacity-100 hover:text-app-text transition-all flex items-center justify-center gap-3" data-v-cf3d770e><i class="pi pi-user-plus" data-v-cf3d770e></i><span data-v-cf3d770e>Guest Protocol</span></button></div></div></div></div></div>`);
         } else {
           _push2(`<!---->`);
         }
@@ -2555,18 +2823,56 @@ _sfc_main$3.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/LoginModal.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-const LoginModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-15f42493"]]);
+const LoginModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-cf3d770e"]]);
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "app",
   __ssrInlineRender: true,
   setup(__props) {
     useThemeStore();
+    const config = /* @__PURE__ */ useRuntimeConfig();
+    const route = useRoute();
+    useHead({
+      titleTemplate: (titleChunk) => {
+        return titleChunk ? `${titleChunk} | Tixo - Ultimate Tic-Tac-Toe` : "Tixo - Ultimate Tic-Tac-Toe";
+      },
+      htmlAttrs: {
+        lang: "en"
+      },
+      link: [
+        {
+          rel: "canonical",
+          href: () => `${config.public.siteUrl}${route.path}`
+        }
+      ]
+    });
+    useSeoMeta({
+      ogTitle: "Tixo - Ultimate Tic-Tac-Toe",
+      description: "Experience the depth of classic Tic-Tac-Toe reimagined as a fractal battle for board supremacy. Precision, logic, and cold-blooded tactics.",
+      ogDescription: "Experience the depth of classic Tic-Tac-Toe reimagined as a fractal battle for board supremacy. Precision, logic, and cold-blooded tactics.",
+      ogImage: `${config.public.siteUrl}/og-image.png`,
+      ogType: "website",
+      twitterCard: "summary_large_image",
+      twitterTitle: "Tixo - Ultimate Tic-Tac-Toe",
+      twitterDescription: "Experience the depth of classic Tic-Tac-Toe reimagined as a fractal battle for board supremacy.",
+      twitterImage: `${config.public.siteUrl}/og-image.png`
+    });
     return (_ctx, _push, _parent, _attrs) => {
-      const _component_NuxtPage = __nuxt_component_0;
-      _push(`<!--[-->`);
-      _push(ssrRenderComponent(_component_NuxtPage, null, null, _parent));
-      _push(ssrRenderComponent(LoginModal, null, null, _parent));
-      _push(`<!--]-->`);
+      const _component_NuxtLayout = __nuxt_component_0;
+      const _component_NuxtPage = __nuxt_component_1;
+      _push(ssrRenderComponent(_component_NuxtLayout, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(_component_NuxtPage, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(LoginModal, null, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(_component_NuxtPage),
+              createVNode(LoginModal)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
     };
   }
 });
@@ -2590,8 +2896,8 @@ const _sfc_main$1 = {
     const statusText = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-DEc3DTGZ.mjs'));
-    const _Error = defineAsyncComponent(() => import('./error-500-BOsvJMDC.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-DPYvHsdg.mjs'));
+    const _Error = defineAsyncComponent(() => import('./error-500-BPLZ3cXC.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
       _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ status: unref(status), statusText: unref(statusText), statusCode: unref(status), statusMessage: unref(statusText), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
@@ -2672,5 +2978,4 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { BaseStyle as B, ConfirmationEventBus as C, DynamicDialogEventBus as D, FilterService as F, HandleAppwriteErrors as H, PrimeVueService as P, ToastEventBus as T, _export_sfc as _, useNuxtApp as a, useRuntimeConfig as b, nuxtLinkDefaults as c, useAuthStore as d, entry_default as default, encodeRoutePath as e, useThemeStore as f, useRoute as g, auth as h, realtime as i, __nuxt_component_0$1 as j, tablesDB as k, functions as l, defineNuxtRouteMiddleware as m, navigateTo as n, FilterMatchMode as o, FilterOperator as p, appwriteClient as q, resolveRouteObject as r, tryUseNuxtApp as t, useRouter as u };
-//# sourceMappingURL=server.mjs.map
+export { BaseStyle as B, ConfirmationEventBus as C, DynamicDialogEventBus as D, FilterService as F, PrimeVueService as P, ToastEventBus as T, _export_sfc as _, useNuxtApp as a, useRuntimeConfig as b, nuxtLinkDefaults as c, useHead as d, entry_default as default, encodeRoutePath as e, useSeoMeta as f, useAuthStore as g, useRoute as h, __nuxt_component_0 as i, auth as j, useThemeStore as k, __nuxt_component_0$1 as l, functions as m, navigateTo as n, defineNuxtRouteMiddleware as o, FilterMatchMode as p, FilterOperator as q, resolveRouteObject as r, appwriteClient as s, tablesDB as t, useRouter as u };

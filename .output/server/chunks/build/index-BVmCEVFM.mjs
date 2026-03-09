@@ -158,4 +158,3 @@ var Ripple = BaseRipple.extend("ripple", {
 });
 
 export { Ripple as R };
-//# sourceMappingURL=index-BVmCEVFM.mjs.map

@@ -542,4 +542,3 @@ var Tooltip = BaseTooltip.extend("tooltip", {
 });
 
 export { Tooltip as T };
-//# sourceMappingURL=index-givXIG1K.mjs.map

@@ -200,4 +200,3 @@ _sfc_main.setup = (props, ctx) => {
 const Board = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-59ec6c4e"]]);
 
 export { Board as B };
-//# sourceMappingURL=Board-BO2ZmLpn.mjs.map

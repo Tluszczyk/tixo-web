@@ -5,4 +5,3 @@ const error404Styles_CiJjK6WX = [
 ];
 
 export { error404Styles_CiJjK6WX as default };
-//# sourceMappingURL=error-404-styles.CiJjK6WX.mjs.map

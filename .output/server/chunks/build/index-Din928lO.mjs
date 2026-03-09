@@ -13,4 +13,3 @@ function unblockBodyScroll() {
 }
 
 export { blockBodyScroll as b, unblockBodyScroll as u };
-//# sourceMappingURL=index-Din928lO.mjs.map

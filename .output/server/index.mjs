@@ -6,6 +6,8 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'vue';
+import 'consola';
 import '@primevue/core/base/style';
 import '@primevue/core/basecomponent/style';
 import '@primeuix/styles/autocomplete';
@@ -104,4 +106,4 @@ import '@primeuix/styles/tooltip';
 import '@primeuix/styles/ripple';
 import '@primeuix/styled';
 import 'node:url';
-//# sourceMappingURL=index.mjs.map
+import 'fast-xml-parser';

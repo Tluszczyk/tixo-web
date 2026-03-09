@@ -163,4 +163,3 @@ var FocusTrap = BaseFocusTrap.extend("focustrap", {
 });
 
 export { FocusTrap as F };
-//# sourceMappingURL=index-i6azE7xM.mjs.map

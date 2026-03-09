@@ -283,7 +283,7 @@ var BaseDirective = {
     selfHook === null || selfHook === void 0 || selfHook(instance, options);
     defaultHook === null || defaultHook === void 0 || defaultHook(instance, options);
   },
-   
+  /* eslint-disable-next-line no-unused-vars */
   _mergeProps: function _mergeProps() {
     var fn = arguments.length > 1 ? arguments[1] : void 0;
     for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key2 = 2; _key2 < _len; _key2++) {
@@ -459,4 +459,3 @@ var BaseDirective = {
 };
 
 export { BaseDirective as B };
-//# sourceMappingURL=index-DA3RQQMs.mjs.map

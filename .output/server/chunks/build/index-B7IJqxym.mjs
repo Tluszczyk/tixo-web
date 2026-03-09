@@ -46,4 +46,3 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 script.render = render;
 
 export { script as s };
-//# sourceMappingURL=index-B7IJqxym.mjs.map
