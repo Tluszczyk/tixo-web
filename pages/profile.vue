@@ -94,6 +94,7 @@ const chartOptions = computed(() => {
         fontSize: 12,
         fontWeight: 'bold'
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       formatter: (params: any) => {
         const date = new Date(params[0].value[0]).toLocaleDateString()
         const rating = params[0].value[1]
@@ -214,7 +215,8 @@ onMounted(async () => {
           ratingDeviation: 350,
           volatility: 0.06,
           $databaseId: '',
-          $collectionId: '',
+          $tableId: '',
+          $sequence: 0,
           $updatedAt: user.registration,
           $permissions: []
         })

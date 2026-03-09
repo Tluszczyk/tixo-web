@@ -88,7 +88,7 @@ watch(requestedOpponentId, (newId) => {
       } else {
         error.value = 'Target user not found.'
       }
-    } catch (e) {
+    } catch {
       error.value = 'Failed to verify user.'
     } finally {
       isValidatingUser.value = false

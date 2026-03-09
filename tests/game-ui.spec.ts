@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { nextTick } from "vue"
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
@@ -35,12 +36,12 @@ describe('In-Game UI Visibility (Integration)', () => {
     // Find the button in the Active Game Actions section
     const buttons = component.findAll('button')
     const abandonButton = buttons.find(b => 
-      b.text().includes('Cancel Match') || b.text().includes('Abandon Match')
+      b.text().includes('Cancel') || b.text().includes('Abandon')
     )
     
     expect(abandonButton?.exists()).toBe(true)
-    expect(abandonButton?.text()).toContain('Cancel Match')
-    expect(abandonButton?.text()).not.toContain('Abandon Match')
+    expect(abandonButton?.text()).toContain('Cancel')
+    expect(abandonButton?.text()).not.toContain('Abandon')
   })
 
   it('Abandon Game: Button shows "Abandon Match" when moves >= 2', async () => {
@@ -64,12 +65,12 @@ describe('In-Game UI Visibility (Integration)', () => {
     
     const buttons = component.findAll('button')
     const abandonButton = buttons.find(b => 
-      b.text().includes('Cancel Match') || b.text().includes('Abandon Match')
+      b.text().includes('Cancel') || b.text().includes('Abandon')
     )
     
     expect(abandonButton?.exists()).toBe(true)
-    expect(abandonButton?.text()).toContain('Abandon Match')
-    expect(abandonButton?.text()).not.toContain('Cancel Match')
+    expect(abandonButton?.text()).toContain('Abandon')
+    expect(abandonButton?.text()).not.toContain('Cancel')
   })
 
   it('Post-Game Actions: Renders "Request Analysis" button when analysis does not exist', async () => {

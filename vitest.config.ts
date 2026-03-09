@@ -10,15 +10,14 @@ export default defineVitestConfig({
     environmentOptions: {
       nuxt: {
         domEnvironment: 'happy-dom',
+        overrides: {
+          modules: ['@pinia/nuxt'],
+          nitro: {
+            preset: 'node'
+          }
+        }
       }
     },
     testTimeout: 10000,
-  },
-  // Override Nuxt config for testing to disable heavy modules
-  nuxt: {
-    modules: ['@pinia/nuxt'],
-    nitro: {
-      preset: 'node'
-    }
   }
 })

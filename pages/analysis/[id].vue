@@ -548,6 +548,8 @@ const goBack = () => {
               :selected-cell="selectedCell"
               :selected-history-index="selectedHistoryIndex"
               :joining="joining"
+              :abandoning="abandoning"
+              :move-history-count="game.moveHistory?.length || 0"
               @clear-history="selectedHistoryIndex = null"
               @clear-selection="selectedCell = null"
               @submit-move="submitMove"

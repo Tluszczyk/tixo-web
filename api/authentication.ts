@@ -116,7 +116,8 @@ class AuthService {
   /**
    * Fetches full user details via backend function and ensures registration.
    */
-  async getUserDetails(): Promise<string | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getUserDetails(): Promise<any | null> {
     try {
       const execution = await functions.createExecution({
         functionId: 'app-handler',
@@ -192,8 +193,9 @@ class AuthService {
    */
   async loginWithGoogle(redirect?: string): Promise<void> {
     if (typeof window === 'undefined') return
-    const successUrl = redirect ? `${window.location.origin}/#${redirect}` : `${window.location.origin}/`
-    // Note: Project uses hash history, so we need to include # if redirecting to a path
+    // Remove the hash (#) as Nuxt 3 uses History API instead of Hash mode
+    // Paths like /dashboard are handled natively
+    const successUrl = redirect ? `${window.location.origin}${redirect}` : `${window.location.origin}/`
     await account.createOAuth2Session(
       OAuthProvider.Google,
       successUrl,

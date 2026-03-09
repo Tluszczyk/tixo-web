@@ -1,4 +1,4 @@
-import { nextTick } from "vue"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // We need to unmock games to test the actual implementation
