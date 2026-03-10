@@ -7,11 +7,10 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "nuxt dev",
-    "dev:network": "nuxt dev --host --qr", 
-    "build": "nuxt build",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
+        "dev": "nuxt dev",
+        "dev:network": "nuxt dev --host --qr",
+        "build": "NODE_OPTIONS='--max-old-space-size=450' npx nuxi build",
+        "generate": "nuxt generate",    "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test:unit": "vitest run --logHeapUsage",
     "test:e2e": "playwright test",
@@ -26,7 +25,6 @@
     "@primevue/nuxt-module": "^4.3.1",
     "@tailwindcss/vite": "^4.1.18",
     "appwrite": "^21.5.0",
-    "axios": "^1.13.2",
     "echarts": "^6.0.0",
     "nuxt": "^3.15.4",
     "pinia": "^3.0.4",

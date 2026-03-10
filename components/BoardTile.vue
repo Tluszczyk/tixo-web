@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BoardCell from './BoardCell.vue'
 
-const props = defineProps<{
+defineProps<{
   tileIndex: number
   tileArr: string[]
   size: 'sm' | 'md' | 'lg'
