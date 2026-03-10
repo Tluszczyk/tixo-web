@@ -7,10 +7,11 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-        "dev": "nuxt dev",
-        "dev:network": "nuxt dev --host --qr",
-        "build": "NODE_OPTIONS='--max-old-space-size=450' npx nuxi build",
-        "generate": "nuxt generate",    "preview": "nuxt preview",
+    "dev": "nuxt dev",
+    "dev:network": "nuxt dev --host --qr",
+    "build": "NODE_OPTIONS='--max-old-space-size=450' npx nuxi build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test:unit": "vitest run --logHeapUsage",
     "test:e2e": "playwright test",

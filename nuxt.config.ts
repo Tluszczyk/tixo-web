@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
+  ssr: false,
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   devServer: {
@@ -18,7 +19,6 @@ export default defineNuxtConfig({
   },
   sitemap: {
     enabled: true,
-    zeroRuntime: true
   },
   robots: {
     enabled: true,
@@ -50,9 +50,6 @@ export default defineNuxtConfig({
     esbuild: {
       target: 'es2020',
     },
-  },
-  nitro: {
-    preset: 'node-server'
   },
   srcDir: '.',
   runtimeConfig: {
