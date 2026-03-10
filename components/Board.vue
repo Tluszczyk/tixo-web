@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import BoardTile from './BoardTile.vue'
 
 const props = defineProps<{
   board?: string
@@ -154,17 +155,6 @@ const deserializedTileWinners = computed(() => {
   return tw.split('')
 })
 
-const cellClasses = computed(() => {
-  switch (props.size) {
-    case 'sm':
-      return 'text-[8px] lg:text-[10px]'
-    case 'md':
-      return 'text-lg lg:text-xl'
-    default:
-      return 'text-lg lg:text-3xl'
-  }
-})
-
 const getAbsoluteIndex = (tileIndex: number, cellIndex: number) => {
   const tx = tileIndex % 3
   const ty = Math.floor(tileIndex / 3)
@@ -175,9 +165,8 @@ const getAbsoluteIndex = (tileIndex: number, cellIndex: number) => {
   return y * 9 + x
 }
 
-const onCellClick = (tileIndex: number, cellIndex: number) => {
+const onCellClick = (absoluteIndex: number) => {
   if (props.readonly) return
-  const absoluteIndex = getAbsoluteIndex(tileIndex, cellIndex)
   emit('cell-click', absoluteIndex)
 }
 
@@ -188,7 +177,7 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 <template>
   <div
     :class="[
-      'board-container w-full relative group mx-auto pt-8 lg:pt-14 pl-8 lg:pl-14',
+      'board-container w-full relative group mx-auto',
       containerSizeClasses,
     ]"
   >
@@ -230,120 +219,28 @@ const verticalLabels = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
       </div>
 
       <div
-        class="main-grid aspect-square glass rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl relative z-10 grid grid-cols-3 grid-rows-3 gap-2 lg:gap-4 p-2 lg:p-6 transition-all duration-300"
+        class="main-grid aspect-square glass rounded-xl lg:rounded-2xl shadow-2xl relative z-10 grid grid-cols-3 grid-rows-3 gap-2 lg:gap-4 p-2 lg:p-4 transition-all duration-300"
       >
-        <div
+        <BoardTile
           v-for="(tileArr, i) in deserializedBoard"
           :key="i"
-          class="small-board transition-all duration-200 relative overflow-hidden aspect-square grid grid-cols-3 grid-rows-3 gap-0.5 lg:gap-1 p-0.5 lg:p-1.5"
-            :class="[
-            isTargetHighlight(i)
-              ? 'target-highlight ring-4 ring-yellow-400/80 z-30'
-              : isTileActive(i)
-                ? 'active ring-2 ring-indigo-500/50'
-                : 'opacity-80',
-            deserializedTileWinners[i] === 'X'
-              ? 'won-x'
-              : deserializedTileWinners[i] === 'O'
-                ? 'won-o'
-                : (deserializedTileWinners[i] === 'D' || deserializedTileWinners[i] === 'TIE')
-                  ? 'won-draw'
-                  : 'glass',
-          ]"
-        >
-          <div
-            v-for="(cell, j) in tileArr"
-            :key="j"
-            @click="onCellClick(i, j)"
-            @mouseenter="handleCellMouseEnter(i, j)"
-            @mouseleave="handleCellMouseLeave"
-            class="flex items-center justify-center aspect-square rounded-md lg:rounded-lg bg-cell-bg border border-cell-border font-black transition-all cursor-pointer select-none active:scale-90 overflow-hidden outline-none touch-manipulation"
-            style="-webkit-tap-highlight-color: transparent"
-            :class="[
-              cellClasses,
-              {
-                'bg-indigo-500/30 border-indigo-500/50 ring-2 ring-indigo-500/40 scale-95':
-                  selectedCell === getAbsoluteIndex(i, j),
-                'historical-move-highlight z-20 scale-110':
-                  highlightedCell === getAbsoluteIndex(i, j),
-                'recommended-move-highlight z-20 scale-110':
-                  recommendedCell === getAbsoluteIndex(i, j),
-                'available-cell hover:bg-yellow-500/20 hover:border-yellow-500/60 hover:ring-2 hover:ring-yellow-500/30':
-                  isCellAvailable(i, j),
-                'hover:bg-app-text/10 hover:border-app-text/20': !isCellAvailable(i, j) && !readonly,
-              },
-            ]"
-          >
-            <span v-if="cell === 'X'" class="marker-x leading-none flex items-center justify-center"
-              >X</span
-            >
-            <span
-              v-else-if="cell === 'O'"
-              class="marker-o leading-none flex items-center justify-center"
-              >O</span
-            >
-          </div>
-        </div>
+          :tile-index="i"
+          :tile-arr="tileArr"
+          :size="size || 'md'"
+          :is-target-highlight="isTargetHighlight(i)"
+          :is-tile-active="isTileActive(i)"
+          :tile-winner="deserializedTileWinners[i]"
+          :readonly="!!readonly"
+          :get-absolute-index="getAbsoluteIndex"
+          :is-selected="(j) => selectedCell === getAbsoluteIndex(i, j)"
+          :is-highlighted="(j) => highlightedCell === getAbsoluteIndex(i, j)"
+          :is-recommended="(j) => recommendedCell === getAbsoluteIndex(i, j)"
+          :is-available="(j) => isCellAvailable(i, j)"
+          @cell-click="onCellClick"
+          @cell-mouseenter="handleCellMouseEnter"
+          @cell-mouseleave="handleCellMouseLeave"
+        />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.small-board {
-  background: var(--tile-bg);
-  border: 1px solid var(--tile-border);
-  border-radius: 1rem;
-}
-.small-board.active {
-  background: rgba(99, 102, 241, 0.05);
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 10px 30px -5px var(--shadow-color);
-  z-index: 20;
-}
-.small-board.won-x {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-}
-.small-board.won-o {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-.small-board.won-draw {
-  background: var(--tile-bg);
-  border-color: var(--tile-border);
-}
-
-.available-cell {
-  border-color: rgba(234, 179, 8, 0.3) !important;
-  background: rgba(234, 179, 8, 0.05) !important;
-  box-shadow: inset 0 0 10px rgba(234, 179, 8, 0.1);
-}
-.available-cell:hover {
-  background: rgba(234, 179, 8, 0.15) !important;
-  border-color: rgba(234, 179, 8, 0.5) !important;
-}
-
-.target-highlight {
-  box-shadow:
-    0 0 30px rgba(250, 204, 21, 0.4),
-    inset 0 0 20px rgba(250, 204, 21, 0.2) !important;
-  border-color: rgba(250, 204, 21, 0.8) !important;
-  background: rgba(250, 204, 21, 0.08) !important;
-  z-index: 40 !important;
-}
-
-.historical-move-highlight {
-  background: #fbbf24 !important;
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.6) !important;
-  color: #000 !important;
-}
-
-.recommended-move-highlight {
-  background: #6366f1 !important;
-  border-color: #4f46e5 !important;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.6) !important;
-  color: #fff !important;
-}
-</style>

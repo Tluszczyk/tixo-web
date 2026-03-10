@@ -468,10 +468,10 @@ const summary = computed(() => {
       </div>
 
       <!-- Main Evaluation Chart -->
-      <div
+      <div v-if="analysisStatus !== 'NOT_ANALYSED'"
         class="glass border-glass-border rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-8 h-[400px] sm:h-[600px] shadow-inner relative flex items-center justify-center"
       >
-        <div v-if="analysisStatus !== 'ANALYSIS_COMPLETE' && (!analytics || !analytics.winProbabilityX || analytics.winProbabilityX.length === 0)" class="flex flex-col items-center gap-4">
+        <div v-if="analysisStatus === 'ANALYSIS_IN_PROCESS' || (!analytics || !analytics.winProbabilityX || analytics.winProbabilityX.length === 0)" class="flex flex-col items-center gap-4">
           <i class="pi pi-spin pi-spinner text-4xl text-indigo-500"></i>
           <span class="text-[10px] font-black uppercase tracking-widest text-app-text-muted opacity-40">Calculating Win Probabilities...</span>
         </div>
