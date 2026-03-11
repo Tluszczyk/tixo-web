@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "dev:network": "nuxt dev --host --qr",
-    "build": "NODE_OPTIONS='--max-old-space-size=450' npx nuxi build",
+    "build": "NODE_OPTIONS='--max-old-space-size=2048' npx nuxi build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
