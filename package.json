@@ -37,6 +37,8 @@
     "vue-echarts": "^8.0.1"
   },
   "devDependencies": {
+    "cac": "6.7.14",
+    "commander": "13.1.0",
     "@nuxt/test-utils": "^4.0.0",
     "@nuxtjs/robots": "^5.7.1",
     "@nuxtjs/sitemap": "^7.6.0",

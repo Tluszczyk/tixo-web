@@ -1,0 +1,1 @@
+import{ai as s,g as u,aj as r,ab as i}from"./BsX1T9eP.js";const c=s(async o=>{let t,a;const e=u();if(e.user||([t,a]=r(()=>e.checkAuth()),await t,a()),!e.isLoggedIn)return e.openLoginModal(o.fullPath),i("/")});export{c as default};

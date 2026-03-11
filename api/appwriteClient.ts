@@ -1,4 +1,4 @@
-import { Client, Account, TablesDB, Functions, Realtime } from 'appwrite'
+import { Client, Account, TablesDB, Functions, Realtime, ID } from 'appwrite'
 
 // In Nuxt, we might want these to be singletons but safe for SSR.
 // However, since we are in a migration, I'll try to keep them as exports but initialized lazily if needed,
@@ -20,4 +20,4 @@ export const functions = new Functions(client)
 // Realtime should only be used on client
 export const realtime = typeof window !== 'undefined' ? new Realtime(client) : ({} as Realtime)
 
-export { ID } from 'appwrite'
+export { ID }

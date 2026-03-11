@@ -1,3 +1,0 @@
-const sources = {};
-
-export { sources };

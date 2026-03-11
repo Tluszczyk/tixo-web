@@ -1,6 +1,6 @@
 /// <reference types="@pinia/nuxt" />
-/// <reference types="@nuxtjs/sitemap" />
 /// <reference types="@primevue/nuxt-module" />
+/// <reference types="@nuxtjs/sitemap" />
 /// <reference types="@nuxtjs/robots" />
 /// <reference types="@nuxt/telemetry" />
 /// <reference types="@nuxt/devtools" />

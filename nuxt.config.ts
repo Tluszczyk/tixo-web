@@ -13,6 +13,23 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxtjs/robots'
   ],
+  nitro: {
+    static: true,
+    prerender: {
+      crawlLinks: true,
+      failOnError: false,
+      routes: ['/sitemap.xml']
+    },
+  },
+  routeRules: {
+    // Dynamic game and analysis pages should be client-side only in SSG
+    '/game/**': { ssr: false },
+    '/analysis/**': { ssr: false },
+    '/users/**': { ssr: false },
+    // Auth-protected pages are better as SPA to avoid flashing of protected content
+    '/dashboard': { ssr: false },
+    '/profile': { ssr: false },
+  },
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || 'https://tixo-game.com',
     name: 'Tixo - Ultimate Tic-Tac-Toe',
@@ -40,10 +57,25 @@ export default defineNuxtConfig({
     'primeicons/primeicons.css',
     '~/assets/index.css'
   ],
+  build: {
+    transpile: ['appwrite'],
+  },
   sourcemap: { server: false, client: false },
   vite: {
     build: {
       sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('echarts')) {
+              return 'echarts'
+            }
+            if (id.includes('primevue')) {
+              return 'primevue'
+            }
+          }
+        }
+      }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins: [tailwindcss() as any],
