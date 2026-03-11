@@ -1,0 +1,9 @@
+{
+  "name": "tixo-web-ssr",
+  "version": "1.0.0",
+  "main": ".output/server/index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node .output/server/index.mjs"
+  }
+}

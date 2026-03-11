@@ -1,0 +1,7 @@
+# Only include these in the bundle for Appwrite
+*
+!package.json
+!package-lock.json
+!.output/
+!.output/server/node_modules/
+!.output/public/
