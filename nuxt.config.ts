@@ -6,6 +6,26 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/',
     buildAssetsDir: '/_nuxt/',
+    head: {
+      script: [
+        {
+          hid: 'gtag-js',
+          async: true,
+          src: 'https://www.googletagmanager.com/gtag/js?id=G-Y7EWYYGQ6H',
+        },
+        {
+          hid: 'gtag-inline',
+          innerHTML: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-Y7EWYYGQ6H');
+          `,
+          type: 'text/javascript'
+        }
+      ]
+    }
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
@@ -69,14 +89,20 @@ export default defineNuxtConfig({
   vite: {
     build: {
       sourcemap: false,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('echarts')) {
-              return 'echarts'
-            }
-            if (id.includes('primevue')) {
-              return 'primevue'
+            if (id.includes('node_modules')) {
+              if (id.includes('echarts') || id.includes('zrender')) {
+                return 'echarts'
+              }
+              if (id.includes('primevue')) {
+                return 'primevue'
+              }
+              if (id.includes('appwrite')) {
+                return 'appwrite'
+              }
             }
           }
         }

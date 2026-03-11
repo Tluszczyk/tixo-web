@@ -1,4 +1,0 @@
-import style_0 from "./_id_-styles-1.mjs-HT6EqwFI.js";
-export default [
-  style_0
-]

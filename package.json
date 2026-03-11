@@ -68,5 +68,8 @@
     "vitest": "^4.0.16",
     "vue-intellisense": "^1.0.3",
     "vue-tsc": "^3.2.2"
+  },
+  "overrides": {
+    "citty": "0.2.1"
   }
 }

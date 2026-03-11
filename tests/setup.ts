@@ -114,7 +114,7 @@ vi.mock('#app', async (importOriginal) => {
     ...actual,
     useRuntimeConfig: () => ({
       public: {
-        appwriteEndpoint: 'https://api.tixo-game.com/v1',
+        appwriteEndpoint: 'https://fra.cloud.appwrite.io/v1',
         appwriteProjectId: 'tixo'
       }
     }),

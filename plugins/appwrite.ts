@@ -4,7 +4,7 @@ import { client } from '~/api/appwriteClient'
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   
-  const endpoint = config.public.appwriteEndpoint || 'https://api.tixo-game.com/v1'
+  const endpoint = config.public.appwriteEndpoint || 'https://fra.cloud.appwrite.io/v1'
   const projectId = config.public.appwriteProjectId || 'tixo'
 
   client

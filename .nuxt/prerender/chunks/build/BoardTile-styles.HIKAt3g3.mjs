@@ -1,7 +1,0 @@
-const BoardTile_vue_vue_type_style_index_0_scoped_f14b0cd2_lang = ".small-board[data-v-f14b0cd2]{background:var(--tile-bg);border:1px solid var(--tile-border)}.small-board.active[data-v-f14b0cd2]{background:#6366f10d;border-color:#6366f166;box-shadow:0 10px 30px -5px var(--shadow-color);z-index:20}.small-board.won-x[data-v-f14b0cd2]{background:#ef44441a;border-color:#ef44444d}.small-board.won-o[data-v-f14b0cd2]{background:#3b82f61a;border-color:#3b82f64d}.small-board.won-draw[data-v-f14b0cd2]{background:var(--tile-bg);border-color:var(--tile-border)}.target-highlight[data-v-f14b0cd2]{background:#facc1514!important;border-color:#facc15cc!important;box-shadow:0 0 30px #facc1566,inset 0 0 20px #facc1533!important;z-index:40!important}";
-
-const BoardTileStyles_HIKAt3g3 = [
-  BoardTile_vue_vue_type_style_index_0_scoped_f14b0cd2_lang
-];
-
-export { BoardTileStyles_HIKAt3g3 as default };

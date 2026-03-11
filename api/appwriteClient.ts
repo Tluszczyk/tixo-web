@@ -8,7 +8,7 @@ import { Client, Account, TablesDB, Functions, Realtime, ID } from 'appwrite'
 export const client = new Client()
 
 // Default fallback, will be overridden by ~/plugins/appwrite.ts using runtimeConfig
-const endpoint = import.meta.env.VITE_APPWRITE_API_URL || 'https://api.tixo-game.com/v1'
+const endpoint = import.meta.env.VITE_APPWRITE_API_URL || 'https://fra.cloud.appwrite.io/v1'
 const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || 'tixo'
 
 client
