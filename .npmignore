@@ -2,6 +2,8 @@
 *
 !package.json
 !package-lock.json
+!node_modules/
+!node_modules/.gitkeep
 !.output/
 !.output/server/node_modules/
 !.output/public/
