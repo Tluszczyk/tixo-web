@@ -1,0 +1,3 @@
+const sources = {};
+
+export { sources };

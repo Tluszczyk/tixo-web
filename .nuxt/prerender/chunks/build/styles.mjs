@@ -1,0 +1,36 @@
+const interopDefault = r => r.default || r || [];
+const styles = {
+  "node_modules/nuxt/dist/app/entry.js": () => import('./entry-styles.C3IHajSq.mjs').then(interopDefault),
+  "pages/users/index.vue": () => import('./index-styles.B02V8aZj.mjs').then(interopDefault),
+  "pages/analysis/[id].vue": () => import('./_id_-styles.BWa0cP6Z.mjs').then(interopDefault),
+  "pages/game/[id].vue": () => import('./_id_-styles.Dx3NlB9i.mjs').then(interopDefault),
+  "pages/how-to-play.vue": () => import('./how-to-play-styles.tKVl3cGL.mjs').then(interopDefault),
+  "pages/users/index.vue?vue&type=style&index=0&scoped=ba085646&lang.css": () => import('./index-styles.B02V8aZj.mjs').then(interopDefault),
+  "pages/analysis/[id].vue?vue&type=style&index=0&scoped=bf98c300&lang.css": () => import('./_id_-styles.BWa0cP6Z.mjs').then(interopDefault),
+  "pages/game/[id].vue?vue&type=style&index=0&scoped=25e30391&lang.css": () => import('./_id_-styles.Dx3NlB9i.mjs').then(interopDefault),
+  "pages/how-to-play.vue?vue&type=style&index=0&scoped=7f141a0d&lang.css": () => import('./how-to-play-styles.tKVl3cGL.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-404.vue": () => import('./error-404-styles.CiJjK6WX.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-500.vue": () => import('./error-500-styles.ulHNpcF1.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-500.vue?vue&type=style&index=0&scoped=a01dd0ba&lang.css": () => import('./error-500-styles.ulHNpcF1.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-404.vue?vue&type=style&index=0&scoped=1bd9e11a&lang.css": () => import('./error-404-styles.CiJjK6WX.mjs').then(interopDefault),
+  "components/LoginModal.vue": () => import('./LoginModal-styles.Dr-MUly-.mjs').then(interopDefault),
+  "components/Common/BaseButton.vue": () => import('./BaseButton-styles.BS99T51Z.mjs').then(interopDefault),
+  "components/LoginModal.vue?vue&type=style&index=0&scoped=ae42cb97&lang.css": () => import('./LoginModal-styles.Dr-MUly-.mjs').then(interopDefault),
+  "components/User/UserDashboard.vue": () => import('./UserDashboard-styles.DAp6QPzo.mjs').then(interopDefault),
+  "components/User/UserDashboard.vue?vue&type=style&index=0&scoped=93738759&lang.css": () => import('./UserDashboard-styles.DAp6QPzo.mjs').then(interopDefault),
+  "layouts/default.vue": () => import('./default-styles.Dy7nAzXa.mjs').then(interopDefault),
+  "components/GameAnalytics/GameAnalyticsDashboard.vue": () => import('./GameAnalyticsDashboard-styles.Ctl4D091.mjs').then(interopDefault),
+  "components/Game/MatchTimeline.vue": () => import('./MatchTimeline-styles.Dpm8kgK9.mjs').then(interopDefault),
+  "components/BoardTile.vue": () => import('./BoardTile-styles.HIKAt3g3.mjs').then(interopDefault),
+  "components/Common/BaseButton.vue?vue&type=style&index=0&scoped=5a2b2f4c&lang.css": () => import('./BaseButton-styles.BS99T51Z.mjs').then(interopDefault),
+  "layouts/default.vue?vue&type=style&index=0&scoped=b049cd52&lang.css": () => import('./default-styles.Dy7nAzXa.mjs').then(interopDefault),
+  "components/GameAnalytics/GameAnalyticsDashboard.vue?vue&type=style&index=0&scoped=a004c8c9&lang.css": () => import('./GameAnalyticsDashboard-styles.Ctl4D091.mjs').then(interopDefault),
+  "components/Game/MatchTimeline.vue?vue&type=style&index=0&scoped=8be43e94&lang.css": () => import('./MatchTimeline-styles.Dpm8kgK9.mjs').then(interopDefault),
+  "components/BoardTile.vue?vue&type=style&index=0&scoped=f14b0cd2&lang.css": () => import('./BoardTile-styles.HIKAt3g3.mjs').then(interopDefault),
+  "components/BoardCell.vue": () => import('./BoardCell-styles.C3znvypm.mjs').then(interopDefault),
+  "components/BoardCell.vue?vue&type=style&index=0&scoped=67c53ab7&lang.css": () => import('./BoardCell-styles.C3znvypm.mjs').then(interopDefault),
+  "components/GameAnalytics/BaseAnalyticsChart.vue": () => import('./BaseAnalyticsChart-styles.Brx53JD-.mjs').then(interopDefault),
+  "components/GameAnalytics/BaseAnalyticsChart.vue?vue&type=style&index=0&scoped=7180fa01&lang.css": () => import('./BaseAnalyticsChart-styles.Brx53JD-.mjs').then(interopDefault)
+};
+
+export { styles as default };

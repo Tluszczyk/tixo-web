@@ -1,7 +1,0 @@
-# START nuxt-robots (indexable)
-User-agent: *
-Allow: /
-Disallow: 
-
-Sitemap: https://tixo-game.com/sitemap.xml
-# END nuxt-robots
