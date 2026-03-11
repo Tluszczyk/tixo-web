@@ -747,8 +747,8 @@ function _expandFromEnv(value) {
 
 const _inlineRuntimeConfig = {
   "app": {
-    "baseURL": "/tixo-web/",
-    "buildId": "537d9c8f-512e-4d54-8e5e-6cb9ff39c906",
+    "baseURL": "/",
+    "buildId": "f5e8903d-ae22-4d2f-96da-ca44d48caf41",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -782,7 +782,7 @@ const _inlineRuntimeConfig = {
         "headers": {
           "Content-Type": "text/xml; charset=UTF-8",
           "Cache-Control": "public, max-age=600, must-revalidate",
-          "X-Sitemap-Prerendered": "2026-03-11T21:27:10.751Z"
+          "X-Sitemap-Prerendered": "2026-03-11T22:16:35.478Z"
         }
       },
       "/_nuxt": {
@@ -2751,7 +2751,7 @@ const _inlineRuntimeConfig = {
     "sitemaps": {
       "sitemap.xml": {
         "sitemapName": "sitemap.xml",
-        "route": "/tixo-web/sitemap.xml",
+        "route": "sitemap.xml",
         "defaults": {},
         "include": [],
         "exclude": [
@@ -3068,7 +3068,7 @@ function defaultHandler(error, event, opts) {
   const statusMessage = error.statusMessage || "Server Error";
   const url = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true });
   if (statusCode === 404) {
-    const baseURL = "/tixo-web/";
+    const baseURL = "/";
     if (/^\/[^/]/.test(baseURL) && !url.pathname.startsWith(baseURL)) {
       const redirectTo = `${baseURL}${url.pathname.slice(1)}${url.search}`;
       return {
