@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   ssr: true,
   app: {
-    baseURL: '/tixo-web/',
+    baseURL: '/',
     buildAssetsDir: '/_nuxt/',
   },
   compatibilityDate: '2024-11-01',
