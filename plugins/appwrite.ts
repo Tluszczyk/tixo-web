@@ -1,7 +1,7 @@
 import { defineNuxtPlugin } from '#app'
 import { client } from '~/api/appwriteClient'
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   
   const endpoint = config.public.appwriteEndpoint || 'https://api.tixo-game.com/v1'

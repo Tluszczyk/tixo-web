@@ -20,6 +20,7 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../node_modules/nuxt/dist/pages/runtime/plugins/prefetch.client.js")> &
   InjectionType<typeof import("../../node_modules/@nuxtjs/robots/dist/runtime/app/plugins/robot-meta.server.js")> &
   InjectionType<typeof import("../../node_modules/@primevue/nuxt-module/dist/runtime/plugin.client.js")> &
+  InjectionType<typeof import("../../plugins/appwrite")> &
   InjectionType<typeof import("../../node_modules/nuxt/dist/pages/runtime/plugins/prerender.server.js")>
 
 declare module '#app' {
